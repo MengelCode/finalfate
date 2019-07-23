@@ -4,40 +4,7 @@
  * and open the template in the editor.
  */
 
-//INIT
-const FRAME_RATE = 35;
-//"booleans" if certain keys are pressed.
-var shoot = 0;
-var up = 0;
-var down = 0;
-var left = 0;
-var right = 0;
-var pause = 0;
-//HTML Canvas
-var canvas = document.getElementById("myScreen");
-//Context
-var context = canvas.getContext("2d");
-//Function Pointer to what should happen in the next rendering cycle.
-var renderFunction = null;
-var screenMatrix = initScreenMatrix();
-//For music/sound playback.
-var bgm = document.getElementById("mainBGM");
-var shoot = document.getElementById("shoot");
-var hit = document.getElementById("hit");
-var lose = document.getElementById("lose");
-//Animation counter.
-var aniCount = 0;
-//Black background.
-context.fillRect(0, 0, 800, 600);
-//Render function assigning.
-renderFunction = titleScreen;
-//Make keys unpressed over time.
-setInterval(keyInvalidator, FRAME_RATE);
-//Count all the frames.
-setInterval(increaseCount, FRAME_RATE);
-//Enter rendering cycle.
-var renderTimer = setInterval(renderFunction, FRAME_RATE);
-window.addEventListener("keydown", getKeyPress);
+
 //CLASSES
 
 
@@ -61,11 +28,9 @@ class GameObject {
          */
         this.updateState = null;
         /**
-         * The color to draw this element in.
-         * 
+         * Render this object.
          */
-        this.color = "white";
-
+        this.renderState = null;
 
         /**
          * 
@@ -100,35 +65,68 @@ class LinkedList {
 
         }
         //Return the next element in this list. Returns null if there is no next element.
-        this.giveNext = function(){
-           if(iterateState==null){
-               return null;
-           } 
-           var returnWhat = iterateState.value;
-           iterateState = iterateState.next;
-           return returnWhat;
+        this.giveNext = function () {
+            if (this.iterateState === null) {
+                return null;
+            }
+            var returnWhat = this.iterateState.value;
+            this.iterateState = this.iterateState.next;
+            return returnWhat;
         };
+        //Return the next element in this list, but without forwarding the iteration. Returns null if there is no next element.
+        this.peekNext = function () {
+            if (this.iterateState === null) {
+                return null;
+            }
+            return this.iterateState.value;
+        };
+        //Reset the iterator.
+        this.resetIterator = function () {
+
+            this.iterateState = this.next;
+        }
         //Adds an element to the list at its end.
         this.addElement = function (value) {
-        if(this.next!=null){
-            this.next.addElement(value);
-        }
-        else{
-            this.next = new LinkedList();
-            this.next.value = value;
-        }
-            
-        iterateState = this.next;
+            if (this.next !== null) {
+                this.next.addElement(value);
+            } else {
+                this.next = new LinkedList();
+                this.next.value = value;
+            }
+
+            this.iterateState = this.next;
         };
         //Add an element at the front of the list.
-        this.addElementFront = function(value){
+        this.addElementFront = function (value) {
             var nextesNext = this.next;
             this.next = new LinkedList();
             this.next.next = nextesNext;
             this.next.value = value;
-            iterateState = this.next;
+            this.iterateState = this.next;
         };
-        
+        //Deletes the entire list.
+        this.deleteAll = function () {
+            this.next = null;
+            this.iterateState = null;
+        };
+        /**
+         Delete the first entry of something based on type-strong comparisons of values.
+         Does nothing if an entry did not even exist in the first place.
+         Returns a boolean indicating if a deletion took place.
+         */
+        this.deleteElementByValue = function (value) {
+            this.iterateState = this;
+            while (this.iterateState !== null) {
+                if (this.iterateState.next.value === value) {
+                    this.iterateState.next = this.iterateState.next.next;
+                    this.iterateState = this.next;
+                    return true;
+                }
+                this.iterateState = this.iterateState.next;
+            }
+            this.iterateState = this.next;
+            return false;
+        };
     }
 
 }
@@ -144,14 +142,79 @@ class SpaceShip extends GameObject {
      */
     constructor(middleX, middleY) {
         super();
-        super.color = "yellow";
+
         super.giveOccupiedSpace = function () {
-            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2];
-            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY];
+            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2,middleX-2,middleX+1];
+            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY,middleY-1,middleY-1];
             return [x, y];
         };
+        
+        super.updateState = function () {
+            if(left){
+                //left = 0;
+                middleX--;
+            }
+            if(right){
+                //right = 0;
+                middleX++;
+            }
+            if(up){
+                middleY--;
+            }
+              if(down){
+                middleY++;
+            }
+        };
+        super.renderState = function (){
+            context.fillStyle = "lightgray";
+            context.fillRect((middleX - 2) * 10 ,middleY*10,50,10);
+            context.fillStyle = "yellow";
+            context.fillRect(middleX * 10, (middleY - 2) *10,10,20);
+            context.fillStyle = "orange";
+            context.fillRect((middleX-2) * 10, (middleY-1) * 10, 10, 10);
+            context.fillRect((middleX+2) * 10, (middleY-1) * 10, 10, 10);
+        };
+        
     }
 }
+
+//INIT
+const FRAME_RATE = 35;
+//"booleans" if certain keys are pressed.
+var shoot = 0;
+var up = 0;
+var down = 0;
+var left = 0;
+var right = 0;
+var pause = 0;
+//HTML Canvas
+var canvas = document.getElementById("myScreen");
+//Context
+var context = canvas.getContext("2d");
+//Function Pointer to what should happen in the next rendering cycle.
+var renderFunction = null;
+//For music/sound playback.
+var bgm = document.getElementById("mainBGM");
+var shoot = document.getElementById("shoot");
+var hit = document.getElementById("hit");
+var lose = document.getElementById("lose");
+//Animation counter.
+var aniCount = 0;
+//Black background.
+context.fillRect(0, 0, 800, 600);
+//Render function assigning.
+renderFunction = titleScreen;
+//Make keys unpressed over time.
+//setInterval(keyInvalidator, FRAME_RATE);
+//Count all the frames.
+setInterval(increaseCount, FRAME_RATE);
+//Linked List to use for all kinds of things.
+var displayList = new LinkedList();
+//Enter rendering cycle.
+var renderTimer = setInterval(renderFunction, FRAME_RATE);
+window.addEventListener("keydown", getKeyPress);
+window.addEventListener("keyup", getKeyRelease);
+
 
 
 //FUNCTIONS
@@ -174,12 +237,57 @@ function titleScreen() {
         context.fillStyle = "gold";
         context.fillText("PRESS SPACE TO START", 230, 520);
         //Only for test purposes....
-        if (shoot) {
-            exchangeRenderLoop(null);
+        if (shoot === 5) {
+            displayList = new LinkedList();
+            displayList.addElement(new SpaceShip(38,55));
+            exchangeRenderLoop(gamePlay);
         }
     }
 
 }
+/**
+ Attract mode...
+ */
+function finalFate() {
+
+}
+/**
+ * 
+ * Actual game loop.
+ */
+function gamePlay(){
+    updateGameObjects();
+    renderInGame();
+}
+
+
+//Auxillary functions for levels.
+
+//1 - Advance the state of each thing. The battle ship of the player is the first thing by contract.
+function updateGameObjects() {
+    displayList.resetIterator();
+    while (displayList.peekNext() !== null) {
+        displayList.giveNext().updateState();
+
+    }
+}
+// 2 - Check for collisions. Again, the premise is that the player is the first object.
+function checkForColli() {
+
+}
+// 3 -  Render game objects.
+
+function renderInGame() {
+    context.fillStyle = "black";
+    context.fillRect(0, 0, 800, 600);
+    displayList.resetIterator();
+    while (displayList.peekNext() !== null) {
+        displayList.giveNext().renderState();
+
+    }
+}
+
+
 //All other functions.
 
 //Make sure that frame counter always continues.
@@ -187,16 +295,7 @@ function increaseCount() {
     aniCount++;
 }
 
-//Returns an matrix where displayed elements can subscribe to.
-function initScreenMatrix() {
-    var gameMatrix = new Array(80);
-    for (i = 0; i < gameMatrix.length; i++) {
-        gameMatrix[i] = new Array(60);
 
-
-    }
-    return gameMatrix;
-}
 //Makes sure keys are not pressed for eternity.
 function keyInvalidator() {
     if (shoot) {
@@ -241,6 +340,28 @@ function getKeyPress(event) {
         down = 5;
     } else if (event.keyCode === KeyboardEvent.DOM_VK_P) {
         pause = 5;
+    }
+
+}
+//Event receiver for key release.
+function getKeyRelease(event) {
+
+    // window.alert("It works....");
+
+
+
+    if (event.keyCode === KeyboardEvent.DOM_VK_SPACE) {
+        shoot = 0;
+    } else if (event.keyCode === KeyboardEvent.DOM_VK_LEFT) {
+        left = 0;
+    } else if (event.keyCode === KeyboardEvent.DOM_VK_RIGHT) {
+        right = 0;
+    } else if (event.keyCode === KeyboardEvent.DOM_VK_UP) {
+        up = 0;
+    } else if (event.keyCode === KeyboardEvent.DOM_VK_DOWN) {
+        down = 0;
+    } else if (event.keyCode === KeyboardEvent.DOM_VK_P) {
+        pause = 0;
     }
 
 }
