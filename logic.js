@@ -116,7 +116,7 @@ class LinkedList {
          */
         this.deleteElementByValue = function (value) {
             this.iterateState = this;
-            while (this.iterateState !== null) {
+            while (this.iterateState.next !== null) {
                 if (this.iterateState.next.value === value) {
                     this.iterateState.next = this.iterateState.next.next;
                     this.iterateState = this.next;
@@ -130,7 +130,29 @@ class LinkedList {
     }
 
 }
-
+class Enemy extends GameObject {
+    /**
+     * 
+     * @param {integer} middleX
+     * @param {integer} middleY
+     * @param {function} dimensionMatrix
+     * @param {function} updateRoutine
+     * @param {function} renderRoutine
+     * @param {boolean} killable
+     * @param {integer} damage
+     * @returns {Enemy}
+     */
+    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, killable = true, damage = 10) {
+        super();
+        this.middleX = middleX;
+        this.middleY = middleY;
+        super.giveOccupiedSpace = dimensionMatrix;
+        super.updateState = updateRoutine;
+        super.renderState = renderRoutine;
+        this.killable = killable;
+        this.damage = damage;
+    }
+}
 
 //Instances of GameObject.
 class SpaceShip extends GameObject {
@@ -144,37 +166,37 @@ class SpaceShip extends GameObject {
         super();
 
         super.giveOccupiedSpace = function () {
-            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2,middleX-2,middleX+1];
-            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY,middleY-1,middleY-1];
-            return [x, y];
+            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2, middleX - 2, middleX + 1];
+            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY, middleY - 1, middleY - 1];
+            return new Array(x,y);
         };
-        
+
         super.updateState = function () {
-            if(left){
+            if (left && middleX > 2) {
                 //left = 0;
                 middleX--;
             }
-            if(right){
+            if (right && middleX < 77) {
                 //right = 0;
                 middleX++;
             }
-            if(up){
+            if (up && middleY > 28) {
                 middleY--;
             }
-              if(down){
+            if (down && middleY < 59) {
                 middleY++;
             }
         };
-        super.renderState = function (){
+        super.renderState = function () {
             context.fillStyle = "lightgray";
-            context.fillRect((middleX - 2) * 10 ,middleY*10,50,10);
+            context.fillRect((middleX - 2) * 10, middleY * 10, 50, 10);
             context.fillStyle = "yellow";
-            context.fillRect(middleX * 10, (middleY - 2) *10,10,20);
+            context.fillRect(middleX * 10, (middleY - 2) * 10, 10, 20);
             context.fillStyle = "orange";
-            context.fillRect((middleX-2) * 10, (middleY-1) * 10, 10, 10);
-            context.fillRect((middleX+2) * 10, (middleY-1) * 10, 10, 10);
+            context.fillRect((middleX - 2) * 10, (middleY - 1) * 10, 10, 10);
+            context.fillRect((middleX + 2) * 10, (middleY - 1) * 10, 10, 10);
         };
-        
+
     }
 }
 
@@ -239,7 +261,8 @@ function titleScreen() {
         //Only for test purposes....
         if (shoot === 5) {
             displayList = new LinkedList();
-            displayList.addElement(new SpaceShip(38,55));
+            displayList.addElement(new SpaceShip(38, 55));
+            displayList.addElement(new Enemy(38, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render));
             exchangeRenderLoop(gamePlay);
         }
     }
@@ -255,9 +278,11 @@ function finalFate() {
  * 
  * Actual game loop.
  */
-function gamePlay(){
+function gamePlay() {
     updateGameObjects();
+    checkForColli();
     renderInGame();
+    deleteDeceased();
 }
 
 
@@ -273,8 +298,43 @@ function updateGameObjects() {
 }
 // 2 - Check for collisions. Again, the premise is that the player is the first object.
 function checkForColli() {
+    checkForEnemyHit();
 
 }
+// 2A - Check for collisions of the player with enemies or enemy bullets
+function checkForEnemyHit() {
+    displayList.resetIterator();
+    var playerObj = displayList.giveNext();
+    var playerArr = playerObj.giveOccupiedSpace();
+    //For all objects...
+    while (displayList.peekNext() !== null) {
+        //...which are enemies
+        if (displayList.peekNext() instanceof Enemy) {
+            // window.alert("I am entered");
+            var enemyObj = displayList.giveNext();
+            var enemyArr = enemyObj.giveOccupiedSpace();
+            //....pick X and Y from player...
+            for (var i = 0; i < playerArr[0].length; i++) {
+                //...and get X and Y from enemy...
+                for (var j = 0; j < enemyArr[0].length; j++) {
+                    //console.log("Going to compare P (" + playerArr[0][i] + "/" + playerArr[1][i] + ") against" + "Q (" + enemyArr[0][j] + "/" + enemyArr[1][j] + ")....");
+                    if (playerArr[0][i] === enemyArr[0][j] && playerArr[1][i] === enemyArr[1][j]) {
+                        console.log("Cool!");
+                        window.alert("Collision detected");
+                    }
+                    else{
+                      
+                    }
+                }
+            }
+        }
+        //Skip everything else.
+        else {
+            displayList.giveNext();
+        }
+    }
+}
+
 // 3 -  Render game objects.
 
 function renderInGame() {
@@ -285,6 +345,44 @@ function renderInGame() {
         displayList.giveNext().renderState();
 
     }
+}
+
+// 4 - Delete all elements which declared themselves as no longer needed.
+
+function deleteDeceased() {
+    displayList.resetIterator();
+    while (displayList.peekNext() !== null) {
+        var objInQuestion = displayList.giveNext();
+        if (objInQuestion.invalid === true) {
+            displayList.deleteElementByValue(objInQuestion);
+        }
+    }
+
+}
+
+//Enemy functions, per enemy.
+//All dimension matrix functions.
+
+//"Stupid Enemy" dimension function.
+function stupidEnemy_dimension() {
+    var x = [this.middleX];
+    var y = [this.middleY];
+    return new Array(x,y);
+}
+
+//All update routines.
+
+//"Stupid Enemy" update function.
+function stupidEnemy_update() {
+    this.middleY = this.middleY + 0.5;
+}
+
+//All rendering routines.
+
+//"Stupid Enemy" rendering function
+function stupidEnemy_render() {
+    context.fillStyle = "white";
+    context.fillRect(this.middleX * 10, this.middleY *10 , 10, 10);
 }
 
 
