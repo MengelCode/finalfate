@@ -232,6 +232,8 @@ renderFunction = titleScreen;
 setInterval(increaseCount, FRAME_RATE);
 //Linked List to use for all kinds of things.
 var displayList = new LinkedList();
+//Linked List to contain enemies, for collision stuff.
+var enemyList = new LinkedList();
 //Enter rendering cycle.
 var renderTimer = setInterval(renderFunction, FRAME_RATE);
 window.addEventListener("keydown", getKeyPress);
@@ -262,7 +264,9 @@ function titleScreen() {
         if (shoot === 5) {
             displayList = new LinkedList();
             displayList.addElement(new SpaceShip(38, 55));
-            displayList.addElement(new Enemy(38, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render));
+            var test_enemy = new Enemy(38, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render); 
+            displayList.addElement(test_enemy);
+            enemyList.addElement(test_enemy);
             exchangeRenderLoop(gamePlay);
         }
     }
@@ -306,12 +310,13 @@ function checkForEnemyHit() {
     displayList.resetIterator();
     var playerObj = displayList.giveNext();
     var playerArr = playerObj.giveOccupiedSpace();
+    enemyList.resetIterator();
     //For all objects...
-    while (displayList.peekNext() !== null) {
+    while (enemyList.peekNext() !== null) {
         //...which are enemies
-        if (displayList.peekNext() instanceof Enemy) {
+       
             // window.alert("I am entered");
-            var enemyObj = displayList.giveNext();
+            var enemyObj = enemyList.giveNext();
             var enemyArr = enemyObj.giveOccupiedSpace();
             //....pick X and Y from player...
             for (var i = 0; i < playerArr[0].length; i++) {
@@ -327,11 +332,8 @@ function checkForEnemyHit() {
                     }
                 }
             }
-        }
-        //Skip everything else.
-        else {
-            displayList.giveNext();
-        }
+        
+       
     }
 }
 
