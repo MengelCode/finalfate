@@ -38,7 +38,7 @@ class GameObject {
          * 
          */
         this.invalidate = function () {
-            invalid = true;
+           this.invalid = true;
         };
     }
 
@@ -84,17 +84,18 @@ class LinkedList {
         this.resetIterator = function () {
 
             this.iterateState = this.next;
-        }
-        //Adds an element to the list at its end.
-        this.addElement = function (value) {
+        };
+        //Adds an element to the list at its end. The reset value is optional and should be set
+        //to false when the iterator being reset causes problems.
+        this.addElement = function (value,reset = true) {
             if (this.next !== null) {
                 this.next.addElement(value);
             } else {
                 this.next = new LinkedList();
                 this.next.value = value;
             }
-
-            this.iterateState = this.next;
+            if(reset === true){
+            this.iterateState = this.next;}
         };
         //Add an element at the front of the list.
         this.addElementFront = function (value) {
@@ -103,6 +104,8 @@ class LinkedList {
             this.next.next = nextesNext;
             this.next.value = value;
             this.iterateState = this.next;
+         
+           
         };
         //Deletes the entire list.
         this.deleteAll = function () {
@@ -154,6 +157,19 @@ class Enemy extends GameObject {
     }
 }
 
+class Bullet extends GameObject {
+    
+    constructor(middleX,middleY){
+        super();
+        this.middleX = middleX;
+        this.middleY = middleY;
+        super.giveOccupiedSpace = bullet_dimension;
+        super.updateState = bullet_update;
+        super.renderState = bullet_render;
+    }
+}
+
+
 //Instances of GameObject.
 class SpaceShip extends GameObject {
     /**
@@ -185,6 +201,15 @@ class SpaceShip extends GameObject {
             }
             if (down && middleY < 59) {
                 middleY++;
+            }
+            if(shoot){
+               var bullet = new Bullet(middleX-2,middleY);
+                displayList.addElement(bullet,false);
+               bulletList.addElement(bullet,false);
+               bullet = new Bullet(middleX+2,middleY);
+                displayList.addElement(bullet,false);
+                bulletList.addElement(bullet,false);
+                
             }
         };
         super.renderState = function () {
@@ -234,6 +259,8 @@ setInterval(increaseCount, FRAME_RATE);
 var displayList = new LinkedList();
 //Linked List to contain enemies, for collision stuff.
 var enemyList = new LinkedList();
+//Linked List to contain bullets, for collision stuff.
+var bulletList = new LinkedList();
 //Enter rendering cycle.
 var renderTimer = setInterval(renderFunction, FRAME_RATE);
 window.addEventListener("keydown", getKeyPress);
@@ -265,6 +292,9 @@ function titleScreen() {
             displayList = new LinkedList();
             displayList.addElement(new SpaceShip(38, 55));
             var test_enemy = new Enemy(38, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render); 
+            displayList.addElement(test_enemy);
+            enemyList.addElement(test_enemy);
+            test_enemy = new Enemy(18, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render); 
             displayList.addElement(test_enemy);
             enemyList.addElement(test_enemy);
             exchangeRenderLoop(gamePlay);
@@ -352,19 +382,27 @@ function renderInGame() {
 // 4 - Delete all elements which declared themselves as no longer needed.
 
 function deleteDeceased() {
-    displayList.resetIterator();
-    while (displayList.peekNext() !== null) {
-        var objInQuestion = displayList.giveNext();
+    var lists = [displayList,enemyList,bulletList];
+    for(var i = 0; i<lists.length; i++){
+    lists[i].resetIterator();
+    while (lists[i].peekNext() !== null) {
+        var objInQuestion = lists[i].giveNext();
         if (objInQuestion.invalid === true) {
-            displayList.deleteElementByValue(objInQuestion);
+            lists[i].deleteElementByValue(objInQuestion);
         }
     }
-
+}
 }
 
 //Enemy functions, per enemy.
 //All dimension matrix functions.
-
+//TODO 
+//"Bullet" dimension function.
+function bullet_dimension(){
+    var x = [this.middleX,this.middleX,this.middleX];
+    var y = [this.middleY,this.middleY-1,this.middleY-2];
+    return new Array(x,y);
+}
 //"Stupid Enemy" dimension function.
 function stupidEnemy_dimension() {
     var x = [this.middleX];
@@ -374,12 +412,29 @@ function stupidEnemy_dimension() {
 
 //All update routines.
 
+//"Bullet" update function.
+function bullet_update(){
+    this.middleY = this.middleY - 1.8;
+    if(this.middleY<3)this.invalid = true;
+}
+
 //"Stupid Enemy" update function.
 function stupidEnemy_update() {
     this.middleY = this.middleY + 0.5;
 }
 
 //All rendering routines.
+
+//"Bullet" rendering function
+function bullet_render(){
+    context.fillStyle = "yellow";
+    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
+    context.fillStyle = "orange";
+    context.fillRect(this.middleX * 10, (this.middleY -1) * 10, 10,10);
+    context.fillStyle = "red";
+    context.fillRect(this.middleX *  10,(this.middleY -2) * 10,10,10 );
+}
+
 
 //"Stupid Enemy" rendering function
 function stupidEnemy_render() {
