@@ -259,6 +259,8 @@ setInterval(increaseCount, FRAME_RATE);
 var displayList = new LinkedList();
 //Linked List to contain enemies, for collision stuff.
 var enemyList = new LinkedList();
+//Matrix for enemy positions. Used for bullets.
+var enemyMatrix = getEnemyMatrix();
 //Linked List to contain bullets, for collision stuff.
 var bulletList = new LinkedList();
 //Enter rendering cycle.
@@ -367,6 +369,7 @@ function checkForEnemyHit() {
     }
 }
 
+// 2B
 // 3 -  Render game objects.
 
 function renderInGame() {
@@ -520,6 +523,17 @@ function getKeyRelease(event) {
     }
 
 }
+/**
+ * Get the collision matrix
+ * @returns {undefined}
+ */
+function getEnemyMatrix(){
+    var arrayX = new Array(80);
+    for(var i = 0; i<arrayX.length; i++){
+        arrayX[i] = new Array(60);
+    }
+}
+
 /**
  * Exchange the rendering loop with another function.
  * Takes care of necessary cleanup and resets frame counter.
