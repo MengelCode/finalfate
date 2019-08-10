@@ -20,7 +20,7 @@ class GameObject {
          Y positions occupied = array 1.
          
          */
-        this.giveOccupiedSpace = null;
+        this.getOccupiedSpace = null;
 
         /**
          * Update the state of this game object.
@@ -38,7 +38,7 @@ class GameObject {
          * 
          */
         this.invalidate = function () {
-           this.invalid = true;
+            this.invalid = true;
         };
     }
 
@@ -65,7 +65,7 @@ class LinkedList {
 
         }
         //Return the next element in this list. Returns null if there is no next element.
-        this.giveNext = function () {
+        this.getNext = function () {
             if (this.iterateState === null) {
                 return null;
             }
@@ -87,15 +87,16 @@ class LinkedList {
         };
         //Adds an element to the list at its end. The reset value is optional and should be set
         //to false when the iterator being reset causes problems.
-        this.addElement = function (value,reset = true) {
+        this.addElement = function (value, reset = true) {
             if (this.next !== null) {
                 this.next.addElement(value);
             } else {
                 this.next = new LinkedList();
                 this.next.value = value;
             }
-            if(reset === true){
-            this.iterateState = this.next;}
+            if (reset === true) {
+                this.iterateState = this.next;
+        }
         };
         //Add an element at the front of the list.
         this.addElementFront = function (value) {
@@ -104,8 +105,8 @@ class LinkedList {
             this.next.next = nextesNext;
             this.next.value = value;
             this.iterateState = this.next;
-         
-           
+
+
         };
         //Deletes the entire list.
         this.deleteAll = function () {
@@ -145,25 +146,28 @@ class Enemy extends GameObject {
      * @param {integer} damage
      * @returns {Enemy}
      */
-    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, killable = true, damage = 10) {
+    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, killable = true, damage = 10, invalidFunc = null) {
         super();
         this.middleX = middleX;
         this.middleY = middleY;
-        super.giveOccupiedSpace = dimensionMatrix;
+        super.getOccupiedSpace = dimensionMatrix;
         super.updateState = updateRoutine;
         super.renderState = renderRoutine;
         this.killable = killable;
         this.damage = damage;
+        if (invalidFunc !== null) {
+            super.invalidate = invalidFunc;
+    }
     }
 }
 
 class Bullet extends GameObject {
-    
-    constructor(middleX,middleY){
+
+    constructor(middleX, middleY) {
         super();
         this.middleX = middleX;
         this.middleY = middleY;
-        super.giveOccupiedSpace = bullet_dimension;
+        super.getOccupiedSpace = bullet_dimension;
         super.updateState = bullet_update;
         super.renderState = bullet_render;
     }
@@ -181,10 +185,10 @@ class SpaceShip extends GameObject {
     constructor(middleX, middleY) {
         super();
 
-        super.giveOccupiedSpace = function () {
+        super.getOccupiedSpace = function () {
             var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2, middleX - 2, middleX + 1];
             var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY, middleY - 1, middleY - 1];
-            return new Array(x,y);
+            return new Array(x, y);
         };
 
         super.updateState = function () {
@@ -202,14 +206,14 @@ class SpaceShip extends GameObject {
             if (down && middleY < 59) {
                 middleY++;
             }
-            if(shoot){
-               var bullet = new Bullet(middleX-2,middleY);
-                displayList.addElement(bullet,false);
-               bulletList.addElement(bullet,false);
-               bullet = new Bullet(middleX+2,middleY);
-                displayList.addElement(bullet,false);
-                bulletList.addElement(bullet,false);
-                
+            if (shoot) {
+                var bullet = new Bullet(middleX - 2, middleY);
+                displayList.addElement(bullet, false);
+                bulletList.addElement(bullet, false);
+                bullet = new Bullet(middleX + 2, middleY);
+                displayList.addElement(bullet, false);
+                bulletList.addElement(bullet, false);
+
             }
         };
         super.renderState = function () {
@@ -293,10 +297,10 @@ function titleScreen() {
         if (shoot === 5) {
             displayList = new LinkedList();
             displayList.addElement(new SpaceShip(38, 55));
-            var test_enemy = new Enemy(38, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render); 
+            var test_enemy = new Enemy(38, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
             displayList.addElement(test_enemy);
             enemyList.addElement(test_enemy);
-            test_enemy = new Enemy(18, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render); 
+            test_enemy = new Enemy(18, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
             displayList.addElement(test_enemy);
             enemyList.addElement(test_enemy);
             exchangeRenderLoop(gamePlay);
@@ -328,7 +332,7 @@ function gamePlay() {
 function updateGameObjects() {
     displayList.resetIterator();
     while (displayList.peekNext() !== null) {
-        displayList.giveNext().updateState();
+        displayList.getNext().updateState();
 
     }
 }
@@ -340,36 +344,75 @@ function checkForColli() {
 // 2A - Check for collisions of the player with enemies or enemy bullets
 function checkForEnemyHit() {
     displayList.resetIterator();
-    var playerObj = displayList.giveNext();
-    var playerArr = playerObj.giveOccupiedSpace();
+    var playerObj = displayList.getNext();
+    var playerArr = playerObj.getOccupiedSpace();
     enemyList.resetIterator();
     //For all objects...
     while (enemyList.peekNext() !== null) {
         //...which are enemies
-       
-            // window.alert("I am entered");
-            var enemyObj = enemyList.giveNext();
-            var enemyArr = enemyObj.giveOccupiedSpace();
-            //....pick X and Y from player...
-            for (var i = 0; i < playerArr[0].length; i++) {
-                //...and get X and Y from enemy...
-                for (var j = 0; j < enemyArr[0].length; j++) {
-                    //console.log("Going to compare P (" + playerArr[0][i] + "/" + playerArr[1][i] + ") against" + "Q (" + enemyArr[0][j] + "/" + enemyArr[1][j] + ")....");
-                    if (playerArr[0][i] === enemyArr[0][j] && playerArr[1][i] === enemyArr[1][j]) {
-                        console.log("Cool!");
-                        window.alert("Collision detected");
-                    }
-                    else{
-                      
-                    }
+
+        // window.alert("I am entered");
+        var enemyObj = enemyList.getNext();
+        var enemyArr = enemyObj.getOccupiedSpace();
+        //....pick X and Y from player...
+        for (var i = 0; i < playerArr[0].length; i++) {
+            //...and get X and Y from enemy...
+            for (var j = 0; j < enemyArr[0].length; j++) {
+                //console.log("Going to compare P (" + playerArr[0][i] + "/" + playerArr[1][i] + ") against" + "Q (" + enemyArr[0][j] + "/" + enemyArr[1][j] + ")....");
+                if (playerArr[0][i] === enemyArr[0][j] && playerArr[1][i] === enemyArr[1][j]) {
+                    console.log("Cool!");
+                    window.alert("Collision detected");
+                } else {
+
                 }
             }
-        
-       
+        }
+
+
     }
 }
 
-// 2B
+// 2B Ckeck for bullet hits on the enemies.
+
+function bulletOnEnemies() {
+    //Get empty enemy matrix
+    enemyMatrix = getEnemyMatrix();
+    //Populate the enemy matrix as follows;
+    //For all enemies...
+    enemyList.resetIterator();
+    while (enemyList.peekNext() !== null) {
+        var enemyInQuestion = enemyList.getNext();
+        //Which can be killed by the player...
+        if (enemyInQuestion.killable) {
+            //Fill up the matrix!
+            var enemArray = enemyInQuestion.getOccupiedSpace();
+            for (var i = 0; i < enemArray[0].length; i++) {
+                if (enemArray[0][i] < 0 || enemArray[0][i] > 80 || enemArray[1][i] < 0 || enemArray[1][i] > 60) {
+
+                } else {
+                    enemyMatrix[enemArray[0][i]][enemArray[1][i]] = enemyInQuestion;
+                }
+            }
+        }
+    }
+    // For all bullets...
+    bulletList.resetIterator();
+    while (bulletList.peekNext() !== null) {
+        var bulletIQ = bulletList.getNext();
+        //...which are not invalid...
+        if (!bulletIQ.invalid) {
+            var bulArr = bulletIQ.getOccupiedSpace();
+            //...check if something is there.
+            for(var i = 0; i<bulArr[0].length; i++){
+                
+            }
+
+        }
+    }
+
+}
+
+
 // 3 -  Render game objects.
 
 function renderInGame() {
@@ -377,7 +420,7 @@ function renderInGame() {
     context.fillRect(0, 0, 800, 600);
     displayList.resetIterator();
     while (displayList.peekNext() !== null) {
-        displayList.giveNext().renderState();
+        displayList.getNext().renderState();
 
     }
 }
@@ -385,40 +428,41 @@ function renderInGame() {
 // 4 - Delete all elements which declared themselves as no longer needed.
 
 function deleteDeceased() {
-    var lists = [displayList,enemyList,bulletList];
-    for(var i = 0; i<lists.length; i++){
-    lists[i].resetIterator();
-    while (lists[i].peekNext() !== null) {
-        var objInQuestion = lists[i].giveNext();
-        if (objInQuestion.invalid === true) {
-            lists[i].deleteElementByValue(objInQuestion);
+    var lists = [displayList, enemyList, bulletList];
+    for (var i = 0; i < lists.length; i++) {
+        lists[i].resetIterator();
+        while (lists[i].peekNext() !== null) {
+            var objInQuestion = lists[i].getNext();
+            if (objInQuestion.invalid === true) {
+                lists[i].deleteElementByValue(objInQuestion);
+            }
         }
     }
-}
 }
 
 //Enemy functions, per enemy.
 //All dimension matrix functions.
 //TODO 
 //"Bullet" dimension function.
-function bullet_dimension(){
-    var x = [this.middleX,this.middleX,this.middleX];
-    var y = [this.middleY,this.middleY-1,this.middleY-2];
-    return new Array(x,y);
+function bullet_dimension() {
+    var x = [this.middleX, this.middleX, this.middleX];
+    var y = [this.middleY, this.middleY - 1, this.middleY - 2];
+    return new Array(x, y);
 }
 //"Stupid Enemy" dimension function.
 function stupidEnemy_dimension() {
     var x = [this.middleX];
     var y = [this.middleY];
-    return new Array(x,y);
+    return new Array(x, y);
 }
 
 //All update routines.
 
 //"Bullet" update function.
-function bullet_update(){
+function bullet_update() {
     this.middleY = this.middleY - 1.8;
-    if(this.middleY<3)this.invalid = true;
+    if (this.middleY < 3)
+        this.invalid = true;
 }
 
 //"Stupid Enemy" update function.
@@ -429,20 +473,20 @@ function stupidEnemy_update() {
 //All rendering routines.
 
 //"Bullet" rendering function
-function bullet_render(){
+function bullet_render() {
     context.fillStyle = "yellow";
     context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
     context.fillStyle = "orange";
-    context.fillRect(this.middleX * 10, (this.middleY -1) * 10, 10,10);
+    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
     context.fillStyle = "red";
-    context.fillRect(this.middleX *  10,(this.middleY -2) * 10,10,10 );
+    context.fillRect(this.middleX * 10, (this.middleY - 2) * 10, 10, 10);
 }
 
 
 //"Stupid Enemy" rendering function
 function stupidEnemy_render() {
     context.fillStyle = "white";
-    context.fillRect(this.middleX * 10, this.middleY *10 , 10, 10);
+    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
 }
 
 
@@ -527,9 +571,9 @@ function getKeyRelease(event) {
  * Get the collision matrix
  * @returns {undefined}
  */
-function getEnemyMatrix(){
+function getEnemyMatrix() {
     var arrayX = new Array(80);
-    for(var i = 0; i<arrayX.length; i++){
+    for (var i = 0; i < arrayX.length; i++) {
         arrayX[i] = new Array(60);
     }
 }
