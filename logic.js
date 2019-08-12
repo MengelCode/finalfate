@@ -39,7 +39,30 @@ class GameObject {
          */
         this.invalidate = function () {
             this.invalid = true;
+            this.getOccupiedSpace = function () {
+                var x = {};
+                var y = {};
+                return new Array(x, y);
+            }
         };
+        /**
+         * 
+         * @param {type} otherObj
+         * @returns {boolean} If this object collides with the given object.
+         */
+        this.collides = function (otherObj) {
+            var ownSpace = this.getOccupiedSpace();
+            var otherSpace = otherObj.getOccupiedSpace();
+            for (var i = 0; i < ownSpace[0].length; i++) {
+                for (var j = 0; j < otherSpace.length; j++) {
+                    if (ownSpace[0][i] === otherSpace[0][j] && ownSpace[1][i] === otherSpace[1][j]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
+
     }
 
 }
@@ -194,17 +217,17 @@ class SpaceShip extends GameObject {
         super.updateState = function () {
             if (left && middleX > 2) {
                 //left = 0;
-                middleX--;
+                middleX = middleX - 1.5;
             }
             if (right && middleX < 77) {
                 //right = 0;
-                middleX++;
+                middleX = middleX + 1.5;
             }
             if (up && middleY > 28) {
-                middleY--;
+                middleY = middleY-1.5;
             }
             if (down && middleY < 59) {
-                middleY++;
+                middleY = middleY+1.5;
             }
             if (shoot) {
                 var bullet = new Bullet(middleX - 2, middleY);
@@ -215,7 +238,7 @@ class SpaceShip extends GameObject {
                 bulletList.addElement(bullet, false);
 
             }
-        };
+        }; 
         super.renderState = function () {
             context.fillStyle = "lightgray";
             context.fillRect((middleX - 2) * 10, middleY * 10, 50, 10);
@@ -225,6 +248,7 @@ class SpaceShip extends GameObject {
             context.fillRect((middleX - 2) * 10, (middleY - 1) * 10, 10, 10);
             context.fillRect((middleX + 2) * 10, (middleY - 1) * 10, 10, 10);
         };
+        
 
     }
 }
@@ -267,6 +291,8 @@ var enemyList = new LinkedList();
 var enemyMatrix = getEnemyMatrix();
 //Linked List to contain bullets, for collision stuff.
 var bulletList = new LinkedList();
+//Player instance.
+var player = null;
 //Enter rendering cycle.
 var renderTimer = setInterval(renderFunction, FRAME_RATE);
 window.addEventListener("keydown", getKeyPress);
@@ -296,8 +322,11 @@ function titleScreen() {
         //Only for test purposes....
         if (shoot === 5) {
             displayList = new LinkedList();
-            displayList.addElement(new SpaceShip(38, 55));
-            var test_enemy = new Enemy(38, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+            bulletList = new LinkedList();
+            enemyList = new LinkedList();
+            player = new SpaceShip(38, 55);
+            displayList.addElement(player);
+            var test_enemy = new Enemy(37, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
             displayList.addElement(test_enemy);
             enemyList.addElement(test_enemy);
             test_enemy = new Enemy(18, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
@@ -339,78 +368,46 @@ function updateGameObjects() {
 // 2 - Check for collisions. Again, the premise is that the player is the first object.
 function checkForColli() {
     checkForEnemyHit();
+    bulletOnEnemies();
 
 }
 // 2A - Check for collisions of the player with enemies or enemy bullets
+
 function checkForEnemyHit() {
-    displayList.resetIterator();
-    var playerObj = displayList.getNext();
-    var playerArr = playerObj.getOccupiedSpace();
     enemyList.resetIterator();
-    //For all objects...
     while (enemyList.peekNext() !== null) {
-        //...which are enemies
-
-        // window.alert("I am entered");
-        var enemyObj = enemyList.getNext();
-        var enemyArr = enemyObj.getOccupiedSpace();
-        //....pick X and Y from player...
-        for (var i = 0; i < playerArr[0].length; i++) {
-            //...and get X and Y from enemy...
-            for (var j = 0; j < enemyArr[0].length; j++) {
-                //console.log("Going to compare P (" + playerArr[0][i] + "/" + playerArr[1][i] + ") against" + "Q (" + enemyArr[0][j] + "/" + enemyArr[1][j] + ")....");
-                if (playerArr[0][i] === enemyArr[0][j] && playerArr[1][i] === enemyArr[1][j]) {
-                    console.log("Cool!");
-                    window.alert("Collision detected");
-                } else {
-
-                }
-            }
+        if (player.collides(enemyList.getNext())) {
+            window.alert("Enemy collided with player using the new function.");
         }
-
-
     }
 }
 
-// 2B Ckeck for bullet hits on the enemies.
 
+
+
+// 2B Check for bullet hits on the enemies.
+
+// 2B New try...
 function bulletOnEnemies() {
-    //Get empty enemy matrix
-    enemyMatrix = getEnemyMatrix();
-    //Populate the enemy matrix as follows;
-    //For all enemies...
-    enemyList.resetIterator();
-    while (enemyList.peekNext() !== null) {
-        var enemyInQuestion = enemyList.getNext();
-        //Which can be killed by the player...
-        if (enemyInQuestion.killable) {
-            //Fill up the matrix!
-            var enemArray = enemyInQuestion.getOccupiedSpace();
-            for (var i = 0; i < enemArray[0].length; i++) {
-                if (enemArray[0][i] < 0 || enemArray[0][i] > 80 || enemArray[1][i] < 0 || enemArray[1][i] > 60) {
-
-                } else {
-                    enemyMatrix[enemArray[0][i]][enemArray[1][i]] = enemyInQuestion;
-                }
-            }
-        }
-    }
-    // For all bullets...
     bulletList.resetIterator();
     while (bulletList.peekNext() !== null) {
-        var bulletIQ = bulletList.getNext();
-        //...which are not invalid...
-        if (!bulletIQ.invalid) {
-            var bulArr = bulletIQ.getOccupiedSpace();
-            //...check if something is there.
-            for(var i = 0; i<bulArr[0].length; i++){
-                
-            }
+        var bullet = bulletList.getNext();
+        if (!bullet.invalid) {
+            enemyList.resetIterator();
+            while (enemyList.peekNext() !== null) {
+                var enemy = enemyList.getNext();
+                if (bullet.collides(enemy)) {
+                      enemy.invalidate();
+                      bullet.invalidate();
+                    //window.alert("Shot the enemy.");
 
+                }
+            }
         }
     }
-
 }
+
+
 
 
 // 3 -  Render game objects.
@@ -460,7 +457,7 @@ function stupidEnemy_dimension() {
 
 //"Bullet" update function.
 function bullet_update() {
-    this.middleY = this.middleY - 1.8;
+    this.middleY = this.middleY - 2;
     if (this.middleY < 3)
         this.invalid = true;
 }
@@ -468,7 +465,7 @@ function bullet_update() {
 //"Stupid Enemy" update function.
 function stupidEnemy_update() {
     this.middleY = this.middleY + 0.5;
-}
+} 
 
 //All rendering routines.
 
