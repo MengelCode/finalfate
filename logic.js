@@ -141,7 +141,7 @@ class LinkedList {
          Does nothing if an entry did not even exist in the first place.
          Returns a boolean indicating if a deletion took place.
          */
-        this.deleteElementByValue = function (value) {
+        this.deleteElement = function (value) {
             this.iterateState = this;
             while (this.iterateState.next !== null) {
                 if (this.iterateState.next.value === value) {
@@ -169,7 +169,7 @@ class Enemy extends GameObject {
      * @param {integer} damage
      * @returns {Enemy}
      */
-    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, killable = true, damage = 10, invalidFunc = null) {
+    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, score = 100, killable = true, damage = 10, invalidFunc = null) {
         super();
         this.middleX = middleX;
         this.middleY = middleY;
@@ -178,6 +178,7 @@ class Enemy extends GameObject {
         super.renderState = renderRoutine;
         this.killable = killable;
         this.damage = damage;
+        this.score = score;
         if (invalidFunc !== null) {
             super.invalidate = invalidFunc;
     }
@@ -195,7 +196,26 @@ class Bullet extends GameObject {
         super.renderState = bullet_render;
     }
 }
+class Spawn {
+    /**
+     * A data structure containing a game object.
+     * @param {type} frameDelta After how many frames should it spawn?
+     * @param {type} gameObject The game object in question.
+     * @param {type} isForDisplay Add game object to display list?
+     * @param {type} isEnemy Add game object to enemy list?
+     * @param {type} isBullet Add game object to bullet list?
+     * @returns {Spawn}
+     */
+    constructor(frameDelta, gameObject, isForDisplay = true, isEnemy = true, isBullet = false) {
+        this.frameDelta = frameDelta;
+        this.gameObject = gameObject;
+        this.isForDisplay = isForDisplay;
+        this.isEnemy = isEnemy;
+        this.isBullet = isBullet;
 
+    }
+
+}
 
 //Instances of GameObject.
 class SpaceShip extends GameObject {
@@ -224,10 +244,10 @@ class SpaceShip extends GameObject {
                 middleX = middleX + 1.5;
             }
             if (up && middleY > 28) {
-                middleY = middleY-1.5;
+                middleY = middleY - 1.5;
             }
-            if (down && middleY < 59) {
-                middleY = middleY+1.5;
+            if (down && middleY < 53) {
+                middleY = middleY + 1.5;
             }
             if (shoot) {
                 var bullet = new Bullet(middleX - 2, middleY);
@@ -237,8 +257,9 @@ class SpaceShip extends GameObject {
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
 
+
             }
-        }; 
+        };
         super.renderState = function () {
             context.fillStyle = "lightgray";
             context.fillRect((middleX - 2) * 10, middleY * 10, 50, 10);
@@ -248,8 +269,23 @@ class SpaceShip extends GameObject {
             context.fillRect((middleX - 2) * 10, (middleY - 1) * 10, 10, 10);
             context.fillRect((middleX + 2) * 10, (middleY - 1) * 10, 10, 10);
         };
-        
-
+        /**
+         * Health Points of the player. If this value goes down to 0(or theoretically less, it costs you a life.
+         */
+        this.health = 100;
+        /**
+         * Lives of the player. If this value is zero and you die, it is over with you.
+         */
+        this.lifes = 3;
+        /**
+         * Score of the player.
+         */
+        this.score = 0;
+        /**
+         * Level the player is in.
+         * 
+         */
+        this.level = 0;
     }
 }
 
@@ -270,9 +306,11 @@ var context = canvas.getContext("2d");
 var renderFunction = null;
 //For music/sound playback.
 var bgm = document.getElementById("mainBGM");
-var shoot = document.getElementById("shoot");
-var hit = document.getElementById("hit");
-var lose = document.getElementById("lose");
+//Level Loaders.
+var loaders = new Array(7);
+loaders[0] = earthLoader;
+//Level background rendering functions.
+var backgroundRenderers = new Array(6);
 //Animation counter.
 var aniCount = 0;
 //Black background.
@@ -287,12 +325,14 @@ setInterval(increaseCount, FRAME_RATE);
 var displayList = new LinkedList();
 //Linked List to contain enemies, for collision stuff.
 var enemyList = new LinkedList();
-//Matrix for enemy positions. Used for bullets.
-var enemyMatrix = getEnemyMatrix();
 //Linked List to contain bullets, for collision stuff.
 var bulletList = new LinkedList();
+//Linked List for spawners.
+var spawnList = new LinkedList();
 //Player instance.
 var player = null;
+//Major boss. Death of it indicates that the next level should come.
+var giant_boss = null;
 //Enter rendering cycle.
 var renderTimer = setInterval(renderFunction, FRAME_RATE);
 window.addEventListener("keydown", getKeyPress);
@@ -301,6 +341,70 @@ window.addEventListener("keyup", getKeyRelease);
 
 
 //FUNCTIONS
+
+//Auxillary functions for level transitions.
+/**
+ * 
+ * Define the beginning state of the game, then start with the first level.
+ */
+function initGame() {
+    player = new SpaceShip(38, 52);
+    loadLevel();
+}
+/**
+ * 
+ * Load a level. General Method.
+ */
+function loadLevel() {
+    player.health = 100;
+    boss = null;
+    displayList = new LinkedList();
+    bulletList = new LinkedList();
+    enemyList = new LinkedList();
+    spawnList = new LinkedList();
+    displayList.addElement(player);
+    loaders[player.level]();
+    exchangeRenderLoop(gamePlay);
+}
+/**
+ * 
+ * Level 1 - The Sky
+ */
+function earthLoader() {
+    var test_enemy = new Enemy(37, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render,100,true,100);
+    displayList.addElement(test_enemy);
+    enemyList.addElement(test_enemy);
+    test_enemy = new Enemy(18, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render,100,true,100);
+    displayList.addElement(test_enemy);
+    enemyList.addElement(test_enemy);
+}
+
+/**
+ * 
+ * @returns {undefined}
+ */
+
+
+/**
+ * Lose a life.
+ *
+ */
+function loseLife(){
+    if(player.lifes>0){
+        player.lifes--;
+        loadLevel();
+    }
+    else{
+        window.alert("You are pretty dead now. ~~Game Over");
+        exchangeRenderLoop(null);
+    }
+}
+
+/**
+ * 
+ * @returns 
+ */
+
 
 //Game Screens
 /*
@@ -319,20 +423,9 @@ function titleScreen() {
         context.font = "23px Nonserif";
         context.fillStyle = "gold";
         context.fillText("PRESS SPACE TO START", 230, 520);
-        //Only for test purposes....
+        //Let the show begin!
         if (shoot === 5) {
-            displayList = new LinkedList();
-            bulletList = new LinkedList();
-            enemyList = new LinkedList();
-            player = new SpaceShip(38, 55);
-            displayList.addElement(player);
-            var test_enemy = new Enemy(37, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-            displayList.addElement(test_enemy);
-            enemyList.addElement(test_enemy);
-            test_enemy = new Enemy(18, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-            displayList.addElement(test_enemy);
-            enemyList.addElement(test_enemy);
-            exchangeRenderLoop(gamePlay);
+            initGame();
         }
     }
 
@@ -348,36 +441,62 @@ function finalFate() {
  * Actual game loop.
  */
 function gamePlay() {
+    checkLeaveLevel();
     updateGameObjects();
     checkForColli();
     renderInGame();
     deleteDeceased();
+    renderHUD();
 }
 
 
 //Auxillary functions for levels.
 
-//1 - Advance the state of each thing. The battle ship of the player is the first thing by contract.
+//1 - Check if one of the end conditions(player dead, boss dead) are met.
+function checkLeaveLevel(){
+    if(player.health===0){
+        loseLife();
+    }
+}
+
+
+//2 - Advance the state of each thing, spawn new things when time arrives. 
 function updateGameObjects() {
     displayList.resetIterator();
     while (displayList.peekNext() !== null) {
         displayList.getNext().updateState();
 
     }
+    var next = spawnList.peekNext();
+    if (next !== null && aniCount > next.frameDelta) {
+        spawnList.getNext();
+        var subject = next.gameObject;
+        if (next.isForDisplay) {
+            displayList.addElement(subject);
+        }
+        if (next.isEnemy) {
+            enemyList.addElement(subject);
+        } else if (next.isBullet) {
+            bulletList.addElement(subject);
+        }
+    }
 }
-// 2 - Check for collisions. Again, the premise is that the player is the first object.
+// 3 - Check for collisions.
 function checkForColli() {
     checkForEnemyHit();
     bulletOnEnemies();
 
 }
-// 2A - Check for collisions of the player with enemies or enemy bullets
+// 3A - Check for collisions of the player with enemies or enemy bullets
 
 function checkForEnemyHit() {
     enemyList.resetIterator();
     while (enemyList.peekNext() !== null) {
-        if (player.collides(enemyList.getNext())) {
-            window.alert("Enemy collided with player using the new function.");
+        var enemyImminent = enemyList.getNext();
+        if (player.collides(enemyImminent)) {
+            //window.alert("Enemy collided with player using the new function.");
+            player.health = player.health - enemyImminent.damage;
+            if(player.health<0)player.health = 0;
         }
     }
 }
@@ -385,9 +504,9 @@ function checkForEnemyHit() {
 
 
 
-// 2B Check for bullet hits on the enemies.
+// 3B Check for bullet hits on the enemies.
 
-// 2B New try...
+// 3B New try...
 function bulletOnEnemies() {
     bulletList.resetIterator();
     while (bulletList.peekNext() !== null) {
@@ -396,9 +515,10 @@ function bulletOnEnemies() {
             enemyList.resetIterator();
             while (enemyList.peekNext() !== null) {
                 var enemy = enemyList.getNext();
-                if (bullet.collides(enemy)) {
-                      enemy.invalidate();
-                      bullet.invalidate();
+                if (bullet.collides(enemy) && !enemy.invalid && enemy.killable) {
+                    player.score = player.score + enemy.score;
+                    enemy.invalidate();
+                    bullet.invalidate();
                     //window.alert("Shot the enemy.");
 
                 }
@@ -410,7 +530,7 @@ function bulletOnEnemies() {
 
 
 
-// 3 -  Render game objects.
+// 4 -  Render game objects.
 
 function renderInGame() {
     context.fillStyle = "black";
@@ -422,7 +542,7 @@ function renderInGame() {
     }
 }
 
-// 4 - Delete all elements which declared themselves as no longer needed.
+// 5 - Delete all elements which declared themselves as no longer needed.
 
 function deleteDeceased() {
     var lists = [displayList, enemyList, bulletList];
@@ -431,11 +551,27 @@ function deleteDeceased() {
         while (lists[i].peekNext() !== null) {
             var objInQuestion = lists[i].getNext();
             if (objInQuestion.invalid === true) {
-                lists[i].deleteElementByValue(objInQuestion);
+                lists[i].deleteElement(objInQuestion);
             }
         }
     }
 }
+
+//6 - Render the HUD.
+
+function renderHUD() {
+    bulletList.resetIterator();
+    if (bulletList.peekNext() !== null) {
+        //  context.fillStyle = "#333333";
+    }
+    context.fillStyle = "#222222";
+    context.fillRect(0, 550, 800, 50);
+    context.fillStyle = "white";
+    context.font = "27px Nonserif";
+    context.fillText(player.score, 0, 585);
+    context.fillText(player.health, 245, 585);
+}
+
 
 //Enemy functions, per enemy.
 //All dimension matrix functions.
@@ -448,8 +584,8 @@ function bullet_dimension() {
 }
 //"Stupid Enemy" dimension function.
 function stupidEnemy_dimension() {
-    var x = [this.middleX];
-    var y = [this.middleY];
+    var x = [this.middleX,this.middleX];
+    var y = [this.middleY,this.middleY-1];
     return new Array(x, y);
 }
 
@@ -465,7 +601,7 @@ function bullet_update() {
 //"Stupid Enemy" update function.
 function stupidEnemy_update() {
     this.middleY = this.middleY + 0.5;
-} 
+}
 
 //All rendering routines.
 
@@ -483,6 +619,7 @@ function bullet_render() {
 //"Stupid Enemy" rendering function
 function stupidEnemy_render() {
     context.fillStyle = "white";
+    context.fillRect(this.middleX * 10, (this.middleY-1) * 10, 10, 10);
     context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
 }
 
@@ -564,16 +701,7 @@ function getKeyRelease(event) {
     }
 
 }
-/**
- * Get the collision matrix
- * @returns {undefined}
- */
-function getEnemyMatrix() {
-    var arrayX = new Array(80);
-    for (var i = 0; i < arrayX.length; i++) {
-        arrayX[i] = new Array(60);
-    }
-}
+
 
 /**
  * Exchange the rendering loop with another function.
