@@ -169,7 +169,7 @@ class Enemy extends GameObject {
      * @param {integer} damage
      * @returns {Enemy}
      */
-    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, score = 100, killable = true, damage = 10, invalidFunc = null) {
+    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null) {
         super();
         this.middleX = middleX;
         this.middleY = middleY;
@@ -229,27 +229,31 @@ class SpaceShip extends GameObject {
         super();
 
         super.getOccupiedSpace = function () {
-            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2, middleX - 2, middleX + 1];
-            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY, middleY - 1, middleY - 1];
+            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2, middleX - 2, middleX + 1,middleX-1,middleX,middleX+1];
+            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY, middleY - 1, middleY - 1,middleY+1,middleY+1,middleY+1];
             return new Array(x, y);
         };
-
+       this.keyReleased = true;
         super.updateState = function () {
             if (left && middleX > 2) {
                 //left = 0;
-                middleX = middleX - 1.5;
+                middleX = middleX - 1;
             }
             if (right && middleX < 77) {
                 //right = 0;
-                middleX = middleX + 1.5;
+                middleX = middleX + 1;
             }
             if (up && middleY > 28) {
-                middleY = middleY - 1.5;
+                middleY = middleY - 1;
             }
             if (down && middleY < 53) {
-                middleY = middleY + 1.5;
+                middleY = middleY + 1;
             }
-            if (shoot) {
+            if(!shoot){
+                this.keyReleased = true;
+            }
+            else if (shoot && this.keyReleased) {
+                this.keyReleased = false;
                 var bullet = new Bullet(middleX - 2, middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
@@ -310,7 +314,7 @@ var bgm = document.getElementById("mainBGM");
 var loaders = new Array(7);
 loaders[0] = earthLoader;
 //Level background rendering functions.
-var backgroundRenderers = new Array(6);
+//var backgroundRenderers = new Array(6);
 //Animation counter.
 var aniCount = 0;
 //Black background.
@@ -322,13 +326,13 @@ renderFunction = titleScreen;
 //Count all the frames.
 setInterval(increaseCount, FRAME_RATE);
 //Linked List to use for all kinds of things.
-var displayList = new LinkedList();
+var displayList = null;
 //Linked List to contain enemies, for collision stuff.
-var enemyList = new LinkedList();
+var enemyList = null;
 //Linked List to contain bullets, for collision stuff.
-var bulletList = new LinkedList();
+var bulletList = null;
 //Linked List for spawners.
-var spawnList = new LinkedList();
+var spawnList = null;
 //Player instance.
 var player = null;
 //Major boss. Death of it indicates that the next level should come.
@@ -357,27 +361,48 @@ function initGame() {
  */
 function loadLevel() {
     player.health = 100;
-    boss = null;
+    player.middleX = 38;
+    player.middleY = 52;
+    giant_boss = null;
     displayList = new LinkedList();
     bulletList = new LinkedList();
     enemyList = new LinkedList();
     spawnList = new LinkedList();
     displayList.addElement(player);
-    loaders[player.level]();
-    exchangeRenderLoop(gamePlay);
+    if (loaders[player.level] === undefined) {
+        window.alert("More has yet to come. I am already on the way, if I am not sleeping! -Manuel");
+        //Make everything stop.
+        exchangeRenderLoop(null);
+    } else {
+        loaders[player.level]();
+        exchangeRenderLoop(gamePlay);
+    }
 }
 /**
  * 
  * Level 1 - The Sky
  */
 function earthLoader() {
-    var test_enemy = new Enemy(37, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render,100,true,100);
-    displayList.addElement(test_enemy);
-    enemyList.addElement(test_enemy);
-    test_enemy = new Enemy(18, 10, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render,100,true,100);
-    displayList.addElement(test_enemy);
-    enemyList.addElement(test_enemy);
+    var enem = new Enemy(37, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    displayList.addElement(enem);
+    enemyList.addElement(enem);
+    enem = new Enemy(18, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    displayList.addElement(enem);
+    enemyList.addElement(enem);
+    enem = new Enemy(26,0,meteor_dimension,meteor_update,meteor_render,17);
+    enem = new Spawn(200,enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(36,0,meteor_dimension,meteor_update,meteor_render,17);
+    enem = new Spawn(280,enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(9,0,stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(340,enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(69,0,stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(360,enem);
+    spawnList.addElement(enem);
 }
+
 
 /**
  * 
@@ -389,12 +414,11 @@ function earthLoader() {
  * Lose a life.
  *
  */
-function loseLife(){
-    if(player.lifes>0){
+function loseLife() {
+    if (player.lifes > 0) {
         player.lifes--;
         loadLevel();
-    }
-    else{
+    } else {
         window.alert("You are pretty dead now. ~~Game Over");
         exchangeRenderLoop(null);
     }
@@ -453,9 +477,13 @@ function gamePlay() {
 //Auxillary functions for levels.
 
 //1 - Check if one of the end conditions(player dead, boss dead) are met.
-function checkLeaveLevel(){
-    if(player.health===0){
+function checkLeaveLevel() {
+    if (player.health === 0) {
         loseLife();
+    }
+    if (giant_boss !== null && giant_boss.invalid) {
+        player.level++;
+        loadLevel();
     }
 }
 
@@ -494,9 +522,11 @@ function checkForEnemyHit() {
     while (enemyList.peekNext() !== null) {
         var enemyImminent = enemyList.getNext();
         if (player.collides(enemyImminent)) {
+            enemyImminent.invalidate();
             //window.alert("Enemy collided with player using the new function.");
             player.health = player.health - enemyImminent.damage;
-            if(player.health<0)player.health = 0;
+            if (player.health < 0)
+                player.health = 0;
         }
     }
 }
@@ -574,26 +604,43 @@ function renderHUD() {
 
 
 //Enemy functions, per enemy.
-//All dimension matrix functions.
 //TODO 
+
+//All "Score" functions.
+
+function default_score(){
+    return 100;
+}
+
+//All dimension matrix functions.
+
 //"Bullet" dimension function.
 function bullet_dimension() {
-    var x = [this.middleX, this.middleX, this.middleX];
-    var y = [this.middleY, this.middleY - 1, this.middleY - 2];
+    var x = [this.middleX, this.middleX, this.middleX,this.middleX];
+    var y = [this.middleY, this.middleY - 1, this.middleY - 2,this.middleY-3];
     return new Array(x, y);
 }
 //"Stupid Enemy" dimension function.
 function stupidEnemy_dimension() {
-    var x = [this.middleX,this.middleX];
-    var y = [this.middleY,this.middleY-1];
+    var x = [this.middleX, this.middleX];
+    var y = [this.middleY, this.middleY - 1];
     return new Array(x, y);
 }
+
+//"Meteor" dimension function.
+function meteor_dimension() {
+    //think of a mobile key pad to understand the coords.
+    var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
+    var y = [this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
+    return new Array(x, y);
+}
+
 
 //All update routines.
 
 //"Bullet" update function.
 function bullet_update() {
-    this.middleY = this.middleY - 2;
+    this.middleY = this.middleY - 1;
     if (this.middleY < 3)
         this.invalid = true;
 }
@@ -602,6 +649,14 @@ function bullet_update() {
 function stupidEnemy_update() {
     this.middleY = this.middleY + 0.5;
 }
+
+//"Meteor" update function.
+function meteor_update() {
+    this.middleY = this.middleY + 0.5;
+   // this.middleX = this.middleX - 0.25;
+
+}
+
 
 //All rendering routines.
 
@@ -613,16 +668,35 @@ function bullet_render() {
     context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
     context.fillStyle = "red";
     context.fillRect(this.middleX * 10, (this.middleY - 2) * 10, 10, 10);
+    context.fillStyle = "#220000";
+    context.fillRect(this.middleX * 10, (this.middleY - 3) * 10, 10, 10);
 }
 
 
 //"Stupid Enemy" rendering function
 function stupidEnemy_render() {
     context.fillStyle = "white";
-    context.fillRect(this.middleX * 10, (this.middleY-1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
     context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
 }
 
+//"Meteor" rendering function
+function meteor_render() {
+    //Num pad on mobile.
+    context.fillStyle = "brown";
+    //Upper row.
+    context.fillRect((this.middleX - 0.5) * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 0.5) * 10, (this.middleY - 1) * 10, 10, 10);
+    //Middle row.
+    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
+    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
+    //Upper row.
+    context.fillRect((this.middleX - 0.5) * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 0.5) * 10, (this.middleY + 1) * 10, 10, 10);
+}
 
 //All other functions.
 
