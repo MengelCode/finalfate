@@ -229,11 +229,11 @@ class SpaceShip extends GameObject {
         super();
 
         super.getOccupiedSpace = function () {
-            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2, middleX - 2, middleX + 1,middleX-1,middleX,middleX+1];
-            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY, middleY - 1, middleY - 1,middleY+1,middleY+1,middleY+1];
+            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2, middleX - 2, middleX + 1, middleX - 1, middleX, middleX + 1];
+            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY, middleY - 1, middleY - 1, middleY + 1, middleY + 1, middleY + 1];
             return new Array(x, y);
         };
-       this.keyReleased = true;
+        this.keyReleased = true;
         super.updateState = function () {
             if (left && middleX > 2) {
                 //left = 0;
@@ -249,11 +249,13 @@ class SpaceShip extends GameObject {
             if (down && middleY < 53) {
                 middleY = middleY + 1;
             }
-            if(!shoot){
+            if (!shoot) {
                 this.keyReleased = true;
-            }
-            else if (shoot && this.keyReleased) {
+            } else if (shoot && this.keyReleased) {
                 this.keyReleased = false;
+                sfx0.pause();
+                sfx0.currentTime = 0;
+                sfx0.play();
                 var bullet = new Bullet(middleX - 2, middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
@@ -294,7 +296,7 @@ class SpaceShip extends GameObject {
 }
 
 //INIT
-const FRAME_RATE = 35;
+const FRAME_RATE = 40;
 //"booleans" if certain keys are pressed.
 var shoot = 0;
 var up = 0;
@@ -310,6 +312,10 @@ var context = canvas.getContext("2d");
 var renderFunction = null;
 //For music/sound playback.
 var bgm = document.getElementById("mainBGM");
+//Shot sound effect.
+var sfx0 = document.getElementById("sfx-channel-0");
+//Hit SFX.
+var sfx1 = document.getElementById("sfx-channel-1");
 //Level Loaders.
 var loaders = new Array(7);
 loaders[0] = earthLoader;
@@ -389,17 +395,20 @@ function earthLoader() {
     enem = new Enemy(18, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
     displayList.addElement(enem);
     enemyList.addElement(enem);
-    enem = new Enemy(26,0,meteor_dimension,meteor_update,meteor_render,17);
-    enem = new Spawn(200,enem);
+    enem = new Enemy(26, 0, meteor_dimension, meteor_update, meteor_render, 17);
+    enem = new Spawn(200, enem);
     spawnList.addElement(enem);
-    enem = new Enemy(36,0,meteor_dimension,meteor_update,meteor_render,17);
-    enem = new Spawn(280,enem);
+    enem = new Enemy(36, 0, meteor_dimension, meteor_update, meteor_render, 17);
+    enem = new Spawn(280, enem);
     spawnList.addElement(enem);
-    enem = new Enemy(9,0,stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-    enem = new Spawn(340,enem);
+    enem = new Enemy(9, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(340, enem);
     spawnList.addElement(enem);
-    enem = new Enemy(69,0,stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-    enem = new Spawn(360,enem);
+    enem = new Enemy(69, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(360, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(33, 5, wingman_dimension,wingman_update,wingman_render);
+    enem = new Spawn(360, enem);
     spawnList.addElement(enem);
 }
 
@@ -523,6 +532,9 @@ function checkForEnemyHit() {
         var enemyImminent = enemyList.getNext();
         if (player.collides(enemyImminent)) {
             enemyImminent.invalidate();
+            sfx1.pause();
+            sfx1.currentTime = 0;
+            sfx1.play();
             //window.alert("Enemy collided with player using the new function.");
             player.health = player.health - enemyImminent.damage;
             if (player.health < 0)
@@ -546,8 +558,13 @@ function bulletOnEnemies() {
             while (enemyList.peekNext() !== null) {
                 var enemy = enemyList.getNext();
                 if (bullet.collides(enemy) && !enemy.invalid && enemy.killable) {
-                    player.score = player.score + enemy.score;
                     enemy.invalidate();
+                    if (enemy.invalid) {
+                        sfx1.pause();
+                        sfx1.currentTime = 0;
+                        sfx1.play();
+                        player.score = player.score + enemy.score;
+                    }
                     bullet.invalidate();
                     //window.alert("Shot the enemy.");
 
@@ -608,16 +625,53 @@ function renderHUD() {
 
 //All "Score" functions.
 
-function default_score(){
+function default_score() {
     return 100;
 }
 
 //All dimension matrix functions.
 
+//"Wingman" dimension functions.
+function wingman_dimension() {
+  
+    //The upper row.
+    var x0 = [this.middleX - 4, this.middleX - 3, this.middleX - 2, this.middleX - 1, this.middleX - 0, this.middleX + 1, this.middleX + 2, this.middleX + 3, this.middleX + 4];  
+    //The middle row.
+    var x1 = [this.middleX - 4, this.middleX - 3, this.middleX - 2, this.middleX - 1, this.middleX + 1, this.middleX + 2, this.middleX + 3, this.middleX + 4];
+    //The lower row.
+    var x2 = [this.middleX-4, this.middleX-3, this.middleX+3 ,this.middleX+4];
+    
+    this.x = [];
+    this.y = [];
+    //The upper row.
+    for(var i = 0; i < x0.length; i++){
+        this.x.push(x0[i]);
+        this.y.push(this.middleY-1);
+    }
+    //The lower row.
+     for(var i = 0; i < x2.length; i++){
+        this.x.push(x2[i]);
+        this.y.push(this.middleY+1);
+    }
+    //The middle row.
+     for(var i = 0; i < x1.length; i++){
+        this.x.push(x1[i]);
+        this.y.push(this.middleY);
+    }
+    /**
+     * MATRIX:
+     * 000000000
+     * 111111111
+     * 111101111 <-- Zero here is {middleX,middleY}.
+     * 110000011
+     */
+    return new Array(this.x,this.y);
+}
+
 //"Bullet" dimension function.
 function bullet_dimension() {
-    var x = [this.middleX, this.middleX, this.middleX,this.middleX];
-    var y = [this.middleY, this.middleY - 1, this.middleY - 2,this.middleY-3];
+    var x = [this.middleX, this.middleX, this.middleX, this.middleX];
+    var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY - 3];
     return new Array(x, y);
 }
 //"Stupid Enemy" dimension function.
@@ -629,44 +683,23 @@ function stupidEnemy_dimension() {
 
 //"Meteor" dimension function.
 function meteor_dimension() {
-    //think of a mobile key pad to understand the coords.
-    var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
-    var y = [this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
+    //think of a mobile key pad to understand the coords. Shadow row added.
+    var x = [this.middleX -1, this.middleX, this.middleX+1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
+    var y = [this.middleY - 2, this.middleY -2, this.middleY -2 ,this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
     return new Array(x, y);
 }
 
 
 //All update routines.
 
+//"Wingman" update function.
+function wingman_update(){
+    this.middleY = this.middleY +0.5;
+    
+}
+
 //"Bullet" update function.
-function bullet_update() {
-    this.middleY = this.middleY - 1;
-    if (this.middleY < 3)
-        this.invalid = true;
-}
-
-//"Stupid Enemy" update function.
-function stupidEnemy_update() {
-    this.middleY = this.middleY + 0.5;
-}
-
-//"Meteor" update function.
-function meteor_update() {
-    this.middleY = this.middleY + 0.5;
-   // this.middleX = this.middleX - 0.25;
-
-}
-
-
-//All rendering routines.
-
-//"Bullet" rendering function
-function bullet_render() {
-    context.fillStyle = "yellow";
-    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
-    context.fillStyle = "orange";
-    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillStyle = "red";
+function bullet_update() {  
     context.fillRect(this.middleX * 10, (this.middleY - 2) * 10, 10, 10);
     context.fillStyle = "#220000";
     context.fillRect(this.middleX * 10, (this.middleY - 3) * 10, 10, 10);
@@ -682,20 +715,21 @@ function stupidEnemy_render() {
 
 //"Meteor" rendering function
 function meteor_render() {
+    //TODO Oben und unten weniger.
     //Num pad on mobile.
     context.fillStyle = "brown";
     //Upper row.
-    context.fillRect((this.middleX - 0.5) * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
     context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 0.5) * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
     //Middle row.
     context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
     context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
     context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
     //Upper row.
-    context.fillRect((this.middleX - 0.5) * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
     context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 0.5) * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
 }
 
 //All other functions.
