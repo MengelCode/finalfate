@@ -296,7 +296,7 @@ class SpaceShip extends GameObject {
 }
 
 //INIT
-const FRAME_RATE = 40;
+const FRAME_RATE = 30;
 //"booleans" if certain keys are pressed.
 var shoot = 0;
 var up = 0;
@@ -683,9 +683,9 @@ function stupidEnemy_dimension() {
 
 //"Meteor" dimension function.
 function meteor_dimension() {
-    //think of a mobile key pad to understand the coords. Shadow row added.
-    var x = [this.middleX -1, this.middleX, this.middleX+1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
-    var y = [this.middleY - 2, this.middleY -2, this.middleY -2 ,this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
+    //think of a mobile key pad to understand the coords. 2 shadow layers added.
+    var x = [this.middleX - 1, this.middleX, this.middleX + 1,this.middleX - 1, this.middleX, this.middleX + 1,this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
+    var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3,this.middleY - 2, this.middleY - 2, this.middleY - 2,this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
     return new Array(x, y);
 }
 
@@ -694,12 +694,50 @@ function meteor_dimension() {
 
 //"Wingman" update function.
 function wingman_update(){
-    this.middleY = this.middleY +0.5;
+    this.middleY = this.middleY +1;
     
 }
 
 //"Bullet" update function.
-function bullet_update() {  
+function bullet_update() {
+    this.middleY = this.middleY - 1;
+    if (this.middleY < 3)
+        this.invalid = true;
+}
+
+//"Stupid Enemy" update function.
+function stupidEnemy_update() {
+    this.middleY = this.middleY + 1;
+}
+
+//"Meteor" update function.
+function meteor_update() {
+    this.middleY = this.middleY + 1;
+    // this.middleX = this.middleX - 0.25;
+
+}
+
+
+//All rendering routines.
+
+
+//"Wingman" rendering function
+function wingman_render(){
+    context.fillStyle = "white";
+    var arrayS = this.getOccupiedSpace();
+    for(var i = 0; i<arrayS[0].length; i++){
+        context.fillRect(arrayS[0][i] * 10, arrayS[1][i] * 10,10,10);
+    }
+}
+
+
+//"Bullet" rendering function
+function bullet_render() {
+    context.fillStyle = "yellow";
+    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
+    context.fillStyle = "orange";
+    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillStyle = "red";
     context.fillRect(this.middleX * 10, (this.middleY - 2) * 10, 10, 10);
     context.fillStyle = "#220000";
     context.fillRect(this.middleX * 10, (this.middleY - 3) * 10, 10, 10);
@@ -715,7 +753,6 @@ function stupidEnemy_render() {
 
 //"Meteor" rendering function
 function meteor_render() {
-    //TODO Oben und unten weniger.
     //Num pad on mobile.
     context.fillStyle = "brown";
     //Upper row.
