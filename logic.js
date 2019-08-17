@@ -14,6 +14,11 @@ class GameObject {
      * 
      */
     constructor() {
+        this.frameCounter = 0;
+        /**
+         * Is this object still required? Set this value to true (via the invalidate function) to mark it for
+         * deletion before the next frame.
+         */
         this.invalid = false;
         /**Returns an array of 2 arrays.
          //X positions occupied = array 0.
@@ -633,7 +638,7 @@ function default_score() {
 
 //"Wingman" dimension functions.
 function wingman_dimension() {
-  
+    //The upper shadow row.
     //The upper row.
     var x0 = [this.middleX - 4, this.middleX - 3, this.middleX - 2, this.middleX - 1, this.middleX - 0, this.middleX + 1, this.middleX + 2, this.middleX + 3, this.middleX + 4];  
     //The middle row.
@@ -707,13 +712,20 @@ function bullet_update() {
 
 //"Stupid Enemy" update function.
 function stupidEnemy_update() {
+   this.frameCounter++;
+    this.frameCounter = this.frameCounter % 2;
+    if(this.frameCounter===1){
     this.middleY = this.middleY + 1;
+    }
 }
 
 //"Meteor" update function.
 function meteor_update() {
+    this.frameCounter++;
+    this.frameCounter = this.frameCounter % 2;
+    if(this.frameCounter===1){
     this.middleY = this.middleY + 1;
-    // this.middleX = this.middleX - 0.25;
+    }
 
 }
 
