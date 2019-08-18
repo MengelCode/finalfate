@@ -44,12 +44,12 @@ class GameObject {
          */
         this.invalidate = function () {
             this.invalid = true;
-            this.getOccupiedSpace = function () {
+        };
+         this.getOccupiedSpace = function () {
                 var x = {};
                 var y = {};
                 return new Array(x, y);
-            }
-        };
+            };
         /**
          * 
          * @param {type} otherObj
