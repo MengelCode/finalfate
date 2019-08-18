@@ -45,11 +45,11 @@ class GameObject {
         this.invalidate = function () {
             this.invalid = true;
         };
-         this.getOccupiedSpace = function () {
-                var x = {};
-                var y = {};
-                return new Array(x, y);
-            };
+        this.getOccupiedSpace = function () {
+            var x = {};
+            var y = {};
+            return new Array(x, y);
+        };
         /**
          * 
          * @param {type} otherObj
@@ -211,9 +211,10 @@ class Spawn {
      * @param {type} isBullet Add game object to bullet list?
      * @returns {Spawn}
      */
-    constructor(frameDelta, gameObject, isForDisplay = true, isEnemy = true, isBullet = false) {
+    constructor(frameDelta, gameObject, isRelative = false, isForDisplay = true, isEnemy = true, isBullet = false) {
         this.frameDelta = frameDelta;
         this.gameObject = gameObject;
+        this.isRelative = isRelative;
         this.isForDisplay = isForDisplay;
         this.isEnemy = isEnemy;
         this.isBullet = isBullet;
@@ -232,27 +233,28 @@ class SpaceShip extends GameObject {
      */
     constructor(middleX, middleY) {
         super();
-
+        this.middleX = middleX;
+        this.middleY = middleY;
         super.getOccupiedSpace = function () {
-            var x = [middleX, middleX, middleX, middleX - 1, middleX - 2, middleX + 1, middleX + 2, middleX - 2, middleX + 1, middleX - 1, middleX, middleX + 1];
-            var y = [middleY, middleY - 1, middleY - 2, middleY, middleY, middleY, middleY, middleY - 1, middleY - 1, middleY + 1, middleY + 1, middleY + 1];
+            var x = [this.middleX, this.middleX, this.middleX, this.middleX - 1, this.middleX - 2, this.middleX + 1, this.middleX + 2, this.middleX - 2, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
+            var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY, this.middleY, this.middleY, this.middleY, this.middleY - 1, this.middleY - 1, this.middleY + 1, this.middleY + 1, this.middleY + 1];
             return new Array(x, y);
         };
         this.keyReleased = true;
         super.updateState = function () {
-            if (left && middleX > 2) {
+            if (left && this.middleX > 2) {
                 //left = 0;
-                middleX = middleX - 1;
+               this.middleX = this.middleX - 1;
             }
-            if (right && middleX < 77) {
+            if (right && this.middleX < 77) {
                 //right = 0;
-                middleX = middleX + 1;
+                this.middleX = this.middleX + 1;
             }
-            if (up && middleY > 28) {
-                middleY = middleY - 1;
+            if (up && this.middleY > 28) {
+                this.middleY = this.middleY - 1;
             }
-            if (down && middleY < 53) {
-                middleY = middleY + 1;
+            if (down && this.middleY < 53) {
+               this.middleY = this.middleY + 1;
             }
             if (!shoot) {
                 this.keyReleased = true;
@@ -261,10 +263,10 @@ class SpaceShip extends GameObject {
                 sfx0.pause();
                 sfx0.currentTime = 0;
                 sfx0.play();
-                var bullet = new Bullet(middleX - 2, middleY);
+                var bullet = new Bullet(this.middleX - 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
-                bullet = new Bullet(middleX + 2, middleY);
+                bullet = new Bullet(this.middleX + 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
 
@@ -273,12 +275,12 @@ class SpaceShip extends GameObject {
         };
         super.renderState = function () {
             context.fillStyle = "lightgray";
-            context.fillRect((middleX - 2) * 10, middleY * 10, 50, 10);
+            context.fillRect((this.middleX - 2) * 10, this.middleY * 10, 50, 10);
             context.fillStyle = "yellow";
-            context.fillRect(middleX * 10, (middleY - 2) * 10, 10, 20);
+            context.fillRect(this.middleX * 10, (this.middleY - 2) * 10, 10, 20);
             context.fillStyle = "orange";
-            context.fillRect((middleX - 2) * 10, (middleY - 1) * 10, 10, 10);
-            context.fillRect((middleX + 2) * 10, (middleY - 1) * 10, 10, 10);
+            context.fillRect((this.middleX - 2) * 10, (this.middleY - 1) * 10, 10, 10);
+            context.fillRect((this.middleX + 2) * 10, (this.middleY - 1) * 10, 10, 10);
         };
         /**
          * Health Points of the player. If this value goes down to 0(or theoretically less, it costs you a life.
@@ -326,8 +328,10 @@ var loaders = new Array(7);
 loaders[0] = earthLoader;
 //Level background rendering functions.
 //var backgroundRenderers = new Array(6);
-//Animation counter.
+//Animation counter. Absolute
 var aniCount = 0;
+//Animation counter. Relative
+var aniCountRelative = 0;
 //Black background.
 context.fillRect(0, 0, 800, 600);
 //Render function assigning.
@@ -394,27 +398,86 @@ function loadLevel() {
  * Level 1 - The Sky
  */
 function earthLoader() {
-    var enem = new Enemy(37, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-    displayList.addElement(enem);
-    enemyList.addElement(enem);
-    enem = new Enemy(18, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-    displayList.addElement(enem);
-    enemyList.addElement(enem);
-    enem = new Enemy(26, 0, meteor_dimension, meteor_update, meteor_render, 17);
-    enem = new Spawn(200, enem);
+    var enem = null;
+//    enem = new Enemy(37, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+//    displayList.addElement(enem);
+//    enemyList.addElement(enem);
+//    enem = new Enemy(18, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+//    displayList.addElement(enem);
+//    enemyList.addElement(enem);
+//Slow beginning...
+    enem = new Enemy(26, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(150, enem);
     spawnList.addElement(enem);
-    enem = new Enemy(36, 0, meteor_dimension, meteor_update, meteor_render, 17);
-    enem = new Spawn(280, enem);
+    enem = new Enemy(36, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(240, enem);
     spawnList.addElement(enem);
     enem = new Enemy(9, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-    enem = new Spawn(340, enem);
+    enem = new Spawn(290, enem);
     spawnList.addElement(enem);
     enem = new Enemy(69, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-    enem = new Spawn(360, enem);
+    enem = new Spawn(310, enem);
     spawnList.addElement(enem);
-    enem = new Enemy(33, 5, wingman_dimension,wingman_update,wingman_render);
-    enem = new Spawn(360, enem);
+    //Gets a bit more...hurried.
+    enem = new Enemy(11, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(370, enem);
     spawnList.addElement(enem);
+    enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(380, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(23, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(410, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(55, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(440, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(33, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(460, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(480, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(20, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(530, enem);
+    spawnList.addElement(enem);
+    //Everything rains at you....
+    enem = new Enemy(30, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(540, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(13, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(570, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(79, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(600, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(55, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(630, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(33, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    enem = new Spawn(640, enem);
+    spawnList.addElement(enem);
+    //New enemy....
+    enem = new Enemy(55, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+    enem = new Spawn(760, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(20, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+    enem = new Spawn(870, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(70, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+    enem = new Spawn(1000, enem);
+    spawnList.addElement(enem);
+    //Strange wave, 1 out of 2.
+    for (var i = 0; i < 20; i++) {
+        enem = new Enemy(10 + i+2, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Spawn(1100 + 10 * i, enem);
+        spawnList.addElement(enem);
+    }
+     for (var i = 0; i < 20; i++) {
+        enem = new Enemy(40 - (i+3), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Spawn(1300 + 10 * i, enem);
+        spawnList.addElement(enem);
+    }
+
 }
 
 
@@ -480,8 +543,8 @@ function finalFate() {
  */
 function gamePlay() {
     checkLeaveLevel();
-    updateGameObjects();
     checkForColli();
+    updateGameObjects();
     renderInGame();
     deleteDeceased();
     renderHUD();
@@ -628,50 +691,27 @@ function renderHUD() {
 //Enemy functions, per enemy.
 //TODO 
 
-//All "Score" functions.
+//All "Score" functions. Not always required.
 
 function default_score() {
     return 100;
 }
 
+//All "damage" functions. Not always required.
+
+//"Blinky" damage function.
+function blinky_damage() {
+    return 22;
+}
+
+//"Meteor" damage function.
+function meteor_damage() {
+    return 17;
+}
+
 //All dimension matrix functions.
 
-//"Wingman" dimension functions.
-function wingman_dimension() {
-    //The upper shadow row.
-    //The upper row.
-    var x0 = [this.middleX - 4, this.middleX - 3, this.middleX - 2, this.middleX - 1, this.middleX - 0, this.middleX + 1, this.middleX + 2, this.middleX + 3, this.middleX + 4];  
-    //The middle row.
-    var x1 = [this.middleX - 4, this.middleX - 3, this.middleX - 2, this.middleX - 1, this.middleX + 1, this.middleX + 2, this.middleX + 3, this.middleX + 4];
-    //The lower row.
-    var x2 = [this.middleX-4, this.middleX-3, this.middleX+3 ,this.middleX+4];
-    
-    this.x = [];
-    this.y = [];
-    //The upper row.
-    for(var i = 0; i < x0.length; i++){
-        this.x.push(x0[i]);
-        this.y.push(this.middleY-1);
-    }
-    //The lower row.
-     for(var i = 0; i < x2.length; i++){
-        this.x.push(x2[i]);
-        this.y.push(this.middleY+1);
-    }
-    //The middle row.
-     for(var i = 0; i < x1.length; i++){
-        this.x.push(x1[i]);
-        this.y.push(this.middleY);
-    }
-    /**
-     * MATRIX:
-     * 000000000
-     * 111111111
-     * 111101111 <-- Zero here is {middleX,middleY}.
-     * 110000011
-     */
-    return new Array(this.x,this.y);
-}
+
 
 //"Bullet" dimension function.
 function bullet_dimension() {
@@ -689,18 +729,19 @@ function stupidEnemy_dimension() {
 //"Meteor" dimension function.
 function meteor_dimension() {
     //think of a mobile key pad to understand the coords. 2 shadow layers added.
-    var x = [this.middleX - 1, this.middleX, this.middleX + 1,this.middleX - 1, this.middleX, this.middleX + 1,this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
-    var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3,this.middleY - 2, this.middleY - 2, this.middleY - 2,this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
+    var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
+    var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
     return new Array(x, y);
 }
-
+//"Blinky" dimension function
+var blinky_dimension = meteor_dimension;
 
 //All update routines.
 
 //"Wingman" update function.
-function wingman_update(){
-    this.middleY = this.middleY +1;
-    
+function wingman_update() {
+    this.middleY = this.middleY + 1;
+
 }
 
 //"Bullet" update function.
@@ -712,19 +753,29 @@ function bullet_update() {
 
 //"Stupid Enemy" update function.
 function stupidEnemy_update() {
-   this.frameCounter++;
+    this.frameCounter++;
     this.frameCounter = this.frameCounter % 2;
-    if(this.frameCounter===1){
-    this.middleY = this.middleY + 1;
+    if (this.frameCounter === 1) {
+        this.middleY = this.middleY + 1;
     }
 }
+
+//"Blinky" update function.
+function blinky_update() {
+    this.frameCounter++;
+    this.frameCounter = this.frameCounter % 1;
+    if (this.frameCounter === 0) {
+        this.middleY = this.middleY + 1;
+    }
+}
+
 
 //"Meteor" update function.
 function meteor_update() {
     this.frameCounter++;
     this.frameCounter = this.frameCounter % 2;
-    if(this.frameCounter===1){
-    this.middleY = this.middleY + 1;
+    if (this.frameCounter === 1) {
+        this.middleY = this.middleY + 1;
     }
 
 }
@@ -734,11 +785,11 @@ function meteor_update() {
 
 
 //"Wingman" rendering function
-function wingman_render(){
+function wingman_render() {
     context.fillStyle = "white";
     var arrayS = this.getOccupiedSpace();
-    for(var i = 0; i<arrayS[0].length; i++){
-        context.fillRect(arrayS[0][i] * 10, arrayS[1][i] * 10,10,10);
+    for (var i = 0; i < arrayS[0].length; i++) {
+        context.fillRect(arrayS[0][i] * 10, arrayS[1][i] * 10, 10, 10);
     }
 }
 
@@ -781,11 +832,40 @@ function meteor_render() {
     context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
 }
 
+//"Blink" rendering function
+function blinky_render() {
+    //Num pad on mobile.
+    if (aniCount % 5 === 0) {
+        context.fillStyle = "red";
+    } else if (aniCount % 4 === 0) {
+        context.fillStyle = "yellow";
+    } else if (aniCount % 3 === 0) {
+        context.fillStyle = "magenta";
+    } else if (aniCount % 2 === 0) {
+        context.fillStyle = "white";
+    } else
+        context.fillStyle = "green";
+    //Upper row.
+    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
+    //Middle row.
+    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
+    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
+    //Upper row.
+    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+}
+
+
 //All other functions.
 
 //Make sure that frame counter always continues.
 function increaseCount() {
     aniCount++;
+    aniCountRelative++;
 }
 
 
