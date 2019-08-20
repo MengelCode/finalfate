@@ -72,6 +72,22 @@ class GameObject {
 
 }
 
+class HealthBoost extends GameObject {
+    /**
+     * Health boost item.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {HealthBoost}
+     */
+    constructor(middleX, middleY) {
+        super();
+        this.middleX = middleX;
+        this.middleY = middleY;
+        super.getOccupiedSpace = healthBoost_dimension;
+        super.updateState = healthBoost_update;
+        super.renderState = healthBoost_render;
+    }
+}
 
 class LinkedList {
     /**
@@ -184,8 +200,22 @@ class Enemy extends GameObject {
         this.killable = killable;
         this.damage = damage;
         this.score = score;
+        //Previous enemy object in a chain.
+        this.previous = null;
+        //Next enemy object in a chain.
+        this.next = null;
+        this.linkTogether = function (nextEnemy) {
+            this.next = nextEnemy;
+            nextEnemy.previous = this;
+        };
         if (invalidFunc !== null) {
             super.invalidate = invalidFunc;
+        } else {
+            super.invalidate = function () {
+             this.invalid = true;
+             if(this.previous!==null && !this.previous.invalid)this.previous.invalidate();
+              if(this.next!==null && !this.next.invalid)this.next.invalidate();
+            };
     }
     }
 }
@@ -197,7 +227,8 @@ class Bullet extends GameObject {
         this.middleX = middleX;
         this.middleY = middleY;
         super.getOccupiedSpace = bullet_dimension;
-        super.updateState = bullet_update;
+        super.updateSpecial = bullet_update;
+        super.updateState = function () {};
         super.renderState = bullet_render;
     }
 }
@@ -244,7 +275,7 @@ class SpaceShip extends GameObject {
         super.updateState = function () {
             if (left && this.middleX > 2) {
                 //left = 0;
-               this.middleX = this.middleX - 1;
+                this.middleX = this.middleX - 1;
             }
             if (right && this.middleX < 77) {
                 //right = 0;
@@ -254,7 +285,7 @@ class SpaceShip extends GameObject {
                 this.middleY = this.middleY - 1;
             }
             if (down && this.middleY < 53) {
-               this.middleY = this.middleY + 1;
+                this.middleY = this.middleY + 1;
             }
             if (!shoot) {
                 this.keyReleased = true;
@@ -323,6 +354,8 @@ var bgm = document.getElementById("mainBGM");
 var sfx0 = document.getElementById("sfx-channel-0");
 //Hit SFX.
 var sfx1 = document.getElementById("sfx-channel-1");
+//Item SFX.
+var sfx2 = document.getElementById("sfx-channel-2");
 //Level Loaders.
 var loaders = new Array(7);
 loaders[0] = earthLoader;
@@ -375,7 +408,9 @@ function initGame() {
  * Load a level. General Method.
  */
 function loadLevel() {
-    player.health = 100;
+    if (player.health < 100) {
+        player.health = 100;
+    }
     player.middleX = 38;
     player.middleY = 52;
     giant_boss = null;
@@ -468,16 +503,19 @@ function earthLoader() {
     spawnList.addElement(enem);
     //Strange wave, 1 out of 2.
     for (var i = 0; i < 20; i++) {
-        enem = new Enemy(10 + i+2, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Enemy(10 + i + 2, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(1100 + 10 * i, enem);
         spawnList.addElement(enem);
     }
-     for (var i = 0; i < 20; i++) {
-        enem = new Enemy(40 - (i+3), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    for (var i = 0; i < 20; i++) {
+        enem = new Enemy(40 - (i + 3), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(1300 + 10 * i, enem);
         spawnList.addElement(enem);
     }
-
+    //frameDelta, gameObject, isRelative = false, isForDisplay = true, isEnemy = true, isBullet = false
+    enem = new HealthBoost(52, 0);
+    enem = new Spawn(20, enem, true, true, false, false);
+    spawnList.addElement(enem);
 }
 
 
@@ -542,16 +580,30 @@ function finalFate() {
  * Actual game loop.
  */
 function gamePlay() {
+    updateBullets();
+    checkForEnemyHit();
+    deleteDeceased();
+    updateGameObjects();
+    deleteDeceased();
     checkLeaveLevel();
     checkForColli();
-    updateGameObjects();
-    renderInGame();
     deleteDeceased();
+    renderInGame();
     renderHUD();
 }
 
 
 //Auxillary functions for levels.
+
+//X - Advance bullets
+function updateBullets() {
+    bulletList.resetIterator();
+    while (bulletList.peekNext() !== null) {
+        bulletList.getNext().updateSpecial();
+
+    }
+}
+
 
 //1 - Check if one of the end conditions(player dead, boss dead) are met.
 function checkLeaveLevel() {
@@ -573,7 +625,8 @@ function updateGameObjects() {
 
     }
     var next = spawnList.peekNext();
-    if (next !== null && aniCount > next.frameDelta) {
+    while (next !== null && ((next.isRelative === false && aniCount > next.frameDelta) || (next.isRelative === true && aniCountRelative > next.frameDelta))) {
+        aniCountRelative = 0;
         spawnList.getNext();
         var subject = next.gameObject;
         if (next.isForDisplay) {
@@ -584,6 +637,7 @@ function updateGameObjects() {
         } else if (next.isBullet) {
             bulletList.addElement(subject);
         }
+         next = spawnList.peekNext();
     }
 }
 // 3 - Check for collisions.
@@ -652,7 +706,9 @@ function renderInGame() {
     context.fillRect(0, 0, 800, 600);
     displayList.resetIterator();
     while (displayList.peekNext() !== null) {
-        displayList.getNext().renderState();
+        var v = displayList.getNext();
+        if (!v.invalid)
+            v.renderState();
 
     }
 }
@@ -711,7 +767,8 @@ function meteor_damage() {
 
 //All dimension matrix functions.
 
-
+//"Health Boost" dimension function.
+var healthBoost_dimension = meteor_dimension;
 
 //"Bullet" dimension function.
 function bullet_dimension() {
@@ -721,8 +778,8 @@ function bullet_dimension() {
 }
 //"Stupid Enemy" dimension function.
 function stupidEnemy_dimension() {
-    var x = [this.middleX, this.middleX];
-    var y = [this.middleY, this.middleY - 1];
+    var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
+    var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
     return new Array(x, y);
 }
 
@@ -780,6 +837,20 @@ function meteor_update() {
 
 }
 
+//"Health Boost" update function.
+function healthBoost_update() {
+
+    this.middleY = this.middleY + 1;
+    if (this.collides(player)) {
+        this.invalid = true;
+        sfx2.pause();
+        sfx2.currentTime = 0;
+        sfx2.play();
+        player.health = player.health + 30;
+    }
+
+}
+
 
 //All rendering routines.
 
@@ -809,9 +880,20 @@ function bullet_render() {
 
 //"Stupid Enemy" rendering function
 function stupidEnemy_render() {
+    //Num pad on mobile.
     context.fillStyle = "white";
+    //Upper row.
+    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
     context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
+    //Middle row.
+    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
     context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
+    //Upper row.
+    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
 }
 
 //"Meteor" rendering function
@@ -832,7 +914,28 @@ function meteor_render() {
     context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
 }
 
-//"Blink" rendering function
+
+//"Health Boost" rendering function
+function healthBoost_render() {
+    //Num pad on mobile.
+    context.fillStyle = "red";
+    //Upper row.
+    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
+    //Middle row.
+    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
+    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
+    //Upper row.
+    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+}
+
+
+
+//"Blinky" rendering function
 function blinky_render() {
     //Num pad on mobile.
     if (aniCount % 5 === 0) {
@@ -938,7 +1041,14 @@ function getKeyRelease(event) {
     }
 
 }
-
+/**
+ * 
+ * @param {type} enemies
+ * @returns {undefined}
+ */
+function combineEnemyBricks(enemies){
+    
+}
 
 /**
  * Exchange the rendering loop with another function.
