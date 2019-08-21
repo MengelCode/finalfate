@@ -212,9 +212,11 @@ class Enemy extends GameObject {
             super.invalidate = invalidFunc;
         } else {
             super.invalidate = function () {
-             this.invalid = true;
-             if(this.previous!==null && !this.previous.invalid)this.previous.invalidate();
-              if(this.next!==null && !this.next.invalid)this.next.invalidate();
+                this.invalid = true;
+                if (this.previous !== null && !this.previous.invalid)
+                    this.previous.invalidate();
+                if (this.next !== null && !this.next.invalid)
+                    this.next.invalidate();
             };
     }
     }
@@ -460,6 +462,8 @@ function earthLoader() {
     enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(380, enem);
     spawnList.addElement(enem);
+    enem = factory_airCraft1(72, 0);
+    spawnListArrayAdd(enem, 400);
     enem = new Enemy(23, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(410, enem);
     spawnList.addElement(enem);
@@ -501,7 +505,7 @@ function earthLoader() {
     enem = new Enemy(70, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
     enem = new Spawn(1000, enem);
     spawnList.addElement(enem);
-    //Strange wave, 1 out of 2.
+    //Strange wave, 1 out of 3s.
     for (var i = 0; i < 20; i++) {
         enem = new Enemy(10 + i + 2, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(1100 + 10 * i, enem);
@@ -511,14 +515,30 @@ function earthLoader() {
         enem = new Enemy(40 - (i + 3), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(1300 + 10 * i, enem);
         spawnList.addElement(enem);
+        if(i===19)window.alert(1300 + 10 * i);
     }
     //frameDelta, gameObject, isRelative = false, isForDisplay = true, isEnemy = true, isBullet = false
     enem = new HealthBoost(52, 0);
     enem = new Spawn(20, enem, true, true, false, false);
     spawnList.addElement(enem);
+    //1542
+    
+    enem = new Enemy(70, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+    enem = new Spawn(1900,enem);
+    spawnList.addElement(enem);
 }
+/**
+ * Adds an array of either linked or unlinked enemy objects to the spawn list.
+ * @param enemy_array Array with enemies.
+ * @param spawn_time Frame when all enemies should spawn.
+ */
+function spawnListArrayAdd(enemy_array, spawn_time) {
+    for (var i = 0; i < enemy_array.length; i++) {
+        var sp = new Spawn(spawn_time, enemy_array[i]);
+        spawnList.addElement(sp);
+    }
 
-
+}
 /**
  * 
  * @returns {undefined}
@@ -637,7 +657,7 @@ function updateGameObjects() {
         } else if (next.isBullet) {
             bulletList.addElement(subject);
         }
-         next = spawnList.peekNext();
+        next = spawnList.peekNext();
     }
 }
 // 3 - Check for collisions.
@@ -760,6 +780,11 @@ function blinky_damage() {
     return 22;
 }
 
+//"Blinky Tracer" damage function.
+function blinkyTracer_damage() {
+    return 36;
+}
+
 //"Meteor" damage function.
 function meteor_damage() {
     return 17;
@@ -790,8 +815,11 @@ function meteor_dimension() {
     var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
     return new Array(x, y);
 }
-//"Blinky" dimension function
+//"Blinky" dimension function.
 var blinky_dimension = meteor_dimension;
+
+//"Blinky Tracer" dimension function.
+var blinkyTracer_dimension = blinky_dimension;
 
 //All update routines.
 
@@ -825,7 +853,13 @@ function blinky_update() {
         this.middleY = this.middleY + 1;
     }
 }
-
+//"Blinky Tracer" update function.
+function blinkyTracer_update() {
+    this.frameCounter++;
+    this.middleY++;
+    if(player.middleX>this.middleX)this.middleX++;
+    else if(player.middleX<this.middleX)this.middleX--;
+}
 
 //"Meteor" update function.
 function meteor_update() {
@@ -933,7 +967,8 @@ function healthBoost_render() {
     context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
 }
 
-
+//"Blinky Tracer" rendering function.
+var blinkyTracer_render = blinky_render;
 
 //"Blinky" rendering function
 function blinky_render() {
@@ -960,6 +995,25 @@ function blinky_render() {
     context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
     context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
     context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+}
+//Factory Functions.
+//Air Craft 1
+function factory_airCraft1(middleX, middleY) {
+    var enemy_array = [];
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    for (var i = 0; i < enemy_array.length - 1; i++) {
+        enemy_array[i].linkTogether(enemy_array[i + 1]);
+    }
+    return enemy_array;
 }
 
 
@@ -1046,8 +1100,8 @@ function getKeyRelease(event) {
  * @param {type} enemies
  * @returns {undefined}
  */
-function combineEnemyBricks(enemies){
-    
+function combineEnemyBricks(enemies) {
+
 }
 
 /**
