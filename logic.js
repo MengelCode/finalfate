@@ -336,6 +336,7 @@ class SpaceShip extends GameObject {
 }
 
 //INIT
+//try{
 const FRAME_RATE = 30;
 //"booleans" if certain keys are pressed.
 var shoot = 0;
@@ -449,6 +450,8 @@ function earthLoader() {
     enem = new Enemy(36, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(240, enem);
     spawnList.addElement(enem);
+    enem = factory_airCraft1(72, 0);
+    spawnListArrayAdd(enem, 260);
     enem = new Enemy(9, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
     enem = new Spawn(290, enem);
     spawnList.addElement(enem);
@@ -456,13 +459,15 @@ function earthLoader() {
     enem = new Spawn(310, enem);
     spawnList.addElement(enem);
     //Gets a bit more...hurried.
+    enem = factory_airCraft1(44, 0);
+    spawnListArrayAdd(enem, 328);
     enem = new Enemy(11, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(370, enem);
     spawnList.addElement(enem);
     enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(380, enem);
     spawnList.addElement(enem);
-    enem = factory_airCraft1(72, 0);
+    enem = factory_airCraft1(20, 0);
     spawnListArrayAdd(enem, 400);
     enem = new Enemy(23, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(410, enem);
@@ -476,6 +481,8 @@ function earthLoader() {
     enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(480, enem);
     spawnList.addElement(enem);
+    enem = factory_airCraft1(22, 0);
+    spawnListArrayAdd(enem, 500);
     enem = new Enemy(20, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(530, enem);
     spawnList.addElement(enem);
@@ -495,6 +502,8 @@ function earthLoader() {
     enem = new Enemy(33, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
     enem = new Spawn(640, enem);
     spawnList.addElement(enem);
+    enem = factory_airCraft1(28, 0);
+    spawnListArrayAdd(enem, 670);
     //New enemy....
     enem = new Enemy(55, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
     enem = new Spawn(760, enem);
@@ -505,7 +514,7 @@ function earthLoader() {
     enem = new Enemy(70, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
     enem = new Spawn(1000, enem);
     spawnList.addElement(enem);
-    //Strange wave, 1 out of 3s.
+    //Strange wave, 1 out of 2s.
     for (var i = 0; i < 20; i++) {
         enem = new Enemy(10 + i + 2, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(1100 + 10 * i, enem);
@@ -515,17 +524,125 @@ function earthLoader() {
         enem = new Enemy(40 - (i + 3), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(1300 + 10 * i, enem);
         spawnList.addElement(enem);
-        if(i===19)window.alert(1300 + 10 * i);
     }
     //frameDelta, gameObject, isRelative = false, isForDisplay = true, isEnemy = true, isBullet = false
     enem = new HealthBoost(52, 0);
     enem = new Spawn(20, enem, true, true, false, false);
     spawnList.addElement(enem);
     //1542
-    
-    enem = new Enemy(70, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
-    enem = new Spawn(1900,enem);
+    enem = new Enemy(38, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(1580, enem);
     spawnList.addElement(enem);
+    enem = new Enemy(25, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(1610, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(63, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(1640, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(27, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(1650, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(44, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    enem = new Spawn(1666, enem);
+    spawnList.addElement(enem);
+    enem = factory_airCraft1(11, 0);
+    spawnListArrayAdd(enem, 1670);
+    enem = factory_airCraft1(37, 0);
+    spawnListArrayAdd(enem, 1670);
+    enem = factory_airCraft1(68, 0);
+    spawnListArrayAdd(enem, 1670);
+    enem = factory_airCraft1(31, 0);
+    spawnListArrayAdd(enem, 1720);
+    enem = factory_airCraft1(58, 0);
+    spawnListArrayAdd(enem, 1720);
+    enem = factory_airCraft1(70, 0);
+    spawnListArrayAdd(enem, 1720);
+    enem = factory_airCraft1(11, 0);
+    spawnListArrayAdd(enem, 1750);
+    enem = factory_airCraft1(44, 0);
+    spawnListArrayAdd(enem, 1750);
+    enem = factory_airCraft1(55, 0);
+    spawnListArrayAdd(enem, 1750);
+    enem = new Enemy(70, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+    enem = new Spawn(1900, enem);
+    spawnList.addElement(enem);
+    enem = factory_airCraft1(11, 0);
+    spawnListArrayAdd(enem, 1950);
+    enem = factory_airCraft1(11, -6);
+    spawnListArrayAdd(enem, 1950);
+    enem = factory_airCraft1(11, -12);
+    spawnListArrayAdd(enem, 1950);
+    enem = factory_airCraft1(11, -18);
+    spawnListArrayAdd(enem, 1950);
+    enem = factory_airCraft1(70, 0);
+    spawnListArrayAdd(enem, 1980);
+    enem = factory_airCraft1(70, -6);
+    spawnListArrayAdd(enem, 1980);
+    enem = factory_airCraft1(70, -12);
+    spawnListArrayAdd(enem, 1980);
+    enem = factory_airCraft1(70, -18);
+    spawnListArrayAdd(enem, 1980);
+    enem = factory_airCraft1(40, 0);
+    spawnListArrayAdd(enem, 2010);
+    enem = factory_airCraft1(40, -6);
+    spawnListArrayAdd(enem, 2010);
+    enem = factory_airCraft1(40, -12);
+    spawnListArrayAdd(enem, 2010);
+    enem = factory_airCraft1(40, -18);
+    spawnListArrayAdd(enem, 2010);
+    //
+    enem = factory_airCraft1(40, 0);
+    spawnListArrayAdd(enem, 2036);
+    enem = factory_airCraft1(40, -6);
+    spawnListArrayAdd(enem, 2036);
+    enem = factory_airCraft1(40, -12);
+    spawnListArrayAdd(enem, 2036);
+    enem = factory_airCraft1(40, -18);
+    spawnListArrayAdd(enem, 2036);
+    //
+    enem = factory_airCraft1(30, 0);
+    spawnListArrayAdd(enem, 2046);
+    enem = factory_airCraft1(55, -6);
+    spawnListArrayAdd(enem, 2046);
+    enem = factory_airCraft1(30, -12);
+    spawnListArrayAdd(enem, 2046);
+    enem = factory_airCraft1(55, -18);
+    spawnListArrayAdd(enem, 2046);
+    //
+    enem = factory_airCraft1(25, 0);
+    spawnListArrayAdd(enem, 2055);
+    enem = factory_airCraft1(40, -6);
+    spawnListArrayAdd(enem, 2055);
+    enem = factory_airCraft1(25, -12);
+    spawnListArrayAdd(enem, 2055);
+    enem = factory_airCraft1(40, -18);
+    spawnListArrayAdd(enem, 2055);
+    enem = new Enemy(10, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+    enem = new Spawn(2090, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(40, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+    enem = new Spawn(2120, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(50, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+    enem = new Spawn(2150, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(36, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+    enem = new Spawn(2180, enem);
+    spawnList.addElement(enem);
+    enem = new Enemy(19, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+    enem = new Spawn(2210, enem);
+    spawnList.addElement(enem);
+    //Strange wave, 2 out of 2s.
+    for (var i = 0; i < 20; i++) {
+        enem = new Enemy(10 + i + 7, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Spawn(2280 + 10 * i, enem);
+        spawnList.addElement(enem);
+    }
+    for (var i = 0; i < 20; i++) {
+        enem = new Enemy(40 - (i + 8), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Spawn(2480 + 10 * i, enem);
+        spawnList.addElement(enem);
+    }
 }
 /**
  * Adds an array of either linked or unlinked enemy objects to the spawn list.
@@ -600,16 +717,21 @@ function finalFate() {
  * Actual game loop.
  */
 function gamePlay() {
-    updateBullets();
-    checkForEnemyHit();
-    deleteDeceased();
-    updateGameObjects();
-    deleteDeceased();
-    checkLeaveLevel();
-    checkForColli();
-    deleteDeceased();
-    renderInGame();
-    renderHUD();
+    try {
+        // throw new Error("Test exception.");
+        updateBullets();
+        checkForEnemyHit();
+        deleteDeceased();
+        updateGameObjects();
+        deleteDeceased();
+        checkLeaveLevel();
+        checkForColli();
+        deleteDeceased();
+        renderInGame();
+        renderHUD();
+    } catch (error) {
+        window.alert("EXCEPTION OCCURED IN-GAME!! \n" + "Exception name:" + error.name + "\n" + " Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
+    }
 }
 
 
@@ -741,7 +863,7 @@ function deleteDeceased() {
         lists[i].resetIterator();
         while (lists[i].peekNext() !== null) {
             var objInQuestion = lists[i].getNext();
-            if (objInQuestion.invalid === true) {
+            if (objInQuestion.invalid === true || objInQuestion.middleY>70) {
                 lists[i].deleteElement(objInQuestion);
             }
         }
@@ -857,8 +979,10 @@ function blinky_update() {
 function blinkyTracer_update() {
     this.frameCounter++;
     this.middleY++;
-    if(player.middleX>this.middleX)this.middleX++;
-    else if(player.middleX<this.middleX)this.middleX--;
+    if (player.middleX > this.middleX)
+        this.middleX++;
+    else if (player.middleX < this.middleX)
+        this.middleX--;
 }
 
 //"Meteor" update function.
