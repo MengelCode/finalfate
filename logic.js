@@ -200,6 +200,8 @@ class Enemy extends GameObject {
         this.killable = killable;
         this.damage = damage;
         this.score = score;
+        //HP value. Can be respected by invalidate() function, but it needs not.
+        this.hp = 100;
         //Previous enemy object in a chain.
         this.previous = null;
         //Next enemy object in a chain.
@@ -359,6 +361,8 @@ var sfx0 = document.getElementById("sfx-channel-0");
 var sfx1 = document.getElementById("sfx-channel-1");
 //Item SFX.
 var sfx2 = document.getElementById("sfx-channel-2");
+//Die.
+var sfx3 = document.getElementById("sfx-channel-3");
 //Level Loaders.
 var loaders = new Array(7);
 loaders[0] = earthLoader;
@@ -641,8 +645,13 @@ function earthLoader() {
     for (var i = 0; i < 20; i++) {
         enem = new Enemy(40 - (i + 8), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(2480 + 10 * i, enem);
+        if (i === 19) {
+            window.alert(2480 + 10 * i);
+        }
         spawnList.addElement(enem);
     }
+    enem = factory_boss1(25, 17);
+    spawnListArrayAdd(enem, 2750);
 }
 /**
  * Adds an array of either linked or unlinked enemy objects to the spawn list.
@@ -667,6 +676,9 @@ function spawnListArrayAdd(enemy_array, spawn_time) {
  *
  */
 function loseLife() {
+    sfx3.pause();
+    sfx3.currentTime = 0;
+    sfx3.play();
     if (player.lifes > 0) {
         player.lifes--;
         loadLevel();
@@ -730,7 +742,7 @@ function gamePlay() {
         renderInGame();
         renderHUD();
     } catch (error) {
-        window.alert("EXCEPTION OCCURED IN-GAME!! \n" + "Exception name:" + error.name + "\n" + " Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
+        window.alert("EXCEPTION OCCURED IN-GAME!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
     }
 }
 
@@ -863,7 +875,7 @@ function deleteDeceased() {
         lists[i].resetIterator();
         while (lists[i].peekNext() !== null) {
             var objInQuestion = lists[i].getNext();
-            if (objInQuestion.invalid === true || objInQuestion.middleY>70) {
+            if (objInQuestion.invalid === true || objInQuestion.middleY > 70) {
                 lists[i].deleteElement(objInQuestion);
             }
         }
@@ -889,6 +901,11 @@ function renderHUD() {
 //Enemy functions, per enemy.
 //TODO 
 
+//All "invalidate" functions. Mostly required for bosses.
+function boss1_invalidate() {
+
+}
+
 //All "Score" functions. Not always required.
 
 function default_score() {
@@ -913,6 +930,8 @@ function meteor_damage() {
 }
 
 //All dimension matrix functions.
+
+
 
 //"Health Boost" dimension function.
 var healthBoost_dimension = meteor_dimension;
@@ -956,6 +975,35 @@ function bullet_update() {
     this.middleY = this.middleY - 1;
     if (this.middleY < 3)
         this.invalid = true;
+}
+//Boss 1 not attackable part update function.
+function boss1na_update() {
+    //Init frame counter of needed.
+    if (this.frameCounter === 0)
+        this.frameCounter = 1;
+    //Moving right...
+    if (this.frameCounter > 0) {
+        this.frameCounter++;
+        //Do actual movement to the right.
+        if (this.frameCounter % 1 === 0) {
+            this.middleX++;
+        }
+        //If count exceeded, invert the direction.
+        if(this.frameCounter>40)
+        this.frameCounter = -1;
+    }
+    //Moving left...
+    else if (this.frameCounter < 0) {
+        this.frameCounter--;
+        //Do actual movement to the right.
+        if (this.frameCounter % 1 === 0) {
+            this.middleX--;
+        }
+        //If count exceeded, invert the direction.
+        if(this.frameCounter<-40)
+          this.frameCounter = 1;
+    }
+
 }
 
 //"Stupid Enemy" update function.
@@ -1121,6 +1169,29 @@ function blinky_render() {
     context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
 }
 //Factory Functions.
+
+//Boss 1
+function factory_boss1(middleX, middleY) {
+    //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
+    var enemy_array = [];
+    var enemy_obj = null;
+    middleX = middleX - 2;
+    middleY = middleY - 2;
+    //Not touchable part.
+    for (var i = 0; i < 14; i++) {
+        for (var j = 0; j < 9; j++) {
+            enemy_obj = new Enemy(middleX + i, middleY + j, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000);
+            giant_boss = enemy_obj;
+            enemy_array.push(enemy_obj);
+        }
+    }
+
+
+    //Linking it all together.
+    combineEnemyBricks(enemy_array);
+    return enemy_array;
+
+}
 //Air Craft 1
 function factory_airCraft1(middleX, middleY) {
     var enemy_array = [];
@@ -1134,9 +1205,7 @@ function factory_airCraft1(middleX, middleY) {
     enemy_array.push(enem_obj);
     enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    for (var i = 0; i < enemy_array.length - 1; i++) {
-        enemy_array[i].linkTogether(enemy_array[i + 1]);
-    }
+    combineEnemyBricks(enemy_array);
     return enemy_array;
 }
 
@@ -1221,11 +1290,13 @@ function getKeyRelease(event) {
 }
 /**
  * 
- * @param {type} enemies
+ * @param {type} enemy_array Enemies to link together.
  * @returns {undefined}
  */
-function combineEnemyBricks(enemies) {
-
+function combineEnemyBricks(enemy_array) {
+    for (var i = 0; i < enemy_array.length - 1; i++) {
+        enemy_array[i].linkTogether(enemy_array[i + 1]);
+    }
 }
 
 /**
