@@ -739,8 +739,7 @@ function gamePlay() {
         checkLeaveLevel();
         checkForColli();
         deleteDeceased();
-        renderInGame();
-        renderHUD();
+        window.requestAnimationFrame(renderInGame);
     } catch (error) {
         window.alert("EXCEPTION OCCURED IN-GAME!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
     }
@@ -865,6 +864,7 @@ function renderInGame() {
             v.renderState();
 
     }
+     renderHUD();
 }
 
 // 5 - Delete all elements which declared themselves as no longer needed.
@@ -1247,23 +1247,26 @@ function keyInvalidator() {
 //Event receiver for key presses.
 function getKeyPress(event) {
 
-    // window.alert("It works....");
-
-
-
-    if (event.keyCode === KeyboardEvent.DOM_VK_SPACE) {
+     //window.alert("It works....");
+ //window.alert(event.keyCode);
+ //Firefox based?
+   if(event.keyCode!==undefined){
+   // window.alert(event.which);
+    if (event.keyCode === 32) {
         shoot = 5;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_LEFT) {
+    } else if (event.keyCode === 37) {
         left = 5;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_RIGHT) {
+    } else if (event.keyCode === 39) {
         right = 5;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_UP) {
+    } else if (event.keyCode === 38) {
         up = 5;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_DOWN) {
+    } else if (event.keyCode === 40) {
         down = 5;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_P) {
+    } else if (event.keyCode === 80) {
         pause = 5;
     }
+   }
+   
 
 }
 //Event receiver for key release.
@@ -1271,22 +1274,24 @@ function getKeyRelease(event) {
 
     // window.alert("It works....");
 
-
-
-    if (event.keyCode === KeyboardEvent.DOM_VK_SPACE) {
+   //Firefox based?
+   if(event.keyCode!==undefined){
+  //  window.alert(event.which);
+    if (event.keyCode === 32) {
         shoot = 0;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_LEFT) {
+    } else if (event.keyCode === 37) {
         left = 0;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_RIGHT) {
+    } else if (event.keyCode === 39) {
         right = 0;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_UP) {
+    } else if (event.keyCode === 38) {
         up = 0;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_DOWN) {
+    } else if (event.keyCode === 40) {
         down = 0;
-    } else if (event.keyCode === KeyboardEvent.DOM_VK_P) {
+    } else if (event.keyCode === 80) {
         pause = 0;
     }
-
+   }
+   
 }
 /**
  * 
