@@ -89,6 +89,25 @@ class HealthBoost extends GameObject {
     }
 }
 
+class FireBoost extends GameObject {
+    /**
+     * Fire boost item.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {FireBoost}
+     */
+    constructor(middleX, middleY) {
+        super();
+        this.middleX = middleX;
+        this.middleY = middleY;
+        super.getOccupiedSpace = fireBoost_dimension;
+        super.updateState = fireBoost_update;
+        super.renderState = fireBoost_render;
+    }
+}
+
+
+
 class LinkedList {
     /**
      * This is a linked list which can contain all kind of stuff you desire
@@ -275,7 +294,12 @@ class SpaceShip extends GameObject {
             var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY, this.middleY, this.middleY, this.middleY, this.middleY - 1, this.middleY - 1, this.middleY + 1, this.middleY + 1, this.middleY + 1];
             return new Array(x, y);
         };
+        //Keyboard thingie released?
         this.keyReleased = true;
+        //Auto-fire upgrade collected?
+        this.massfire = false;
+        //Auto-fire cooldown.
+        this.cooldown = 0;
         super.updateState = function () {
             if (left && this.middleX > 2) {
                 //left = 0;
@@ -293,8 +317,11 @@ class SpaceShip extends GameObject {
             }
             if (!shoot) {
                 this.keyReleased = true;
-            } else if (shoot && this.keyReleased) {
+            }
+            if ((shoot && this.keyReleased && this.massfire === false) || (shoot && this.massfire === true && this.cooldown === 0)) {
                 this.keyReleased = false;
+                if (this.massfire === true)
+                    this.cooldown = 5;
                 sfx0.pause();
                 sfx0.currentTime = 0;
                 sfx0.play();
@@ -307,6 +334,8 @@ class SpaceShip extends GameObject {
 
 
             }
+            if (this.cooldown > 0)
+                this.cooldown--;
         };
         super.renderState = function () {
             context.fillStyle = "lightgray";
@@ -563,6 +592,9 @@ function earthLoader() {
     spawnListArrayAdd(enem, 1720);
     enem = factory_airCraft1(11, 0);
     spawnListArrayAdd(enem, 1750);
+    enem = new FireBoost(22, 0);
+    enem = new Spawn(1750, enem, false, true, false, false);
+    spawnList.addElement(enem);
     enem = factory_airCraft1(44, 0);
     spawnListArrayAdd(enem, 1750);
     enem = factory_airCraft1(55, 0);
@@ -650,7 +682,7 @@ function earthLoader() {
         }
         spawnList.addElement(enem);
     }
-    enem = factory_boss1(25, 17);
+    enem = factory_boss1(20, 15);
     spawnListArrayAdd(enem, 2750);
 }
 /**
@@ -676,6 +708,7 @@ function spawnListArrayAdd(enemy_array, spawn_time) {
  *
  */
 function loseLife() {
+    player.massfire = false;
     sfx3.pause();
     sfx3.currentTime = 0;
     sfx3.play();
@@ -864,10 +897,10 @@ function renderInGame() {
             v.renderState();
 
     }
-     renderHUD();
+    renderHUD();
 }
 
-// 5 - Delete all elements which declared themselves as no longer needed.
+// 5 - Delete all elements which declared themselves as no longer needed. Or left the screen.
 
 function deleteDeceased() {
     var lists = [displayList, enemyList, bulletList];
@@ -903,7 +936,22 @@ function renderHUD() {
 
 //All "invalidate" functions. Mostly required for bosses.
 function boss1_invalidate() {
-
+    if(this.hp>0)this.hp = this.hp - 7;
+    //Don't die if HP higher than 
+    if (this.hp > 0) {
+        //TODO Add graphical effect?
+    } else {
+        this.invalid = true;
+    }
+    if (this.previous !== null && this.hp <= 0 && this.previous.hp>this.hp){
+        this.previous.hp = 0;
+        this.previous.invalidate();
+    }
+        
+     if (this.next !== null && this.hp <=0 && this.next.hp>this.hp){
+        this.next.hp = 0;
+        this.next.invalidate();
+    }
 }
 
 //All "Score" functions. Not always required.
@@ -935,6 +983,9 @@ function meteor_damage() {
 
 //"Health Boost" dimension function.
 var healthBoost_dimension = meteor_dimension;
+
+//"Fire Boost" dimension function.
+var fireBoost_dimension = healthBoost_dimension;
 
 //"Bullet" dimension function.
 function bullet_dimension() {
@@ -989,8 +1040,8 @@ function boss1na_update() {
             this.middleX++;
         }
         //If count exceeded, invert the direction.
-        if(this.frameCounter>40)
-        this.frameCounter = -1;
+        if (this.frameCounter > 60)
+            this.frameCounter = -1;
     }
     //Moving left...
     else if (this.frameCounter < 0) {
@@ -1000,10 +1051,29 @@ function boss1na_update() {
             this.middleX--;
         }
         //If count exceeded, invert the direction.
-        if(this.frameCounter<-40)
-          this.frameCounter = 1;
+        if (this.frameCounter < -60)
+            this.frameCounter = 1;
     }
 
+}
+//Boss 1 attackable and meteors spamming part.
+function boss1sa_update() {
+    boss1na_update.call(this);
+    if (this.frameCounter % 26 === 0) {
+        var enemy = new Enemy(this.middleX, this.middleY, meteor_dimension, meteor2_update, meteor_render, meteor_damage());
+        enemyList.addElement(enemy, false);
+        displayList.addElement(enemy, false);
+    }
+}
+
+//Boss 1 attackable and meteors spamming part.
+function boss1a_update() {
+    boss1na_update.call(this);
+    if (this.frameCounter % 40 === 0) {
+        var enemy = new Enemy(this.middleX, this.middleY, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enemyList.addElement(enemy, false);
+        displayList.addElement(enemy, false);
+    }
 }
 
 //"Stupid Enemy" update function.
@@ -1043,9 +1113,25 @@ function meteor_update() {
 
 }
 
+//"Meteor 2" update function.
+function meteor2_update() {
+
+    this.middleY = this.middleY + 1;
+
+
+}
+
+
 //"Health Boost" update function.
 function healthBoost_update() {
-
+    if (this.collides(player)) {
+        this.invalid = true;
+        sfx2.pause();
+        sfx2.currentTime = 0;
+        sfx2.play();
+        player.health = player.health + 30;
+        return;
+    }
     this.middleY = this.middleY + 1;
     if (this.collides(player)) {
         this.invalid = true;
@@ -1057,6 +1143,26 @@ function healthBoost_update() {
 
 }
 
+//"Fire Boost" update function.
+function fireBoost_update() {
+    if (this.collides(player)) {
+        this.invalid = true;
+        sfx2.pause();
+        sfx2.currentTime = 0;
+        sfx2.play();
+        player.massfire = true;
+        return;
+    }
+    this.middleY = this.middleY + 1;
+    if (this.collides(player)) {
+        this.invalid = true;
+        sfx2.pause();
+        sfx2.currentTime = 0;
+        sfx2.play();
+        player.massfire = true;
+    }
+
+}
 
 //All rendering routines.
 
@@ -1124,6 +1230,25 @@ function meteor_render() {
 //"Health Boost" rendering function
 function healthBoost_render() {
     //Num pad on mobile.
+    context.fillStyle = "green";
+    //Upper row.
+    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
+    //Middle row.
+    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
+    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
+    //Upper row.
+    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+}
+
+
+//"Fire Boost" rendering function
+function fireBoost_render() {
+    //Num pad on mobile.
     context.fillStyle = "red";
     //Upper row.
     context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
@@ -1180,12 +1305,36 @@ function factory_boss1(middleX, middleY) {
     //Not touchable part.
     for (var i = 0; i < 14; i++) {
         for (var j = 0; j < 9; j++) {
-            enemy_obj = new Enemy(middleX + i, middleY + j, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000);
+            enemy_obj = new Enemy(middleX + i, middleY + j, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000,boss1_invalidate);
             giant_boss = enemy_obj;
             enemy_array.push(enemy_obj);
         }
     }
+    //Left stone-spawner part
+    for (var i = 0; i < 3; i++) {
+        if (i === 1) {
+            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1sa_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
+        } else
+            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
+        enemy_array.push(enemy_obj);
+    }
+    //Middle stone-spawner part
+    for (var i = 3; i < 11; i++) {
+        if (i === 6 || i === 7) {
+            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1a_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
+        } else
+            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
+        enemy_array.push(enemy_obj);
+    }
 
+    //Right stone-spawner part
+    for (var i = 11; i < 14; i++) {
+        if (i === 12) {
+            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1sa_update, stupidEnemy_render, 170, false, 5000);
+        } else
+            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000);
+        enemy_array.push(enemy_obj);
+    }
 
     //Linking it all together.
     combineEnemyBricks(enemy_array);
@@ -1247,26 +1396,26 @@ function keyInvalidator() {
 //Event receiver for key presses.
 function getKeyPress(event) {
 
-     //window.alert("It works....");
- //window.alert(event.keyCode);
- //Firefox based?
-   if(event.keyCode!==undefined){
-   // window.alert(event.which);
-    if (event.keyCode === 32) {
-        shoot = 5;
-    } else if (event.keyCode === 37) {
-        left = 5;
-    } else if (event.keyCode === 39) {
-        right = 5;
-    } else if (event.keyCode === 38) {
-        up = 5;
-    } else if (event.keyCode === 40) {
-        down = 5;
-    } else if (event.keyCode === 80) {
-        pause = 5;
+    //window.alert("It works....");
+    //window.alert(event.keyCode);
+    //Firefox based?
+    if (event.keyCode !== undefined) {
+        // window.alert(event.which);
+        if (event.keyCode === 32) {
+            shoot = 5;
+        } else if (event.keyCode === 37) {
+            left = 5;
+        } else if (event.keyCode === 39) {
+            right = 5;
+        } else if (event.keyCode === 38) {
+            up = 5;
+        } else if (event.keyCode === 40) {
+            down = 5;
+        } else if (event.keyCode === 80) {
+            pause = 5;
+        }
     }
-   }
-   
+
 
 }
 //Event receiver for key release.
@@ -1274,24 +1423,24 @@ function getKeyRelease(event) {
 
     // window.alert("It works....");
 
-   //Firefox based?
-   if(event.keyCode!==undefined){
-  //  window.alert(event.which);
-    if (event.keyCode === 32) {
-        shoot = 0;
-    } else if (event.keyCode === 37) {
-        left = 0;
-    } else if (event.keyCode === 39) {
-        right = 0;
-    } else if (event.keyCode === 38) {
-        up = 0;
-    } else if (event.keyCode === 40) {
-        down = 0;
-    } else if (event.keyCode === 80) {
-        pause = 0;
+    //Firefox based?
+    if (event.keyCode !== undefined) {
+        //  window.alert(event.which);
+        if (event.keyCode === 32) {
+            shoot = 0;
+        } else if (event.keyCode === 37) {
+            left = 0;
+        } else if (event.keyCode === 39) {
+            right = 0;
+        } else if (event.keyCode === 38) {
+            up = 0;
+        } else if (event.keyCode === 40) {
+            down = 0;
+        } else if (event.keyCode === 80) {
+            pause = 0;
+        }
     }
-   }
-   
+
 }
 /**
  * 
