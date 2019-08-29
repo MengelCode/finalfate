@@ -296,11 +296,22 @@ class SpaceShip extends GameObject {
         };
         //Keyboard thingie released?
         this.keyReleased = true;
+        //Quad-fire upgrade collected?
+        this.quadfire = false;
         //Auto-fire upgrade collected?
         this.massfire = false;
         //Auto-fire cooldown.
         this.cooldown = 0;
         super.updateState = function () {
+            
+            if(this.score>=this.score_newlife){
+                sfx2.pause();
+                sfx2.currentTime = 0;
+                sfx2.play();
+                this.lifes++;
+                this.score_newlife = this.score_newlife + 30000;
+            }
+            
             if (left && this.middleX > 2) {
                 //left = 0;
                 this.middleX = this.middleX - 1;
@@ -331,6 +342,14 @@ class SpaceShip extends GameObject {
                 bullet = new Bullet(this.middleX + 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
+                if (this.quadfire) {
+                    bullet = new Bullet(this.middleX - 1, this.middleY);
+                    displayList.addElement(bullet, false);
+                    bulletList.addElement(bullet, false);
+                    bullet = new Bullet(this.middleX + 1, this.middleY);
+                    displayList.addElement(bullet, false);
+                    bulletList.addElement(bullet, false);
+                }
 
 
             }
@@ -345,6 +364,10 @@ class SpaceShip extends GameObject {
             context.fillStyle = "orange";
             context.fillRect((this.middleX - 2) * 10, (this.middleY - 1) * 10, 10, 10);
             context.fillRect((this.middleX + 2) * 10, (this.middleY - 1) * 10, 10, 10);
+            if (this.quadfire) {
+                context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
+                context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
+            }
         };
         /**
          * Health Points of the player. If this value goes down to 0(or theoretically less, it costs you a life.
@@ -358,6 +381,11 @@ class SpaceShip extends GameObject {
          * Score of the player.
          */
         this.score = 0;
+        /**
+         * Score required to get a new life.
+         */
+        this.score_newlife = 20000;
+        
         /**
          * Level the player is in.
          * 
@@ -395,6 +423,7 @@ var sfx3 = document.getElementById("sfx-channel-3");
 //Level Loaders.
 var loaders = new Array(7);
 loaders[0] = earthLoader;
+loaders[1] = solarSystemLoader;
 //Level background rendering functions.
 //var backgroundRenderers = new Array(6);
 //Animation counter. Absolute
@@ -421,6 +450,10 @@ var spawnList = null;
 var player = null;
 //Major boss. Death of it indicates that the next level should come.
 var giant_boss = null;
+//Level background
+var background = null;
+//Last score after boss defeat.
+var savedScore = -9999;
 //Enter rendering cycle.
 var renderTimer = setInterval(renderFunction, FRAME_RATE);
 window.addEventListener("keydown", getKeyPress);
@@ -437,6 +470,9 @@ window.addEventListener("keyup", getKeyRelease);
  */
 function initGame() {
     player = new SpaceShip(38, 52);
+    //CHEAT ZONE!!!
+    player.level = 0;
+    savedScore = 0;
     loadLevel();
 }
 /**
@@ -447,6 +483,7 @@ function loadLevel() {
     if (player.health < 100) {
         player.health = 100;
     }
+    savedScore = player.score;
     player.middleX = 38;
     player.middleY = 52;
     giant_boss = null;
@@ -460,22 +497,113 @@ function loadLevel() {
         //Make everything stop.
         exchangeRenderLoop(null);
     } else {
+        background = null;
         loaders[player.level]();
         exchangeRenderLoop(gamePlay);
     }
 }
 /**
  * 
+ * Level 2 -  The Solar Sytem
+ */
+function solarSystemLoader() {
+    var enem = null;
+
+    for (var i = 0; i < 58; i++) {
+        var rand = getRandomX();
+        enem = new Enemy(rand, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Spawn(150 + i * 20, enem);
+        spawnList.addElement(enem);
+        switch (i) {
+            //Series 1, blinkyTracer with bias to the left.
+            case 4:
+            case 11:
+            case 16:
+            case 23:
+            case 30:
+            case 45:
+            case 50:
+            case 52:
+            case 54:
+            case 56:
+                enem = new Enemy(rand - 2, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinky_damage());
+                enem = new Spawn(150 + i * 20, enem);
+                spawnList.addElement(enem);
+                break;
+                //Series 2, blinkyTracer with bias to the right. 
+            case 8:
+            case 14:
+            case 28:
+            case 36:
+            case 44:
+            case 51:
+            case 53:
+            case 55:
+            case 57:
+                enem = new Enemy(rand + 3, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinky_damage());
+                enem = new Spawn(150 + i * 20, enem);
+                spawnList.addElement(enem);
+                break;
+                //Spawn 1, health boost.
+            case 10:
+                enem = new HealthBoost(30, 0);
+                enem = new Spawn(20, enem, true, true, false, false);
+                spawnList.addElement(enem);
+                break;
+                //Spawn 2, fire boost.
+            case 24:
+                enem = new FireBoost(22, 0);
+                enem = new Spawn(20, enem, true, true, false, false);
+                spawnList.addElement(enem);
+                break;
+        }
+    }
+    //Frame: 1290
+    enem = factory_airCraft2(65, -6);
+    spawnListArrayAdd(enem, 1300);
+    enem = factory_airCraft2(50, -6);
+    spawnListArrayAdd(enem, 1300);
+    enem = factory_airCraft2(10, -6);
+    spawnListArrayAdd(enem, 1300);
+    //
+    enem = factory_airCraft2(30, -6);
+    spawnListArrayAdd(enem, 1350);
+    enem = factory_airCraft2(75, -6);
+    spawnListArrayAdd(enem, 1350);
+    enem = factory_airCraft2(10, -6);
+    spawnListArrayAdd(enem, 1350);
+    enem = factory_airCraft2(44, -6);
+    spawnListArrayAdd(enem, 1350);
+    enem = factory_airCraft2(0, -6);
+    spawnListArrayAdd(enem, 1350);
+    //Blinky mania!!!
+    for (var i = 0; i < 40; i++) {
+         enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Spawn(1400 + i * 20, enem);
+        spawnList.addElement(enem);
+        if(i%5===0){
+            var rando = getRandomX()%2 === 0;
+            if(rando){
+               enem = new Enemy(78, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());  
+            }
+            else enem = new Enemy(-1, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());  
+             enem = new Spawn(1400 + i * 20, enem);
+            spawnList.addElement(enem);
+        }
+    }
+    //Frame: 2180.
+}
+
+/**
+ * 
  * Level 1 - The Sky
+ * Length: 2770 frames.
  */
 function earthLoader() {
+    background = new Enemy(0, 0, background_dimension, background_update, background1_render);
     var enem = null;
-//    enem = new Enemy(37, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-//    displayList.addElement(enem);
-//    enemyList.addElement(enem);
-//    enem = new Enemy(18, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
-//    displayList.addElement(enem);
-//    enemyList.addElement(enem);
 //Slow beginning...
     enem = new Enemy(26, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(150, enem);
@@ -677,13 +805,10 @@ function earthLoader() {
     for (var i = 0; i < 20; i++) {
         enem = new Enemy(40 - (i + 8), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(2480 + 10 * i, enem);
-        if (i === 19) {
-            window.alert(2480 + 10 * i);
-        }
         spawnList.addElement(enem);
     }
     enem = factory_boss1(20, 15);
-    spawnListArrayAdd(enem, 2750);
+    spawnListArrayAdd(enem, 2770);
 }
 /**
  * Adds an array of either linked or unlinked enemy objects to the spawn list.
@@ -709,6 +834,8 @@ function spawnListArrayAdd(enemy_array, spawn_time) {
  */
 function loseLife() {
     player.massfire = false;
+    player.quadfire = false;
+    player.score = savedScore;
     sfx3.pause();
     sfx3.currentTime = 0;
     sfx3.play();
@@ -890,6 +1017,10 @@ function bulletOnEnemies() {
 function renderInGame() {
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
+    if (background !== null) {
+        background.updateState();
+        background.renderState();
+    }
     displayList.resetIterator();
     while (displayList.peekNext() !== null) {
         var v = displayList.getNext();
@@ -928,6 +1059,7 @@ function renderHUD() {
     context.font = "27px Nonserif";
     context.fillText(player.score, 0, 585);
     context.fillText(player.health, 245, 585);
+    context.fillText(player.lifes, 350, 585);
 }
 
 
@@ -936,19 +1068,20 @@ function renderHUD() {
 
 //All "invalidate" functions. Mostly required for bosses.
 function boss1_invalidate() {
-    if(this.hp>0)this.hp = this.hp - 7;
+    if (this.hp > 0)
+        this.hp = this.hp - 7;
     //Don't die if HP higher than 
     if (this.hp > 0) {
         //TODO Add graphical effect?
     } else {
         this.invalid = true;
     }
-    if (this.previous !== null && this.hp <= 0 && this.previous.hp>this.hp){
+    if (this.previous !== null && this.hp <= 0 && this.previous.hp > this.hp) {
         this.previous.hp = 0;
         this.previous.invalidate();
     }
-        
-     if (this.next !== null && this.hp <=0 && this.next.hp>this.hp){
+
+    if (this.next !== null && this.hp <= 0 && this.next.hp > this.hp) {
         this.next.hp = 0;
         this.next.invalidate();
     }
@@ -979,6 +1112,11 @@ function meteor_damage() {
 
 //All dimension matrix functions.
 
+
+//"Background" dimension function.
+function background_dimension() {
+    return null;
+}
 
 
 //"Health Boost" dimension function.
@@ -1026,6 +1164,10 @@ function bullet_update() {
     this.middleY = this.middleY - 1;
     if (this.middleY < 3)
         this.invalid = true;
+}
+//"Background" update function.
+function background_update() {
+    this.middleY = this.middleY + 0.1;
 }
 //Boss 1 not attackable part update function.
 function boss1na_update() {
@@ -1076,6 +1218,42 @@ function boss1a_update() {
     }
 }
 
+//"Slow movement" update function. To be called by everything that wants to move slowly!!!
+
+function slowMove_update() {
+    this.frameCounter++;
+    // this.frameCounter = this.frameCounter % 2;
+    if (this.frameCounter % 2 === 1) {
+        this.middleY = this.middleY + 1;
+    }
+}
+
+
+//"Aircraft 2 -  shooting cannon" update funcion
+
+function aircraft2sc_update() {
+    slowMove_update.call(this);
+    if (this.frameCounter % 20 === 0) {
+        var enemy = new Enemy(this.middleX, this.middleY, blinkyTracer_dimension, meteor2_update, meteor_render);
+        enemyList.addElement(enemy, false);
+        displayList.addElement(enemy, false);
+    }
+
+}
+
+//Aircraft 3- shooting cannon update function
+function aircraft3sc_update() {
+    slowMove_update.call(this);
+    if (this.frameCounter % 20 === 0) {
+        var enemy = new Enemy(this.middleX, this.middleY, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enemyList.addElement(enemy, false);
+        displayList.addElement(enemy, false);
+    }
+
+}
+
+
+
 //"Stupid Enemy" update function.
 function stupidEnemy_update() {
     this.frameCounter++;
@@ -1105,11 +1283,7 @@ function blinkyTracer_update() {
 
 //"Meteor" update function.
 function meteor_update() {
-    this.frameCounter++;
-    this.frameCounter = this.frameCounter % 2;
-    if (this.frameCounter === 1) {
-        this.middleY = this.middleY + 1;
-    }
+    slowMove_update.call(this);
 
 }
 
@@ -1150,6 +1324,9 @@ function fireBoost_update() {
         sfx2.pause();
         sfx2.currentTime = 0;
         sfx2.play();
+        if(player.massfire){
+            player.health = player.health * 2 + 120;
+        }
         player.massfire = true;
         return;
     }
@@ -1166,6 +1343,12 @@ function fireBoost_update() {
 
 //All rendering routines.
 
+
+//Level 1 - The Earth rendering function
+function background1_render() {
+    context.fillStyle = "blue";
+    context.fillRect(0, 0, 800, 600);
+}
 
 //"Wingman" rendering function
 function wingman_render() {
@@ -1194,36 +1377,14 @@ function bullet_render() {
 function stupidEnemy_render() {
     //Num pad on mobile.
     context.fillStyle = "white";
-    //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    //Middle row.
-    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
-    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
-    //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    simpleSquare_render.call(this);
 }
 
 //"Meteor" rendering function
 function meteor_render() {
     //Num pad on mobile.
     context.fillStyle = "brown";
-    //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    //Middle row.
-    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
-    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
-    //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    simpleSquare_render.call(this);
 }
 
 
@@ -1231,7 +1392,12 @@ function meteor_render() {
 function healthBoost_render() {
     //Num pad on mobile.
     context.fillStyle = "green";
-    //Upper row.
+    simpleSquare_render.call(this);
+}
+
+
+//"Simple Square" rendering function. To be called by every 3x3 object!!!
+function simpleSquare_render() {
     context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
     context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
     context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
@@ -1245,23 +1411,12 @@ function healthBoost_render() {
     context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
 }
 
-
 //"Fire Boost" rendering function
 function fireBoost_render() {
     //Num pad on mobile.
     context.fillStyle = "red";
-    //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    //Middle row.
-    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
-    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
-    //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    simpleSquare_render.call(this);
+
 }
 
 //"Blinky Tracer" rendering function.
@@ -1280,18 +1435,7 @@ function blinky_render() {
         context.fillStyle = "white";
     } else
         context.fillStyle = "green";
-    //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    //Middle row.
-    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
-    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
-    //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    simpleSquare_render.call(this);
 }
 //Factory Functions.
 
@@ -1305,7 +1449,7 @@ function factory_boss1(middleX, middleY) {
     //Not touchable part.
     for (var i = 0; i < 14; i++) {
         for (var j = 0; j < 9; j++) {
-            enemy_obj = new Enemy(middleX + i, middleY + j, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000,boss1_invalidate);
+            enemy_obj = new Enemy(middleX + i, middleY + j, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
             giant_boss = enemy_obj;
             enemy_array.push(enemy_obj);
         }
@@ -1358,6 +1502,40 @@ function factory_airCraft1(middleX, middleY) {
     return enemy_array;
 }
 
+//Air Craft 2
+function factory_airCraft2(middleX, middleY) {
+    var enemy_array = [];
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft2sc_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, aircraft2sc_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    combineEnemyBricks(enemy_array);
+    return enemy_array;
+}
+
+
+//Air Craft 3
+function factory_airCraft3(middleX, middleY) {
+    var enemy_array = [];
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft3sc_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, aircraft3sc_update, stupidEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    combineEnemyBricks(enemy_array);
+    return enemy_array;
+}
 
 //All other functions.
 
@@ -1452,6 +1630,19 @@ function combineEnemyBricks(enemy_array) {
         enemy_array[i].linkTogether(enemy_array[i + 1]);
     }
 }
+
+
+/**
+ * 
+ * @returns random X coordinate.
+ */
+function getRandomX() {
+    var rand = Math.random();
+    return Math.floor(rand * 80);
+}
+
+
+
 
 /**
  * Exchange the rendering loop with another function.
