@@ -303,15 +303,15 @@ class SpaceShip extends GameObject {
         //Auto-fire cooldown.
         this.cooldown = 0;
         super.updateState = function () {
-            
-            if(this.score>=this.score_newlife){
+
+            if (this.score >= this.score_newlife) {
                 sfx2.pause();
                 sfx2.currentTime = 0;
                 sfx2.play();
                 this.lifes++;
                 this.score_newlife = this.score_newlife + 30000;
             }
-            
+
             if (left && this.middleX > 2) {
                 //left = 0;
                 this.middleX = this.middleX - 1;
@@ -385,7 +385,7 @@ class SpaceShip extends GameObject {
          * Score required to get a new life.
          */
         this.score_newlife = 20000;
-        
+
         /**
          * Level the player is in.
          * 
@@ -579,21 +579,77 @@ function solarSystemLoader() {
     spawnListArrayAdd(enem, 1350);
     //Blinky mania!!!
     for (var i = 0; i < 40; i++) {
-         enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
         //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(1400 + i * 20, enem);
         spawnList.addElement(enem);
-        if(i%5===0){
-            var rando = getRandomX()%2 === 0;
-            if(rando){
-               enem = new Enemy(78, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());  
-            }
-            else enem = new Enemy(-1, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());  
-             enem = new Spawn(1400 + i * 20, enem);
+        if (i % 5 === 0) {
+            var rando = getRandomX() % 2 === 0;
+            if (rando) {
+                enem = new Enemy(78, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            } else
+                enem = new Enemy(-1, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            enem = new Spawn(1400 + i * 20, enem);
             spawnList.addElement(enem);
         }
     }
     //Frame: 2180.
+    //A bit more randomness.
+    for (var i = 0; i < 120; i++) {
+        //window.alert(2217 + 119 * 15);
+        // modulo division by 7 will decide the object to spawn.
+        // 0 = Blinky Tracer, 1-2 = Meteor, 3-5 = AirCraft 2, 6 = Blinky
+        var randon = getRandomX() % 7;
+        var enem = null;
+        if(i===20 || i===77){
+                enem = new HealthBoost(player.middleX, 0);
+                enem = new Spawn(2217 + i * 15, enem, false, true, false, false);
+                spawnList.addElement(enem);
+        }
+        //Object generation.
+        switch (randon) {
+            case 0:
+                enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                break;
+            case 1:
+            case 2:
+                enem = new Enemy(getRandomX(), 0, meteor_dimension, meteor_update, meteor_render);
+                break;
+            case 3:
+            case 4:
+            case 5:
+                enem = factory_airCraft2(getRandomX(), -5);
+                spawnListArrayAdd(enem, 2217 + i * 15);
+                break;
+            case 6:
+                enem = new Enemy(getRandomX(), 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+                break;
+
+        }
+        if (randon !== 3 && randon !== 4 && randon !== 5) {
+            enem = new Spawn(2217 + i * 15, enem);
+            spawnList.addElement(enem);
+        }
+    }
+    //Frame: 4002
+     //Blinky mania!!!
+    for (var i = 0; i < 70; i++) {
+       
+        enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Spawn(4030 + i * 20, enem);
+        spawnList.addElement(enem);
+        if (i % 5 === 0) {
+            var rando = getRandomX() % 2 === 0;
+            if (rando) {
+                enem = new Enemy(78, 11, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            } else
+                enem = new Enemy(-1, 11, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            enem = new Spawn(4030 + i * 20, enem);
+            spawnList.addElement(enem);
+        }
+    }
+    //Frame: 5410
 }
 
 /**
@@ -1169,6 +1225,10 @@ function bullet_update() {
 function background_update() {
     this.middleY = this.middleY + 0.1;
 }
+
+//Boss 2 not attackable part of update function.
+function boss2na_update(){}
+
 //Boss 1 not attackable part update function.
 function boss1na_update() {
     //Init frame counter of needed.
@@ -1324,7 +1384,7 @@ function fireBoost_update() {
         sfx2.pause();
         sfx2.currentTime = 0;
         sfx2.play();
-        if(player.massfire){
+        if (player.massfire) {
             player.health = player.health * 2 + 120;
         }
         player.massfire = true;
@@ -1336,6 +1396,9 @@ function fireBoost_update() {
         sfx2.pause();
         sfx2.currentTime = 0;
         sfx2.play();
+        if (player.massfire) {
+            player.health = player.health * 2 + 120;
+        }
         player.massfire = true;
     }
 
@@ -1438,6 +1501,19 @@ function blinky_render() {
     simpleSquare_render.call(this);
 }
 //Factory Functions.
+
+//Boss 2
+function factory_boss2(middleX, middleY){
+    var enemy_array = [];
+    var enemy_obj = null;
+    //Not touchable. Middle point of over
+    enemy_obj = new Enemy(middleX, middleY , stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
+    giant_boss = enemy_obj;
+    enemy_array.push(enemy_obj);
+    
+    return enemy_array;
+}
+
 
 //Boss 1
 function factory_boss1(middleX, middleY) {
