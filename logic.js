@@ -420,6 +420,8 @@ var sfx1 = document.getElementById("sfx-channel-1");
 var sfx2 = document.getElementById("sfx-channel-2");
 //Die.
 var sfx3 = document.getElementById("sfx-channel-3");
+//
+var game_over = document.getElementById("game-over");
 //Level Loaders.
 var loaders = new Array(7);
 loaders[0] = earthLoader;
@@ -601,10 +603,10 @@ function solarSystemLoader() {
         // 0 = Blinky Tracer, 1-2 = Meteor, 3-5 = AirCraft 2, 6 = Blinky
         var randon = getRandomX() % 7;
         var enem = null;
-        if(i===20 || i===77){
-                enem = new HealthBoost(player.middleX, 0);
-                enem = new Spawn(2217 + i * 15, enem, false, true, false, false);
-                spawnList.addElement(enem);
+        if (i === 20 || i === 77) {
+            enem = new HealthBoost(player.middleX, 0);
+            enem = new Spawn(2217 + i * 15, enem, false, true, false, false);
+            spawnList.addElement(enem);
         }
         //Object generation.
         switch (randon) {
@@ -632,9 +634,9 @@ function solarSystemLoader() {
         }
     }
     //Frame: 4002
-     //Blinky mania!!!
+    //Blinky mania!!!
     for (var i = 0; i < 70; i++) {
-       
+
         enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
         //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
         enem = new Spawn(4030 + i * 20, enem);
@@ -650,6 +652,8 @@ function solarSystemLoader() {
         }
     }
     //Frame: 5410
+    enem = factory_boss2(35, 28);
+    spawnListArrayAdd(enem, 5450);
 }
 
 /**
@@ -899,8 +903,8 @@ function loseLife() {
         player.lifes--;
         loadLevel();
     } else {
-        window.alert("You are pretty dead now. ~~Game Over");
-        exchangeRenderLoop(null);
+        //window.alert("You are pretty dead now. ~~Game Over");
+        exchangeRenderLoop(gameOver);
     }
 }
 
@@ -915,6 +919,7 @@ function loseLife() {
  * Render the title screen.
  */
 function titleScreen() {
+
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     context.font = "60px Serif";
@@ -934,6 +939,31 @@ function titleScreen() {
     }
 
 }
+
+/**
+ * Prevent that from happening!!
+ * @returns {undefined}
+ */
+function gameOver() {
+    context.fillStyle = "black";
+    context.fillRect(0, 0, 800, 600);
+    if (aniCount < 30)
+        return;
+    if (aniCount === 44) {
+        bgm.pause();
+        game_over.currentTime = 0;
+        game_over.pause();
+        game_over.play();
+    }
+    context.font = "60px Nonerif";
+    context.fillStyle = "yellow";
+    context.fillText("GAME OVER", 180, 320);
+    if (aniCount === 90) {
+        exchangeRenderLoop(titleScreen);
+    }
+}
+
+
 /**
  Attract mode...
  */
@@ -945,6 +975,11 @@ function finalFate() {
  * Actual game loop.
  */
 function gamePlay() {
+    if (aniCount === 5) {
+        bgm.currentTime = 0;
+        bgm.pause();
+        bgm.play();
+    }
     try {
         // throw new Error("Test exception.");
         updateBullets();
@@ -1113,9 +1148,16 @@ function renderHUD() {
     context.fillRect(0, 550, 800, 50);
     context.fillStyle = "white";
     context.font = "27px Nonserif";
-    context.fillText(player.score, 0, 585);
-    context.fillText(player.health, 245, 585);
-    context.fillText(player.lifes, 350, 585);
+    context.fillText(player.score, 0, 581);
+    context.fillText(player.health, 245, 581);
+    context.fillText(player.lifes, 350, 581);
+    context.fillText(player.level + 1, 700, 581);
+    context.font = "13px Nonserif";
+    context.fillText("SCORE",0,595);
+    context.fillText("HEALTH",245,595);
+    context.fillText("LIVE",350,595);
+    context.fillText("LEVEL",700,595);
+    
 }
 
 
@@ -1227,7 +1269,7 @@ function background_update() {
 }
 
 //Boss 2 not attackable part of update function.
-function boss2na_update(){}
+function boss2na_update() {}
 
 //Boss 1 not attackable part update function.
 function boss1na_update() {
@@ -1503,14 +1545,24 @@ function blinky_render() {
 //Factory Functions.
 
 //Boss 2
-function factory_boss2(middleX, middleY){
+function factory_boss2(middleX, middleY) {
     var enemy_array = [];
     var enemy_obj = null;
     //Not touchable. Middle point of over
-    enemy_obj = new Enemy(middleX, middleY , stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
+    enemy_obj = new Enemy(middleX, middleY, stupidEnemy_dimension, boss2na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
     giant_boss = enemy_obj;
     enemy_array.push(enemy_obj);
-    
+    var y_dimension = 16;
+    //The height of the thingie.
+    for (var i = 0; i < y_dimension; i++) {
+        //Way up.  
+        enemy_obj = new Enemy(middleX, middleY - i, stupidEnemy_dimension, boss2na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
+        enemy_array.push(enemy_obj);
+        //Way down.
+        enemy_obj = new Enemy(middleX, middleY + i, stupidEnemy_dimension, boss2na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
+        enemy_array.push(enemy_obj);
+    }
+    combineEnemyBricks(enemy_array);
     return enemy_array;
 }
 
