@@ -406,8 +406,13 @@ var right = 0;
 var pause = 0;
 //HTML Canvas
 var canvas = document.getElementById("myScreen");
+var newWidth = window.innerWidth-(window.innerWidth/100*3);
+var newHeight = window.innerHeight-(window.innerHeight/100*3);
+canvas.setAttribute("width",newWidth);
+canvas.setAttribute("height",newHeight);
 //Context
 var context = canvas.getContext("2d");
+context.scale(newWidth/800,newHeight/600);
 //Function Pointer to what should happen in the next rendering cycle.
 var renderFunction = null;
 //For music/sound playback.
@@ -422,6 +427,8 @@ var sfx2 = document.getElementById("sfx-channel-2");
 var sfx3 = document.getElementById("sfx-channel-3");
 //
 var game_over = document.getElementById("game-over");
+//Exception occured.
+var loadingException = null;
 //Level Loaders.
 var loaders = new Array(7);
 loaders[0] = earthLoader;
@@ -456,10 +463,27 @@ var giant_boss = null;
 var background = null;
 //Last score after boss defeat.
 var savedScore = -9999;
+//TODO Other constanv values.
+var boss2_y_dimension_relative = 16;
+var x_dimension = 10;
+y_dimension = 33;
+x_dimension = 20;
 //Enter rendering cycle.
 var renderTimer = setInterval(renderFunction, FRAME_RATE);
 window.addEventListener("keydown", getKeyPress);
 window.addEventListener("keyup", getKeyRelease);
+
+
+//"STATIC" PROTOTYPES
+//Boss 2 constants carrier.
+function boss2_constants() {}
+boss2_constants.prototype.abs_y_pos = 33;
+boss2_constants.prototype.abs_x_pos = 20;
+boss2_constants.prototype.x= 55;
+boss2_constants.prototype.y= 38;
+boss2_constants.prototype.dimension = null;
+//CHEAT ZONE!!
+boss2_constants.prototype.DebugSpawnInstantly = false;
 
 
 
@@ -494,14 +518,24 @@ function loadLevel() {
     enemyList = new LinkedList();
     spawnList = new LinkedList();
     displayList.addElement(player);
-    if (loaders[player.level] === undefined) {
-        window.alert("More has yet to come. I am already on the way, if I am not sleeping! -Manuel");
-        //Make everything stop.
+
+    try {
+        //throw new Error("Test");
+        if (loaders[player.level] === undefined) {
+            window.alert("More has yet to come. I am already on the way, if I am not sleeping! -Manuel");
+            //Make everything stop.
+            exchangeRenderLoop(null);
+        } else {
+            background = null;
+            loaders[player.level]();
+            if(loadingException===null){
+            exchangeRenderLoop(gamePlay);     
+            }
+           else throw loadingException;
+        }
+    } catch (error) {
+        window.alert("EXCEPTION OCCURED! Failed to begin level transition. \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
         exchangeRenderLoop(null);
-    } else {
-        background = null;
-        loaders[player.level]();
-        exchangeRenderLoop(gamePlay);
     }
 }
 /**
@@ -509,151 +543,163 @@ function loadLevel() {
  * Level 2 -  The Solar Sytem
  */
 function solarSystemLoader() {
-    var enem = null;
-
-    for (var i = 0; i < 58; i++) {
-        var rand = getRandomX();
-        enem = new Enemy(rand, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
-        //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
-        enem = new Spawn(150 + i * 20, enem);
-        spawnList.addElement(enem);
-        switch (i) {
-            //Series 1, blinkyTracer with bias to the left.
-            case 4:
-            case 11:
-            case 16:
-            case 23:
-            case 30:
-            case 45:
-            case 50:
-            case 52:
-            case 54:
-            case 56:
-                enem = new Enemy(rand - 2, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinky_damage());
-                enem = new Spawn(150 + i * 20, enem);
-                spawnList.addElement(enem);
-                break;
-                //Series 2, blinkyTracer with bias to the right. 
-            case 8:
-            case 14:
-            case 28:
-            case 36:
-            case 44:
-            case 51:
-            case 53:
-            case 55:
-            case 57:
-                enem = new Enemy(rand + 3, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinky_damage());
-                enem = new Spawn(150 + i * 20, enem);
-                spawnList.addElement(enem);
-                break;
-                //Spawn 1, health boost.
-            case 10:
-                enem = new HealthBoost(30, 0);
-                enem = new Spawn(20, enem, true, true, false, false);
-                spawnList.addElement(enem);
-                break;
-                //Spawn 2, fire boost.
-            case 24:
-                enem = new FireBoost(22, 0);
-                enem = new Spawn(20, enem, true, true, false, false);
-                spawnList.addElement(enem);
-                break;
+    try {
+        var enem = null;
+        
+        if(boss2_constants.prototype.DebugSpawnInstantly){
+            enem = boss2_factory(boss2_constants.prototype.x, boss2_constants.prototype.y);
+            enem = new Spawn(15,enem);
+            spawnList.addElement(enem);
+            return;
         }
-    }
-    //Frame: 1290
-    enem = factory_airCraft2(65, -6);
-    spawnListArrayAdd(enem, 1300);
-    enem = factory_airCraft2(50, -6);
-    spawnListArrayAdd(enem, 1300);
-    enem = factory_airCraft2(10, -6);
-    spawnListArrayAdd(enem, 1300);
-    //
-    enem = factory_airCraft2(30, -6);
-    spawnListArrayAdd(enem, 1350);
-    enem = factory_airCraft2(75, -6);
-    spawnListArrayAdd(enem, 1350);
-    enem = factory_airCraft2(10, -6);
-    spawnListArrayAdd(enem, 1350);
-    enem = factory_airCraft2(44, -6);
-    spawnListArrayAdd(enem, 1350);
-    enem = factory_airCraft2(0, -6);
-    spawnListArrayAdd(enem, 1350);
-    //Blinky mania!!!
-    for (var i = 0; i < 40; i++) {
-        enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
-        //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
-        enem = new Spawn(1400 + i * 20, enem);
-        spawnList.addElement(enem);
-        if (i % 5 === 0) {
-            var rando = getRandomX() % 2 === 0;
-            if (rando) {
-                enem = new Enemy(78, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
-            } else
-                enem = new Enemy(-1, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        
+        for (var i = 0; i < 58; i++) {
+            var rand = getRandomX();
+            enem = new Enemy(rand, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+            //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
+            enem = new Spawn(150 + i * 20, enem);
+            spawnList.addElement(enem);
+            switch (i) {
+                //Series 1, blinkyTracer with bias to the left.
+                case 4:
+                case 11:
+                case 16:
+                case 23:
+                case 30:
+                case 45:
+                case 50:
+                case 52:
+                case 54:
+                case 56:
+                    enem = new Enemy(rand - 2, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinky_damage());
+                    enem = new Spawn(150 + i * 20, enem);
+                    spawnList.addElement(enem);
+                    break;
+                    //Series 2, blinkyTracer with bias to the right. 
+                case 8:
+                case 14:
+                case 28:
+                case 36:
+                case 44:
+                case 51:
+                case 53:
+                case 55:
+                case 57:
+                    enem = new Enemy(rand + 3, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinky_damage());
+                    enem = new Spawn(150 + i * 20, enem);
+                    spawnList.addElement(enem);
+                    break;
+                    //Spawn 1, health boost.
+                case 10:
+                    enem = new HealthBoost(30, 0);
+                    enem = new Spawn(20, enem, true, true, false, false);
+                    spawnList.addElement(enem);
+                    break;
+                    //Spawn 2, fire boost.
+                case 24:
+                    enem = new FireBoost(22, 0);
+                    enem = new Spawn(20, enem, true, true, false, false);
+                    spawnList.addElement(enem);
+                    break;
+            }
+        }
+        //Frame: 1290
+        enem = airCraft2_factory(65, -6);
+        spawnListArrayAdd(enem, 1300);
+        enem = airCraft2_factory(50, -6);
+        spawnListArrayAdd(enem, 1300);
+        enem = airCraft2_factory(10, -6);
+        spawnListArrayAdd(enem, 1300);
+        //
+        enem = airCraft2_factory(30, -6);
+        spawnListArrayAdd(enem, 1350);
+        enem = airCraft2_factory(75, -6);
+        spawnListArrayAdd(enem, 1350);
+        enem = airCraft2_factory(10, -6);
+        spawnListArrayAdd(enem, 1350);
+        enem = airCraft2_factory(44, -6);
+        spawnListArrayAdd(enem, 1350);
+        enem = airCraft2_factory(0, -6);
+        spawnListArrayAdd(enem, 1350);
+        //Blinky mania!!!
+        for (var i = 0; i < 40; i++) {
+            enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
             enem = new Spawn(1400 + i * 20, enem);
             spawnList.addElement(enem);
+            if (i % 5 === 0) {
+                var rando = getRandomX() % 2 === 0;
+                if (rando) {
+                    enem = new Enemy(78, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                } else
+                    enem = new Enemy(-1, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                enem = new Spawn(1400 + i * 20, enem);
+                spawnList.addElement(enem);
+            }
         }
-    }
-    //Frame: 2180.
-    //A bit more randomness.
-    for (var i = 0; i < 120; i++) {
-        //window.alert(2217 + 119 * 15);
-        // modulo division by 7 will decide the object to spawn.
-        // 0 = Blinky Tracer, 1-2 = Meteor, 3-5 = AirCraft 2, 6 = Blinky
-        var randon = getRandomX() % 7;
-        var enem = null;
-        if (i === 20 || i === 77) {
-            enem = new HealthBoost(player.middleX, 0);
-            enem = new Spawn(2217 + i * 15, enem, false, true, false, false);
-            spawnList.addElement(enem);
-        }
-        //Object generation.
-        switch (randon) {
-            case 0:
-                enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
-                break;
-            case 1:
-            case 2:
-                enem = new Enemy(getRandomX(), 0, meteor_dimension, meteor_update, meteor_render);
-                break;
-            case 3:
-            case 4:
-            case 5:
-                enem = factory_airCraft2(getRandomX(), -5);
-                spawnListArrayAdd(enem, 2217 + i * 15);
-                break;
-            case 6:
-                enem = new Enemy(getRandomX(), 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
-                break;
+        //Frame: 2180.
+        //A bit more randomness.
+        for (var i = 0; i < 120; i++) {
+            //window.alert(2217 + 119 * 15);
+            // modulo division by 7 will decide the object to spawn.
+            // 0 = Blinky Tracer, 1-2 = Meteor, 3-5 = AirCraft 2, 6 = Blinky
+            var randon = getRandomX() % 7;
+            var enem = null;
+            if (i === 20 || i === 77) {
+                enem = new HealthBoost(player.middleX, 0);
+                enem = new Spawn(2217 + i * 15, enem, false, true, false, false);
+                spawnList.addElement(enem);
+            }
+            //Object generation.
+            switch (randon) {
+                case 0:
+                    enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                    break;
+                case 1:
+                case 2:
+                    enem = new Enemy(getRandomX(), 0, meteor_dimension, meteor_update, meteor_render);
+                    break;
+                case 3:
+                case 4:
+                case 5:
+                    enem = airCraft2_factory(getRandomX(), -5);
+                    spawnListArrayAdd(enem, 2217 + i * 15);
+                    break;
+                case 6:
+                    enem = new Enemy(getRandomX(), 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+                    break;
 
+            }
+            if (randon !== 3 && randon !== 4 && randon !== 5) {
+                enem = new Spawn(2217 + i * 15, enem);
+                spawnList.addElement(enem);
+            }
         }
-        if (randon !== 3 && randon !== 4 && randon !== 5) {
-            enem = new Spawn(2217 + i * 15, enem);
-            spawnList.addElement(enem);
-        }
-    }
-    //Frame: 4002
-    //Blinky mania!!!
-    for (var i = 0; i < 70; i++) {
+        //Frame: 4002
+        //Blinky mania!!!
+        for (var i = 0; i < 70; i++) {
 
-        enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
-        //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
-        enem = new Spawn(4030 + i * 20, enem);
-        spawnList.addElement(enem);
-        if (i % 5 === 0) {
-            var rando = getRandomX() % 2 === 0;
-            if (rando) {
-                enem = new Enemy(78, 11, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
-            } else
-                enem = new Enemy(-1, 11, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
             enem = new Spawn(4030 + i * 20, enem);
             spawnList.addElement(enem);
+            if (i % 5 === 0) {
+                var rando = getRandomX() % 2 === 0;
+                if (rando) {
+                    enem = new Enemy(78, 11, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                } else
+                    enem = new Enemy(-1, 11, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                enem = new Spawn(4030 + i * 20, enem);
+                spawnList.addElement(enem);
+            }
         }
+        //Frame: 5410
+         enem = boss2_factory(boss2_constants.prototype.x, boss2_constants.prototype.y);
+        enem = new Spawn(5450, enem);
+        spawnList.addElement(enem);
+    } catch (error) {
+        loadingException = error;
     }
-    //Frame: 5410
-    enem = factory_boss2(35, 28);
-    spawnListArrayAdd(enem, 5450);
 }
 
 /**
@@ -662,6 +708,7 @@ function solarSystemLoader() {
  * Length: 2770 frames.
  */
 function earthLoader() {
+try{
     background = new Enemy(0, 0, background_dimension, background_update, background1_render);
     var enem = null;
 //Slow beginning...
@@ -671,7 +718,7 @@ function earthLoader() {
     enem = new Enemy(36, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(240, enem);
     spawnList.addElement(enem);
-    enem = factory_airCraft1(72, 0);
+    enem = airCraft1_factory(72, 0);
     spawnListArrayAdd(enem, 260);
     enem = new Enemy(9, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
     enem = new Spawn(290, enem);
@@ -680,7 +727,7 @@ function earthLoader() {
     enem = new Spawn(310, enem);
     spawnList.addElement(enem);
     //Gets a bit more...hurried.
-    enem = factory_airCraft1(44, 0);
+    enem = airCraft1_factory(44, 0);
     spawnListArrayAdd(enem, 328);
     enem = new Enemy(11, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(370, enem);
@@ -688,7 +735,7 @@ function earthLoader() {
     enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(380, enem);
     spawnList.addElement(enem);
-    enem = factory_airCraft1(20, 0);
+    enem = airCraft1_factory(20, 0);
     spawnListArrayAdd(enem, 400);
     enem = new Enemy(23, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(410, enem);
@@ -702,7 +749,7 @@ function earthLoader() {
     enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(480, enem);
     spawnList.addElement(enem);
-    enem = factory_airCraft1(22, 0);
+    enem = airCraft1_factory(22, 0);
     spawnListArrayAdd(enem, 500);
     enem = new Enemy(20, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(530, enem);
@@ -723,7 +770,7 @@ function earthLoader() {
     enem = new Enemy(33, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
     enem = new Spawn(640, enem);
     spawnList.addElement(enem);
-    enem = factory_airCraft1(28, 0);
+    enem = airCraft1_factory(28, 0);
     spawnListArrayAdd(enem, 670);
     //New enemy....
     enem = new Enemy(55, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
@@ -766,80 +813,80 @@ function earthLoader() {
     enem = new Enemy(44, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     enem = new Spawn(1666, enem);
     spawnList.addElement(enem);
-    enem = factory_airCraft1(11, 0);
+    enem = airCraft1_factory(11, 0);
     spawnListArrayAdd(enem, 1670);
-    enem = factory_airCraft1(37, 0);
+    enem = airCraft1_factory(37, 0);
     spawnListArrayAdd(enem, 1670);
-    enem = factory_airCraft1(68, 0);
+    enem = airCraft1_factory(68, 0);
     spawnListArrayAdd(enem, 1670);
-    enem = factory_airCraft1(31, 0);
+    enem = airCraft1_factory(31, 0);
     spawnListArrayAdd(enem, 1720);
-    enem = factory_airCraft1(58, 0);
+    enem = airCraft1_factory(58, 0);
     spawnListArrayAdd(enem, 1720);
-    enem = factory_airCraft1(70, 0);
+    enem = airCraft1_factory(70, 0);
     spawnListArrayAdd(enem, 1720);
-    enem = factory_airCraft1(11, 0);
+    enem = airCraft1_factory(11, 0);
     spawnListArrayAdd(enem, 1750);
     enem = new FireBoost(22, 0);
     enem = new Spawn(1750, enem, false, true, false, false);
     spawnList.addElement(enem);
-    enem = factory_airCraft1(44, 0);
+    enem = airCraft1_factory(44, 0);
     spawnListArrayAdd(enem, 1750);
-    enem = factory_airCraft1(55, 0);
+    enem = airCraft1_factory(55, 0);
     spawnListArrayAdd(enem, 1750);
     enem = new Enemy(70, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
     enem = new Spawn(1900, enem);
     spawnList.addElement(enem);
-    enem = factory_airCraft1(11, 0);
+    enem = airCraft1_factory(11, 0);
     spawnListArrayAdd(enem, 1950);
-    enem = factory_airCraft1(11, -6);
+    enem = airCraft1_factory(11, -6);
     spawnListArrayAdd(enem, 1950);
-    enem = factory_airCraft1(11, -12);
+    enem = airCraft1_factory(11, -12);
     spawnListArrayAdd(enem, 1950);
-    enem = factory_airCraft1(11, -18);
+    enem = airCraft1_factory(11, -18);
     spawnListArrayAdd(enem, 1950);
-    enem = factory_airCraft1(70, 0);
+    enem = airCraft1_factory(70, 0);
     spawnListArrayAdd(enem, 1980);
-    enem = factory_airCraft1(70, -6);
+    enem = airCraft1_factory(70, -6);
     spawnListArrayAdd(enem, 1980);
-    enem = factory_airCraft1(70, -12);
+    enem = airCraft1_factory(70, -12);
     spawnListArrayAdd(enem, 1980);
-    enem = factory_airCraft1(70, -18);
+    enem = airCraft1_factory(70, -18);
     spawnListArrayAdd(enem, 1980);
-    enem = factory_airCraft1(40, 0);
+    enem = airCraft1_factory(40, 0);
     spawnListArrayAdd(enem, 2010);
-    enem = factory_airCraft1(40, -6);
+    enem = airCraft1_factory(40, -6);
     spawnListArrayAdd(enem, 2010);
-    enem = factory_airCraft1(40, -12);
+    enem = airCraft1_factory(40, -12);
     spawnListArrayAdd(enem, 2010);
-    enem = factory_airCraft1(40, -18);
+    enem = airCraft1_factory(40, -18);
     spawnListArrayAdd(enem, 2010);
     //
-    enem = factory_airCraft1(40, 0);
+    enem = airCraft1_factory(40, 0);
     spawnListArrayAdd(enem, 2036);
-    enem = factory_airCraft1(40, -6);
+    enem = airCraft1_factory(40, -6);
     spawnListArrayAdd(enem, 2036);
-    enem = factory_airCraft1(40, -12);
+    enem = airCraft1_factory(40, -12);
     spawnListArrayAdd(enem, 2036);
-    enem = factory_airCraft1(40, -18);
+    enem = airCraft1_factory(40, -18);
     spawnListArrayAdd(enem, 2036);
     //
-    enem = factory_airCraft1(30, 0);
+    enem = airCraft1_factory(30, 0);
     spawnListArrayAdd(enem, 2046);
-    enem = factory_airCraft1(55, -6);
+    enem = airCraft1_factory(55, -6);
     spawnListArrayAdd(enem, 2046);
-    enem = factory_airCraft1(30, -12);
+    enem = airCraft1_factory(30, -12);
     spawnListArrayAdd(enem, 2046);
-    enem = factory_airCraft1(55, -18);
+    enem = airCraft1_factory(55, -18);
     spawnListArrayAdd(enem, 2046);
     //
-    enem = factory_airCraft1(25, 0);
+    enem = airCraft1_factory(25, 0);
     spawnListArrayAdd(enem, 2055);
-    enem = factory_airCraft1(40, -6);
+    enem = airCraft1_factory(40, -6);
     spawnListArrayAdd(enem, 2055);
-    enem = factory_airCraft1(25, -12);
+    enem = airCraft1_factory(25, -12);
     spawnListArrayAdd(enem, 2055);
-    enem = factory_airCraft1(40, -18);
+    enem = airCraft1_factory(40, -18);
     spawnListArrayAdd(enem, 2055);
     enem = new Enemy(10, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
     enem = new Spawn(2090, enem);
@@ -867,8 +914,12 @@ function earthLoader() {
         enem = new Spawn(2480 + 10 * i, enem);
         spawnList.addElement(enem);
     }
-    enem = factory_boss1(20, 15);
+    enem = boss1_factory(20, 15);
     spawnListArrayAdd(enem, 2770);
+}
+catch(error){
+    loadingException = error;
+}
 }
 /**
  * Adds an array of either linked or unlinked enemy objects to the spawn list.
@@ -981,7 +1032,7 @@ function gamePlay() {
         bgm.play();
     }
     try {
-        // throw new Error("Test exception.");
+       //  throw new Error("Test exception.");
         updateBullets();
         checkForEnemyHit();
         deleteDeceased();
@@ -1153,11 +1204,11 @@ function renderHUD() {
     context.fillText(player.lifes, 350, 581);
     context.fillText(player.level + 1, 700, 581);
     context.font = "13px Nonserif";
-    context.fillText("SCORE",0,595);
-    context.fillText("HEALTH",245,595);
-    context.fillText("LIVE",350,595);
-    context.fillText("LEVEL",700,595);
-    
+    context.fillText("SCORE", 0, 595);
+    context.fillText("HEALTH", 245, 595);
+    context.fillText("LIVE", 350, 595);
+    context.fillText("LEVEL", 700, 595);
+
 }
 
 
@@ -1223,6 +1274,18 @@ var healthBoost_dimension = meteor_dimension;
 //"Fire Boost" dimension function.
 var fireBoost_dimension = healthBoost_dimension;
 
+//"Boss 2 " dimension function.
+function boss2_dimension() {
+    var x = [];
+    var y = [];
+    for (var i = 0; i < boss2_constants.prototype.abs_x_pos; i++) {
+
+    }
+    return new Array(x, y);
+}
+
+
+
 //"Bullet" dimension function.
 function bullet_dimension() {
     var x = [this.middleX, this.middleX, this.middleX, this.middleX];
@@ -1237,12 +1300,31 @@ function stupidEnemy_dimension() {
 }
 
 //"Meteor" dimension function.
-function meteor_dimension() {
+function meteor_dimension(trueMiddleX = this.middleX, trueMiddleY = this.middleY) {
     //think of a mobile key pad to understand the coords. 2 shadow layers added.
-    var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
-    var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
+    var x = [trueMiddleX - 1, trueMiddleX, trueMiddleX + 1, trueMiddleX - 1, trueMiddleX, trueMiddleX + 1, trueMiddleX - 1, trueMiddleX, trueMiddleX + 1, trueMiddleX - 1, trueMiddleX, trueMiddleX + 1, trueMiddleX - 1, trueMiddleX, trueMiddleX + 1];
+    var y = [trueMiddleY - 3, trueMiddleY - 3, trueMiddleY - 3, trueMiddleY - 2, trueMiddleY - 2, trueMiddleY - 2, trueMiddleY - 1, trueMiddleY - 1, trueMiddleY - 1, trueMiddleY, trueMiddleY, trueMiddleY, trueMiddleY + 1, trueMiddleY + 1, trueMiddleY + 1];
     return new Array(x, y);
 }
+
+//"Boss 2" dimension function.
+function boss2_dimension(){
+    if(boss2_constants.prototype.dimension!==null){
+     return boss2_constants.prototype.dimension;    
+    }
+    var x = [];
+    var y = [];
+    for(var i = 0; i<boss2_constants.prototype.abs_x_pos; i++){
+        for(var j = 0; j<boss2_constants.prototype.abs_y_pos; j++){
+            var arrayFragment = meteor_dimension(this.middleX+i,this.middleY+j);
+            x= x.concat(arrayFragment[0]);
+            y= y.concat(arrayFragment[1]);
+        }
+    }
+    boss2_constants.prototype.dimension = new Array(x,y);
+    return boss2_constants.prototype.dimension;
+}
+
 //"Blinky" dimension function.
 var blinky_dimension = meteor_dimension;
 
@@ -1268,8 +1350,6 @@ function background_update() {
     this.middleY = this.middleY + 0.1;
 }
 
-//Boss 2 not attackable part of update function.
-function boss2na_update() {}
 
 //Boss 1 not attackable part update function.
 function boss1na_update() {
@@ -1354,7 +1434,10 @@ function aircraft3sc_update() {
 
 }
 
+//Boss 2 update function.
+function boss2_update() {
 
+}
 
 //"Stupid Enemy" update function.
 function stupidEnemy_update() {
@@ -1502,18 +1585,18 @@ function healthBoost_render() {
 
 
 //"Simple Square" rendering function. To be called by every 3x3 object!!!
-function simpleSquare_render() {
-    context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
+function simpleSquare_render(usingMiddleX = this.middleX, usingMiddleY = this.middleY) {
+    context.fillRect((usingMiddleX - 1) * 10, (usingMiddleY - 1) * 10, 10, 10);
+    context.fillRect(usingMiddleX * 10, (usingMiddleY - 1) * 10, 10, 10);
+    context.fillRect((usingMiddleX + 1) * 10, (usingMiddleY - 1) * 10, 10, 10);
     //Middle row.
-    context.fillRect((this.middleX - 1) * 10, this.middleY * 10, 10, 10);
-    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, this.middleY * 10, 10, 10);
+    context.fillRect((usingMiddleX - 1) * 10, usingMiddleY * 10, 10, 10);
+    context.fillRect(usingMiddleX * 10, usingMiddleY * 10, 10, 10);
+    context.fillRect((usingMiddleX + 1) * 10, usingMiddleY * 10, 10, 10);
     //Upper row.
-    context.fillRect((this.middleX - 1) * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect(this.middleX * 10, (this.middleY + 1) * 10, 10, 10);
-    context.fillRect((this.middleX + 1) * 10, (this.middleY + 1) * 10, 10, 10);
+    context.fillRect((usingMiddleX - 1) * 10, (usingMiddleY + 1) * 10, 10, 10);
+    context.fillRect(usingMiddleX * 10, (usingMiddleY + 1) * 10, 10, 10);
+    context.fillRect((usingMiddleX + 1) * 10, (usingMiddleY + 1) * 10, 10, 10);
 }
 
 //"Fire Boost" rendering function
@@ -1526,6 +1609,13 @@ function fireBoost_render() {
 
 //"Blinky Tracer" rendering function.
 var blinkyTracer_render = blinky_render;
+
+//"Boss 2" rendering function.#
+function boss2_render(){
+     context.fillStyle = "gray";
+     context.fillRect(this.middleX*10,this.middleY*10,10*boss2_constants.prototype.abs_x_pos,10*boss2_constants.prototype.abs_y_pos);
+}
+
 
 //"Blinky" rendering function
 function blinky_render() {
@@ -1545,30 +1635,17 @@ function blinky_render() {
 //Factory Functions.
 
 //Boss 2
-function factory_boss2(middleX, middleY) {
-    var enemy_array = [];
+function boss2_factory(middleX, middleY) {
     var enemy_obj = null;
     //Not touchable. Middle point of over
-    enemy_obj = new Enemy(middleX, middleY, stupidEnemy_dimension, boss2na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
+    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2_update, meteor_render);
     giant_boss = enemy_obj;
-    enemy_array.push(enemy_obj);
-    var y_dimension = 16;
-    //The height of the thingie.
-    for (var i = 0; i < y_dimension; i++) {
-        //Way up.  
-        enemy_obj = new Enemy(middleX, middleY - i, stupidEnemy_dimension, boss2na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
-        enemy_array.push(enemy_obj);
-        //Way down.
-        enemy_obj = new Enemy(middleX, middleY + i, stupidEnemy_dimension, boss2na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
-        enemy_array.push(enemy_obj);
-    }
-    combineEnemyBricks(enemy_array);
-    return enemy_array;
+    return enemy_obj;
 }
 
 
 //Boss 1
-function factory_boss1(middleX, middleY) {
+function boss1_factory(middleX, middleY) {
     //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
     var enemy_array = [];
     var enemy_obj = null;
@@ -1614,7 +1691,7 @@ function factory_boss1(middleX, middleY) {
 
 }
 //Air Craft 1
-function factory_airCraft1(middleX, middleY) {
+function airCraft1_factory(middleX, middleY) {
     var enemy_array = [];
     var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
@@ -1631,7 +1708,7 @@ function factory_airCraft1(middleX, middleY) {
 }
 
 //Air Craft 2
-function factory_airCraft2(middleX, middleY) {
+function airCraft2_factory(middleX, middleY) {
     var enemy_array = [];
     var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft2sc_update, stupidEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
@@ -1649,7 +1726,7 @@ function factory_airCraft2(middleX, middleY) {
 
 
 //Air Craft 3
-function factory_airCraft3(middleX, middleY) {
+function airCraft3_factory(middleX, middleY) {
     var enemy_array = [];
     var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft3sc_update, stupidEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
