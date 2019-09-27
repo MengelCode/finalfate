@@ -1288,8 +1288,8 @@ function boss2_dimension() {
 
 //"Bullet" dimension function.
 function bullet_dimension() {
-    var x = [this.middleX, this.middleX, this.middleX, this.middleX];
-    var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY - 3];
+    var x = [this.middleX, this.middleX, this.middleX, this.middleX,this.middleX-1, this.middleX-1, this.middleX-1, this.middleX-1];
+    var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY - 3,this.middleY, this.middleY - 1, this.middleY - 2, this.middleY - 3];
     return new Array(x, y);
 }
 //"Stupid Enemy" dimension function.
