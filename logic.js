@@ -25,7 +25,7 @@ class GameObject {
          Y positions occupied = array 1.
          
          */
-        this.getOccupiedSpace = null;
+        //this.getOccupiedSpace = null;
 
         /**
          * Update the state of this game object.
@@ -37,40 +37,53 @@ class GameObject {
          */
         this.renderState = null;
 
-        /**
-         * 
-         * Mark the object as no longer required.
-         * 
-         */
-        this.invalidate = function () {
-            this.invalid = true;
-        };
-        this.getOccupiedSpace = function () {
-            var x = {};
-            var y = {};
-            return new Array(x, y);
-        };
-        /**
-         * 
-         * @param {type} otherObj
-         * @returns {boolean} If this object collides with the given object.
-         */
-        this.collides = function (otherObj) {
-            var ownSpace = this.getOccupiedSpace();
-            var otherSpace = otherObj.getOccupiedSpace();
-            for (var i = 0; i < ownSpace[0].length; i++) {
-                for (var j = 0; j < otherSpace.length; j++) {
-                    if (ownSpace[0][i] === otherSpace[0][j] && ownSpace[1][i] === otherSpace[1][j]) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        };
+
+
 
     }
 
 }
+
+/**
+ * 
+ * Mark the object as no longer required.
+ * 
+ */
+GameObject.prototype.invalidate = function () {
+    this.invalid = true;
+};
+
+
+/**
+ * Get the collision matrix of a specific object. Empty unless it is overriden.
+ * @returns {Array}
+ */
+GameObject.prototype.getOccupiedSpace = function () {
+    var x = {};
+    var y = {};
+    return new Array(x, y);
+};
+
+
+
+/**
+ * 
+ * @param {GameObject} otherObj
+ * @returns {boolean} If this object collides with the given object.
+ */
+GameObject.prototype.collides = function (otherObj) {
+    var ownSpace = this.getOccupiedSpace();
+    var otherSpace = otherObj.getOccupiedSpace();
+    for (var i = 0; i < ownSpace[0].length; i++) {
+        for (var j = 0; j < otherSpace.length; j++) {
+            if (ownSpace[0][i] === otherSpace[0][j] && ownSpace[1][i] === otherSpace[1][j]) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
 
 class HealthBoost extends GameObject {
     /**
@@ -121,7 +134,7 @@ class LinkedList {
         this.next = null;
         //Cursor of which node is the next element to return with giveNext function. Changing the list will reset it.
         this.iterateState = null;
-        if (value != null) {
+        if (value !== null) {
             this.next = new LinkedList();
             this.next.value = value;
             this.iterateState = this.next;
@@ -260,6 +273,7 @@ class Spawn {
      * A data structure containing a game object.
      * @param {type} frameDelta After how many frames should it spawn?
      * @param {type} gameObject The game object in question.
+     * @param {}     isRelative Is the frame delta relative to the last spawn
      * @param {type} isForDisplay Add game object to display list?
      * @param {type} isEnemy Add game object to enemy list?
      * @param {type} isBullet Add game object to bullet list?
@@ -501,10 +515,10 @@ function initGame() {
     //CHEAT ZONE!!!
     player.level = 0;
     savedScore = 0;
-   // renderReset = 9000;
+    // renderReset = 9000;
     //CHEAT ZONE end.
     loadLevel();
-    
+
 }
 /**
  * 
@@ -1066,7 +1080,7 @@ function updateBullets() {
 
 //1 - Check if one of the end conditions(player dead, boss dead) are met.
 function checkLeaveLevel() {
-    if (player.health === 0) {
+    if (player.health <= 0) {
         loseLife();
     }
     if (giant_boss !== null && giant_boss.invalid) {
@@ -1229,15 +1243,7 @@ function boss1_invalidate() {
     } else {
         this.invalid = true;
     }
-    if (this.previous !== null && this.hp <= 0 && this.previous.hp > this.hp) {
-        this.previous.hp = 0;
-        this.previous.invalidate();
-    }
-
-    if (this.next !== null && this.hp <= 0 && this.next.hp > this.hp) {
-        this.next.hp = 0;
-        this.next.invalidate();
-    }
+    invalidate_Badjacent.call(this);
 }
 
 //All "Score" functions. Not always required.
@@ -1312,7 +1318,7 @@ function meteor_dimension(trueMiddleX = this.middleX, trueMiddleY = this.middleY
 }
 
 //"Boss 2" dimension function.
-var boss2_dimension = meteor_dimension; 
+var boss2_dimension = meteor_dimension;
 
 //"Blinky" dimension function.
 var blinky_dimension = meteor_dimension;
@@ -1424,31 +1430,62 @@ function aircraft3sc_update() {
 }
 
 //Boss 2 first brick function.
-function boss2fb_update(){
-    if(this.next===null){
+function boss2fb_update() {
+    //Create other bricks if they aren't yet created.
+    var length = 10;
+    var height = 5;
+    if (this.next === null) {
         var enemArray = [];
         enemArray.push(this);
-        var length = 10;
-        var height = 5;
-        for(i = 0; i<length; i++){
-             for(j = 0; j<height; j++){
-             if(i=== 0 && j=== 0)continue;    
-            var enem = new Enemy(this.middleX+(2*i), this.middleY+(1*j), boss2_dimension, boss2_update, stupidEnemy_render,damage = 8, true, 0, function(){});
-            displayList.addElement(enem, false);
-            enemyList.addElement(enem,false);
-            enemArray.push(enem);
-        }
+
+        for (i = 0; i < length; i++) {
+            for (j = 0; j < height; j++) {
+                if (i === 0 && j === 0)
+                    continue;
+                var enem = new Enemy(this.middleX + (2 * i), this.middleY + (1 * j), boss2_dimension, boss2_update, stupidEnemy_render, damage = 8, true, 0, function () {});
+                displayList.addElement(enem, false);
+                enemyList.addElement(enem, false);
+                enemArray.push(enem);
+            }
         }
         combineEnemyBricks(enemArray);
     }
+    //Increase frame counter.
+    this.frameCounter++;
+    var enema = null;
+    //Spawn right enemy if X modulo 15 == 0
+    if (this.frameCounter % 15 === 0) {
+        enemb = new Enemy(this.middleX + 3 + 2 * length - 1, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
+        enema = new Enemy(this.middleX + 2 * length - 1, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
+    }
+    //Spawn middle if if X modulo 15 != 0 && X modulo 10 == 0
+    else if (this.frameCounter % 10 === 0) {
+        enemb = new Enemy(this.middleX + 3 + 2 * length / 2, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
+        enema = new Enemy(this.middleX + 2 * length / 2, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
+    }
+    //Spawn middle if if X modulo 15 != 0 && X modulo 10 != 0 && X mod 5 == 90
+    else if (this.frameCounter % 5 === 0) {
+        enemb = new Enemy(this.middleX - 3, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
+        enema = new Enemy(this.middleX, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
+    }
+    //If enem was created, add it.
+    if (enema !== null) {
+        displayList.addElement(enema, false);
+        enemyList.addElement(enema, false);
+        displayList.addElement(enemb, false);
+        enemyList.addElement(enemb, false);
+
+    }
     //Forcing player back in when he leaves to the left.
-    if(player.middleX<this.middleX-2){
+    if (player.middleX < this.middleX - 2) {
+        player.health = player.health - 12;
         player.middleX = player.middleX + 4;
     }
     //Uncomment this if you want pinball action.....
     //else if(player.middleX>this.middleX+10){
-        else if(player.middleX>this.middleX+15){
-            player.middleX = player.middleX -4;
+    else if (player.middleX > this.middleX + 18) {
+        player.health = player.health - 12;
+        player.middleX = player.middleX - 4;
     }
 }
 
@@ -1543,7 +1580,7 @@ function fireBoost_update() {
         sfx2.play();
         if (player.massfire) {
             player.health = player.health + 120;
-             player.quadfire = true;
+            player.quadfire = true;
         }
         player.massfire = true;
     }
@@ -1660,7 +1697,7 @@ function boss2_factory(middleX, middleY) {
     var enemy_obj = null;
     //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
     //Not touchable. Middle point of over
-    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, stupidEnemy_render,damage = 8, true, 0, function(){});
+    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, stupidEnemy_render, damage = 8, true, 0, function () {});
     giant_boss = enemy_obj;
     return enemy_obj;
 }
@@ -1672,7 +1709,7 @@ function boss1_factory(middleX, middleY) {
     var enemy_array = [];
     var enemy_obj = null;
     middleX = middleX - 2;
-    middleY = middleY - 2;   
+    middleY = middleY - 2;
     //Not touchable part.
     for (var i = 0; i < 14; i++) {
         for (var j = 0; j < 9; j++) {
@@ -1858,6 +1895,22 @@ function combineEnemyBricks(enemy_array) {
     }
 }
 
+/**
+ * For use by bosses in order to ease their complete destruction.
+ * Do not call directly, but via invalidate_Badjacent.call(enemyObject)
+ * @returns {undefined}
+ */
+function invalidate_Badjacent() {
+    if (this.previous !== null && this.hp <= 0 && this.previous.hp > this.hp) {
+        this.previous.hp = 0;
+        this.previous.invalidate();
+    }
+
+    if (this.next !== null && this.hp <= 0 && this.next.hp > this.hp) {
+        this.next.hp = 0;
+        this.next.invalidate();
+    }
+}
 
 /**
  * 
