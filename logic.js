@@ -317,7 +317,12 @@ class SpaceShip extends GameObject {
         //Auto-fire cooldown.
         this.cooldown = 0;
         super.updateState = function () {
-
+            //If memorized button here, then poll that from controller.
+            if (button_mem) {
+                pollAxisX();
+                pollAxisY();
+                pollDatButton();
+            }
             if (this.score >= this.score_newlife) {
                 sfx2.pause();
                 sfx2.currentTime = 0;
@@ -408,7 +413,7 @@ class SpaceShip extends GameObject {
     }
 }
 
-//INIT
+//TODO INIT
 //try{
 const FRAME_RATE = 30;
 //"booleans" if certain keys are pressed.
@@ -471,6 +476,10 @@ var enemyList = null;
 var bulletList = null;
 //Linked List for spawners.
 var spawnList = null;
+//Remember gamepad
+var gamePad_mem = false;
+//Remember button.
+var button_mem = false;
 //Player instance.
 var player = null;
 //Major boss. Death of it indicates that the next level should come.
@@ -486,10 +495,19 @@ y_dimension = 33;
 x_dimension = 20;
 //Enter rendering cycle.
 var renderTimer = setInterval(renderFunction, FRAME_RATE);
+//Keyboard input catching.
 window.addEventListener("keydown", getKeyPress);
 window.addEventListener("keyup", getKeyRelease);
+//Controller list.
+var controllers = [];
 
+if (navigator.getGamepads !== undefined) {
 
+//Gamepad connect/disconnect catching, easier way.
+    window.addEventListener("gamepadconnected", controllerAttached);
+    window.addEventListener("gamepaddisconnected", controllerRemoved);
+    controllersSupported = true;
+}
 //"STATIC" PROTOTYPES
 //Boss 2 constants carrier.
 function boss2_constants() {}
@@ -988,7 +1006,8 @@ function loseLife() {
  * Render the title screen.
  */
 function titleScreen() {
-
+    button_mem = false;
+    controller_mem = false;
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     context.font = "60px Serif";
@@ -1002,7 +1021,7 @@ function titleScreen() {
         context.fillStyle = "gold";
         context.fillText("PRESS SPACE TO START", 230, 520);
         //Let the show begin!
-        if (shoot === 5) {
+        if (shoot === 5 || pollButtonMemory()) {
             initGame();
         }
     }
@@ -1884,7 +1903,116 @@ function getKeyRelease(event) {
     }
 
 }
+
 /**
+ * Triggered when a new controller is attached. Not working on all modern browsers.
+ * @param {type} event
+ */
+function controllerAttached(event) {
+    controllers = navigator.getGamepads();
+    //window.alert("Gamepad connected at index " + gp.index + ": " + gp.id + " " + gp.buttons.length + " buttons, " + gp.axes.length + "%d axes.");
+}
+/**
+ * Triggered when a controller is removed. Not working on all modern browsers.
+ * @param {type} event
+ */
+function controllerRemoved(event) {
+    //navigator.getGamepads()[event.gamepad.index] = undefined;
+}
+
+
+/**
+ * ERRORNOUS. Works only one time before everything crashes.
+ * @returns {boolean} Is a key pressed on any gamepad?
+ */
+function pollButtonTrivial() {
+    for (var i = 0; i < controllers.length; i++) {
+        var testController = controllers[i];
+        if (testController === undefined)
+            continue;
+        if (testController.buttons === undefined)
+            continue;
+        for (var j = 0; testController.buttons.length; j++) {
+            if (testController.buttons[j] !== undefined && testController.buttons[j].pressed)
+                return true;
+        }
+    }
+    return false;
+}
+/**
+ * Same as before, but remember button!
+ * @returns {Boolean}
+ */
+function pollButtonMemory() {
+    for (var i = 0; i < controllers.length; i++) {
+        var testController = controllers[i];
+        if (testController === undefined)
+            continue;
+        if (testController.buttons === undefined)
+            continue;
+        for (var j = 0; testController.buttons.length; j++) {
+            if (testController.buttons[j] !== undefined && testController.buttons[j].pressed) {
+                gamepad_mem = testController;
+                button_mem = testController.buttons[j];
+                return true;
+            }
+
+        }
+    }
+    return false;
+}
+/**
+ * Poll remembered button.
+ * @returns {undefined}
+ */
+function pollDatButton() {
+    if (button_mem.pressed) {
+        shoot = 5;
+    } else {
+        shoot = 0;
+    }
+}
+
+/**
+ * Poll X Axis of gamepad.
+ * @returns {undefined}
+ */
+function pollAxisX() {
+    //I think this is right?
+    if (gamepad_mem.axes[0] > 0.4) {
+        left = false;
+        right = true;
+    } else if (gamepad_mem.axes[0] < -0.4) {
+        left = true;
+        right = false;
+    } else {
+        left = false;
+        right = false;
+    }
+}
+
+
+/**
+ * Poll Y Axis of gamepad.
+ * @returns {undefined}
+ */
+function pollAxisY() {
+  //I think this is right?
+    if (gamepad_mem.axes[1] > 0.4) {
+        up = false;
+        down = true;
+    } else if (gamepad_mem.axes[1] < -0.4) {
+        up = true;
+        down = false;
+    } else {
+        up = false;
+        down = false;
+    }
+}
+
+
+/**
+ }
  * 
  * @param {type} enemy_array Enemies to link together.
  * @returns {undefined}
