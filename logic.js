@@ -1016,6 +1016,7 @@ function titleScreen() {
     context.font = "17px Nonserif";
     context.fillStyle = "white";
     context.fillText("(C) 2019 Manuel Engel", 270, 580);
+    try {
     if (aniCount % 5 === aniCount % 10) {
         context.font = "23px Nonserif";
         context.fillStyle = "gold";
@@ -1024,6 +1025,11 @@ function titleScreen() {
         if (shoot === 5 || pollButtonMemory()) {
             initGame();
         }
+    }
+    }
+    catch(error){
+                window.alert("EXCEPTION OCCURED IN TITLE SCREEN!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
+
     }
 
 }
@@ -1944,13 +1950,13 @@ function pollButtonTrivial() {
  * @returns {Boolean}
  */
 function pollButtonMemory() {
-    for (var i = 0; i < controllers.length; i++) {
+    for (var i = 0; i < controllers.length && i<10; i++) {
         var testController = controllers[i];
         if (testController === undefined)
             continue;
         if (testController.buttons === undefined)
             continue;
-        for (var j = 0; testController.buttons.length; j++) {
+        for (var j = 0; testController.buttons.length && j<40; j++) {
             if (testController.buttons[j] !== undefined && testController.buttons[j].pressed) {
                 gamepad_mem = testController;
                 button_mem = testController.buttons[j];
