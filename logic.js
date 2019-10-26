@@ -222,7 +222,7 @@ class Enemy extends GameObject {
      * @param {integer} damage
      * @returns {Enemy}
      */
-    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null) {
+    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null, hp = 100) {
         super();
         this.middleX = middleX;
         this.middleY = middleY;
@@ -233,7 +233,7 @@ class Enemy extends GameObject {
         this.damage = damage;
         this.score = score;
         //HP value. Can be respected by invalidate() function, but it needs not.
-        this.hp = 100;
+        this.hp = hp;
         //Previous enemy object in a chain.
         this.previous = null;
         //Next enemy object in a chain.
@@ -1017,18 +1017,17 @@ function titleScreen() {
     context.fillStyle = "white";
     context.fillText("(C) 2019 Manuel Engel", 270, 580);
     try {
-    if (aniCount % 5 === aniCount % 10) {
-        context.font = "23px Nonserif";
-        context.fillStyle = "gold";
-        context.fillText("PRESS SPACE TO START", 230, 520);
-        //Let the show begin!
-        if (shoot === 5 || pollButtonMemory()) {
-            initGame();
+        if (aniCount % 5 === aniCount % 10) {
+            context.font = "23px Nonserif";
+            context.fillStyle = "gold";
+            context.fillText("PRESS SPACE TO START", 230, 520);
+            //Let the show begin!
+            if (shoot === 5 || pollButtonMemory()) {
+                initGame();
+            }
         }
-    }
-    }
-    catch(error){
-                window.alert("EXCEPTION OCCURED IN TITLE SCREEN!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
+    } catch (error) {
+        window.alert("EXCEPTION OCCURED IN TITLE SCREEN!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
 
     }
 
@@ -1270,6 +1269,9 @@ function boss1_invalidate() {
     }
     invalidate_Badjacent.call(this);
 }
+//Copy the function for boss 2.
+var boss2_invalidate = boss1_invalidate;
+
 
 //All "Score" functions. Not always required.
 
@@ -1467,7 +1469,7 @@ function boss2fb_update() {
             for (j = 0; j < height; j++) {
                 if (i === 0 && j === 0)
                     continue;
-                var enem = new Enemy(this.middleX + (2 * i), this.middleY + (1 * j), boss2_dimension, boss2_update, stupidEnemy_render, damage = 8, true, 0, function () {});
+                var enem = new Enemy(this.middleX + (2 * i), this.middleY + (1 * j), boss2_dimension, boss2_update, stupidEnemy_render, damage = 8, true, 5000, boss2_invalidate,270);
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 enemArray.push(enem);
@@ -1592,7 +1594,7 @@ function fireBoost_update() {
         sfx2.play();
         if (player.massfire) {
             player.health = player.health + 120;
-            player.quadfire = true;
+           
         }
         player.massfire = true;
         return;
@@ -1605,7 +1607,7 @@ function fireBoost_update() {
         sfx2.play();
         if (player.massfire) {
             player.health = player.health + 120;
-            player.quadfire = true;
+            
         }
         player.massfire = true;
     }
@@ -1722,7 +1724,7 @@ function boss2_factory(middleX, middleY) {
     var enemy_obj = null;
     //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
     //Not touchable. Middle point of over
-    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, stupidEnemy_render, damage = 8, true, 0, function () {});
+    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, stupidEnemy_render, damage = 8, true, 0, boss2_invalidate,270);
     giant_boss = enemy_obj;
     return enemy_obj;
 }
@@ -1950,13 +1952,13 @@ function pollButtonTrivial() {
  * @returns {Boolean}
  */
 function pollButtonMemory() {
-    for (var i = 0; i < controllers.length && i<10; i++) {
+    for (var i = 0; i < controllers.length && i < 10; i++) {
         var testController = controllers[i];
         if (testController === undefined)
             continue;
         if (testController.buttons === undefined)
             continue;
-        for (var j = 0; testController.buttons.length && j<40; j++) {
+        for (var j = 0; testController.buttons.length && j < 40; j++) {
             if (testController.buttons[j] !== undefined && testController.buttons[j].pressed) {
                 gamepad_mem = testController;
                 button_mem = testController.buttons[j];
@@ -2003,7 +2005,7 @@ function pollAxisX() {
  * @returns {undefined}
  */
 function pollAxisY() {
-  //I think this is right?
+    //I think this is right?
     if (gamepad_mem.axes[1] > 0.4) {
         up = false;
         down = true;
@@ -2055,7 +2057,14 @@ function getRandomX() {
     return Math.floor(rand * 80);
 }
 
-
+/**
+ * 
+ * @returns random Y coordinate.
+ */
+function getRandomY() {
+    var rand = Math.random();
+    return Math.floor(rand * 60);
+}
 
 
 /**
@@ -2068,5 +2077,6 @@ function exchangeRenderLoop(func) {
     clearInterval(renderTimer);
     renderFunction = func;
     aniCount = renderReset;
+    aniCountRelative = 0;
     renderTimer = setInterval(renderFunction, FRAME_RATE);
 }
