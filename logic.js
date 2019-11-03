@@ -413,6 +413,40 @@ class SpaceShip extends GameObject {
     }
 }
 
+//Decoration element.
+class Decoration {
+    /**
+     * Creates a decoration object without look and function, located at the given coordinates.
+     * @param {Integer} middleX
+     * @param {Integer} middleY
+     * @param {function()} renderRoutine
+     * @param {function()} updateRoutine
+     * @returns {Decoration}
+     */
+    constructor(middleX, middleY, renderRoutine = function() {}, updateRoutine = function() {}){
+        this.middleX = middleX;
+        this.middleY = middleY;
+        this.renderRoutine = renderRoutine;
+        this.updateRoutine = updateRoutine;
+    }
+
+}
+
+class Star extends Decoration {
+    /**
+     * Creates a Star decoration object.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {Star}
+     */
+    constructor(middleX, middleY) {
+        super(middleX, middleY, star_render);
+       
+    }
+
+}
+
+
 //TODO INIT
 //try{
 const FRAME_RATE = 30;
@@ -468,7 +502,7 @@ renderFunction = titleScreen;
 //setInterval(keyInvalidator, FRAME_RATE);
 //Count all the frames.
 setInterval(increaseCount, FRAME_RATE);
-//Linked List to use for all kinds of things.
+//Linked List to use for all kinds of things to display.
 var displayList = null;
 //Linked List to contain enemies, for collision stuff.
 var enemyList = null;
@@ -577,10 +611,11 @@ function loadLevel() {
 }
 /**
  * 
- * Level 2 -  The Solar Sytem
+ * Level 2 - The Solar System
  */
 function solarSystemLoader() {
     try {
+        background = new Enemy(0, 0, background_dimension, background1_update, background2_render);
         var enem = null;
 
         if (boss2_constants.prototype.DebugSpawnInstantly) {
@@ -746,7 +781,7 @@ function solarSystemLoader() {
  */
 function earthLoader() {
     try {
-        background = new Enemy(0, 0, background_dimension, background_update, background1_render);
+        background = new Enemy(0, 0, background_dimension, background1_update, background1_render);
         var enem = null;
 //Slow beginning...
         enem = new Enemy(26, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
@@ -1367,8 +1402,8 @@ function bullet_update() {
     if (this.middleY < 3)
         this.invalid = true;
 }
-//"Background" update function.
-function background_update() {
+//"Background 1" update function.
+function background1_update() {
     this.middleY = this.middleY + 0.1;
 }
 
@@ -1469,7 +1504,7 @@ function boss2fb_update() {
             for (j = 0; j < height; j++) {
                 if (i === 0 && j === 0)
                     continue;
-                var enem = new Enemy(this.middleX + (2 * i), this.middleY + (1 * j), boss2_dimension, boss2_update, stupidEnemy_render, damage = 8, true, 5000, boss2_invalidate,270);
+                var enem = new Enemy(this.middleX + (2 * i), this.middleY + (1 * j), boss2_dimension, boss2_update, stupidEnemy_render, damage = 8, true, 5000, boss2_invalidate, 270);
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 enemArray.push(enem);
@@ -1594,7 +1629,7 @@ function fireBoost_update() {
         sfx2.play();
         if (player.massfire) {
             player.health = player.health + 120;
-           
+
         }
         player.massfire = true;
         return;
@@ -1607,7 +1642,7 @@ function fireBoost_update() {
         sfx2.play();
         if (player.massfire) {
             player.health = player.health + 120;
-            
+
         }
         player.massfire = true;
     }
@@ -1619,8 +1654,40 @@ function fireBoost_update() {
 
 //Level 1 - The Earth rendering function
 function background1_render() {
-    context.fillStyle = "blue";
-    context.fillRect(0, 0, 800, 600);
+    context.fillStyle = "#0000BB";
+    context.fillRect(this.middleX, this.middleY - 350, 800, 280);
+    context.fillStyle = "#0000DD";
+    context.fillRect(this.middleX, this.middleY - 150, 800, 180);
+    context.fillStyle = "#0000FF";
+    context.fillRect(this.middleX, this.middleY, 800, 600);
+}
+
+//Level 2 - The Solar System rendering function
+function background2_render() {
+    if (this.next === null) {
+        this.next = star_factory();
+    }
+
+    this.next.resetIterator();
+    while(this.next.peekNext()!==null){
+        var star = this.next.getNext();
+        star.renderRoutine();
+    }
+}
+
+//Star Rendering function
+function star_render() {
+    for (var i = 0; i < 3; i++) {
+        for (var j = 0; j < 3; j++) {
+            if (i === 1 && j === 1)
+                context.fillStyle = "#CCCCCC";
+            else
+                context.fillStyle = "#666666";
+            context.fillRect((this.middleX * 10 - 2 + (i * 2)), (this.middleY *10 - 2 + (j * 2)), 2, 2);
+        }
+    }
+
+
 }
 
 //"Wingman" rendering function
@@ -1724,7 +1791,7 @@ function boss2_factory(middleX, middleY) {
     var enemy_obj = null;
     //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
     //Not touchable. Middle point of over
-    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, stupidEnemy_render, damage = 8, true, 0, boss2_invalidate,270);
+    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, stupidEnemy_render, damage = 8, true, 0, boss2_invalidate, 270);
     giant_boss = enemy_obj;
     return enemy_obj;
 }
@@ -1827,6 +1894,25 @@ function airCraft3_factory(middleX, middleY) {
     combineEnemyBricks(enemy_array);
     return enemy_array;
 }
+
+//Star factory function.
+function star_factory() {
+var starList = new LinkedList();
+//Decide where to place stars.
+for(var i = 0; i<80; i++){
+    for(var j= 0; j<60; j++){
+    var randomNumber = Math.random();
+    //Chance of star appearance 1/n.
+    var chance = 230;
+    randomNumber = Math.floor(randomNumber * chance);
+    if(randomNumber%chance===0){
+        starList.addElement(new Star(i,j));
+    }
+    }
+}
+return starList;
+}
+
 
 //All other functions.
 
