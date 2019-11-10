@@ -1111,13 +1111,12 @@ function gamePlay() {
     try {
         //  throw new Error("Test exception.");
         updateBullets();
-        checkForEnemyHit();
-        deleteDeceased();
-        updateGameObjects();
-        deleteDeceased();
-        checkLeaveLevel();
         checkForColli();
         deleteDeceased();
+        updateGameObjects();
+        checkForColli();
+        deleteDeceased();
+        checkLeaveLevel();
         window.requestAnimationFrame(renderInGame);
     } catch (error) {
         window.alert("EXCEPTION OCCURED IN-GAME!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
