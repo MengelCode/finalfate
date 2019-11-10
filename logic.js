@@ -449,6 +449,7 @@ class Star extends Decoration {
 
 //TODO INIT
 //try{
+//CHEAT ZONE - default 30.
 const FRAME_RATE = 30;
 //"booleans" if certain keys are pressed.
 var shoot = 0;
@@ -1755,7 +1756,14 @@ function fireBoost_render() {
     //Num pad on mobile.
     context.fillStyle = "red";
     simpleSquare_render.call(this);
-
+    context.fillStyle = "white";
+    //F
+    //Upper line
+    context.fillRect((this.middleX * 10)-10, (this.middleY *10)-6,24,7);
+    //Left line
+    context.fillRect((this.middleX * 10)-10, (this.middleY *10)-6,7,24);
+    //Middle line
+    context.fillRect((this.middleX * 10)-10, (this.middleY *10)+5,24,7);
 }
 
 //"Blinky Tracer" rendering function.
