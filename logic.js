@@ -654,7 +654,7 @@ function solarSystemLoader() {
 
         for (var i = 0; i < 58; i++) {
             var rand = getRandomX();
-            enem = new Enemy(rand, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+            enem = new Meteor(rand, 0);
             //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
             enem = new Spawn(150 + i * 20, enem);
             spawnList.addElement(enem);
@@ -756,7 +756,7 @@ function solarSystemLoader() {
                     break;
                 case 1:
                 case 2:
-                    enem = new Enemy(getRandomX(), 0, meteor_dimension, meteor_update, meteor_render);
+                    enem = new Meteor(getRandomX(), 0);
                     break;
                 case 3:
                 case 4:
