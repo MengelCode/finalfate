@@ -212,7 +212,7 @@ class LinkedList {
 }
 class Enemy extends GameObject {
     /**
-     * 
+     * Creates an enemy object.
      * @param {integer} middleX
      * @param {integer} middleY
      * @param {function} dimensionMatrix
@@ -254,6 +254,19 @@ class Enemy extends GameObject {
             };
     }
     }
+}
+
+class Meteor extends Enemy {
+    /**
+     * Create a meteor object.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {Meteor}
+     */
+    constructor(middleX,middleY){
+        super(middleX, middleY, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+    }
+    
 }
 
 class Bullet extends GameObject {
@@ -441,7 +454,7 @@ class Star extends Decoration {
      */
     constructor(middleX, middleY) {
         super(middleX, middleY, star_render);
-       
+
     }
 
 }
@@ -489,6 +502,7 @@ var loadingException = null;
 var loaders = new Array(7);
 loaders[0] = earthLoader;
 loaders[1] = solarSystemLoader;
+loaders[2] = universeLoader;
 //Level background rendering functions.
 //var backgroundRenderers = new Array(6);
 //Animation counter. Absolute
@@ -610,6 +624,18 @@ function loadLevel() {
         exchangeRenderLoop(null);
     }
 }
+/**
+ * 
+ * Level 3 - The Universe
+ */
+function universeLoader() {
+    try {
+
+    } catch (error) {
+    loadingException = error;
+    }
+}
+
 /**
  * 
  * Level 2 - The Solar System
@@ -785,10 +811,11 @@ function earthLoader() {
         background = new Enemy(0, 0, background_dimension, background1_update, background1_render);
         var enem = null;
 //Slow beginning...
-        enem = new Enemy(26, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        //enem = new Enemy(26, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(26,0);
         enem = new Spawn(150, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(36, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(36, 0);
         enem = new Spawn(240, enem);
         spawnList.addElement(enem);
         enem = airCraft1_factory(72, 0);
@@ -802,15 +829,15 @@ function earthLoader() {
         //Gets a bit more...hurried.
         enem = airCraft1_factory(44, 0);
         spawnListArrayAdd(enem, 328);
-        enem = new Enemy(11, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(11, 0);
         enem = new Spawn(370, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(40, 0);
         enem = new Spawn(380, enem);
         spawnList.addElement(enem);
         enem = airCraft1_factory(20, 0);
         spawnListArrayAdd(enem, 400);
-        enem = new Enemy(23, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(23, 0);
         enem = new Spawn(410, enem);
         spawnList.addElement(enem);
         enem = new Enemy(55, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
@@ -819,12 +846,12 @@ function earthLoader() {
         enem = new Enemy(33, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
         enem = new Spawn(460, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(40, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(40, 0);
         enem = new Spawn(480, enem);
         spawnList.addElement(enem);
         enem = airCraft1_factory(22, 0);
         spawnListArrayAdd(enem, 500);
-        enem = new Enemy(20, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(20, 0);
         enem = new Spawn(530, enem);
         spawnList.addElement(enem);
         //Everything rains at you....
@@ -857,12 +884,12 @@ function earthLoader() {
         spawnList.addElement(enem);
         //Strange wave, 1 out of 2s.
         for (var i = 0; i < 20; i++) {
-            enem = new Enemy(10 + i + 2, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+            enem = new Meteor(10 + i + 2, 0);
             enem = new Spawn(1100 + 10 * i, enem);
             spawnList.addElement(enem);
         }
         for (var i = 0; i < 20; i++) {
-            enem = new Enemy(40 - (i + 3), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+            enem = new Meteor(40 - (i + 3), 0);
             enem = new Spawn(1300 + 10 * i, enem);
             spawnList.addElement(enem);
         }
@@ -871,19 +898,19 @@ function earthLoader() {
         enem = new Spawn(20, enem, true, true, false, false);
         spawnList.addElement(enem);
         //1542
-        enem = new Enemy(38, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(38, 0);
         enem = new Spawn(1580, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(25, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(25, 0);
         enem = new Spawn(1610, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(63, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(63, 0);
         enem = new Spawn(1640, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(27, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(27, 0);
         enem = new Spawn(1650, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(44, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+        enem = new Meteor(44, 0);
         enem = new Spawn(1666, enem);
         spawnList.addElement(enem);
         enem = airCraft1_factory(11, 0);
@@ -978,12 +1005,12 @@ function earthLoader() {
         spawnList.addElement(enem);
         //Strange wave, 2 out of 2s.
         for (var i = 0; i < 20; i++) {
-            enem = new Enemy(10 + i + 7, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+            enem = new Meteor(10 + i + 7, 0);
             enem = new Spawn(2280 + 10 * i, enem);
             spawnList.addElement(enem);
         }
         for (var i = 0; i < 20; i++) {
-            enem = new Enemy(40 - (i + 8), 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
+            enem = new Meteor(40 - (i + 8), 0);
             enem = new Spawn(2480 + 10 * i, enem);
             spawnList.addElement(enem);
         }
@@ -1669,7 +1696,7 @@ function background2_render() {
     }
 
     this.next.resetIterator();
-    while(this.next.peekNext()!==null){
+    while (this.next.peekNext() !== null) {
         var star = this.next.getNext();
         star.renderRoutine();
     }
@@ -1683,7 +1710,7 @@ function star_render() {
                 context.fillStyle = "#CCCCCC";
             else
                 context.fillStyle = "#666666";
-            context.fillRect((this.middleX * 10 - 2 + (i * 2)), (this.middleY *10 - 2 + (j * 2)), 2, 2);
+            context.fillRect((this.middleX * 10 - 2 + (i * 2)), (this.middleY * 10 - 2 + (j * 2)), 2, 2);
         }
     }
 
@@ -1736,11 +1763,11 @@ function healthBoost_render() {
     context.fillStyle = "white";
     //H
     //Left line
-    context.fillRect((this.middleX * 10)-10, (this.middleY *10)-6,7,24);
+    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) - 6, 7, 24);
     //Middle line
-    context.fillRect((this.middleX * 10)-10, (this.middleY *10)+5,24,7);
+    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) + 5, 24, 7);
     //Right line
-    context.fillRect((this.middleX * 10)+8, (this.middleY *10)-6,7,24);
+    context.fillRect((this.middleX * 10) + 8, (this.middleY * 10) - 6, 7, 24);
 }
 
 
@@ -1767,11 +1794,11 @@ function fireBoost_render() {
     context.fillStyle = "white";
     //F
     //Upper line
-    context.fillRect((this.middleX * 10)-10, (this.middleY *10)-6,24,7);
+    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) - 6, 24, 7);
     //Left line
-    context.fillRect((this.middleX * 10)-10, (this.middleY *10)-6,7,24);
+    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) - 6, 7, 24);
     //Middle line
-    context.fillRect((this.middleX * 10)-10, (this.middleY *10)+5,24,7);
+    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) + 5, 24, 7);
 }
 
 //"Blinky Tracer" rendering function.
@@ -1912,20 +1939,20 @@ function airCraft3_factory(middleX, middleY) {
 
 //Star factory function.
 function star_factory() {
-var starList = new LinkedList();
+    var starList = new LinkedList();
 //Decide where to place stars.
-for(var i = 0; i<80; i++){
-    for(var j= 0; j<60; j++){
-    var randomNumber = Math.random();
-    //Chance of star appearance 1/n.
-    var chance = 230;
-    randomNumber = Math.floor(randomNumber * chance);
-    if(randomNumber%chance===0){
-        starList.addElement(new Star(i,j));
+    for (var i = 0; i < 80; i++) {
+        for (var j = 0; j < 60; j++) {
+            var randomNumber = Math.random();
+            //Chance of star appearance 1/n.
+            var chance = 230;
+            randomNumber = Math.floor(randomNumber * chance);
+            if (randomNumber % chance === 0) {
+                starList.addElement(new Star(i, j));
+            }
+        }
     }
-    }
-}
-return starList;
+    return starList;
 }
 
 
@@ -1968,7 +1995,7 @@ function getKeyPress(event) {
 
     //window.alert("It works....");
     //window.alert(event.keyCode);
-    //Firefox based?
+    //Key Codes supported?
     if (event.keyCode !== undefined) {
         // window.alert(event.which);
         if (event.keyCode === 32) {
