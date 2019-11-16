@@ -263,22 +263,21 @@ class Meteor extends Enemy {
      * @param {type} middleY
      * @returns {Meteor}
      */
-    constructor(middleX,middleY){
+    constructor(middleX, middleY) {
         super(middleX, middleY, meteor_dimension, meteor_update, meteor_render, meteor_damage());
     }
-    
+
 }
 
-class StupidEnemy extends Enemy{
-    
-     
-     /**
+class StupidEnemy extends Enemy {
+
+    /**
      * Create a stupid enemy object.
      * @param {type} middleX
      * @param {type} middleY
      * @returns {Meteor}
      */
-    constructor(middleX,middleY){
+    constructor(middleX, middleY) {
         super(middleX, middleY, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
     }
 }
@@ -399,6 +398,15 @@ class SpaceShip extends GameObject {
 
 
             }
+            if(!pause){
+                pauseReleased = true;
+            }
+            if(pause && pauseReleased){
+              bgm.pause();
+              pauseReleased = false;  
+              exchangeRenderLoop(gamePause);  
+            }
+            
             if (this.cooldown > 0)
                 this.cooldown--;
         };
@@ -609,6 +617,7 @@ function loadLevel() {
     if (player.health < 100) {
         player.health = 100;
     }
+    musicAlreadyPlayed = false;
     savedScore = player.score;
     player.middleX = 38;
     player.middleY = 52;
@@ -646,7 +655,7 @@ function universeLoader() {
     try {
 
     } catch (error) {
-    loadingException = error;
+        loadingException = error;
     }
 }
 
@@ -826,7 +835,7 @@ function earthLoader() {
         var enem = null;
 //Slow beginning...
         //enem = new Enemy(26, 0, meteor_dimension, meteor_update, meteor_render, meteor_damage());
-        enem = new Meteor(26,0);
+        enem = new Meteor(26, 0);
         enem = new Spawn(150, enem);
         spawnList.addElement(enem);
         enem = new Meteor(36, 0);
@@ -1140,15 +1149,38 @@ function gameOver() {
 function finalFate() {
 
 }
+
+
+var pauseReleased = true;
+
+/**
+ * Game Pause.
+ * @returns {undefined}
+ */
+function gamePause() {
+    if(!pause){
+                pauseReleased = true;
+            }
+            if(pause && pauseReleased){
+              pauseReleased = false;  
+              bgm.play();
+              exchangeRenderLoop(gamePlay);  
+            }
+    window.requestAnimationFrame(renderInGame);
+}
+
+var musicAlreadyPlayed = false;
+
 /**
  * 
  * Actual game loop.
  */
 function gamePlay() {
-    if (aniCount === 5) {
+    if (aniCount === 5 && !musicAlreadyPlayed) {
         bgm.currentTime = 0;
         bgm.pause();
         bgm.play();
+        musicAlreadyPlayed = true;
     }
     try {
         //  throw new Error("Test exception.");
@@ -1278,7 +1310,7 @@ function renderInGame() {
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     if (background !== null) {
-        background.updateState();
+        if(renderFunction !== gamePause)background.updateState();
         background.renderState();
     }
     displayList.resetIterator();
@@ -1289,6 +1321,11 @@ function renderInGame() {
 
     }
     renderHUD();
+    if (renderFunction === gamePause) {
+        context.fillStyle = "white";
+        context.font = "27px Nonserif";
+        context.fillText("Pause",380,240);
+    }
 }
 
 // 5 - Delete all elements which declared themselves as no longer needed. Or left the screen.
