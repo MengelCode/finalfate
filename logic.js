@@ -269,6 +269,20 @@ class Meteor extends Enemy {
     
 }
 
+class StupidEnemy extends Enemy{
+    
+     
+     /**
+     * Create a stupid enemy object.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {Meteor}
+     */
+    constructor(middleX,middleY){
+        super(middleX, middleY, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+    }
+}
+
 class Bullet extends GameObject {
 
     constructor(middleX, middleY) {
@@ -820,10 +834,10 @@ function earthLoader() {
         spawnList.addElement(enem);
         enem = airCraft1_factory(72, 0);
         spawnListArrayAdd(enem, 260);
-        enem = new Enemy(9, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(9, 0);
         enem = new Spawn(290, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(69, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(69, 0);
         enem = new Spawn(310, enem);
         spawnList.addElement(enem);
         //Gets a bit more...hurried.
@@ -840,10 +854,10 @@ function earthLoader() {
         enem = new Meteor(23, 0);
         enem = new Spawn(410, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(55, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(55, 0);
         enem = new Spawn(440, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(33, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(33, 0);
         enem = new Spawn(460, enem);
         spawnList.addElement(enem);
         enem = new Meteor(40, 0);
@@ -855,19 +869,19 @@ function earthLoader() {
         enem = new Spawn(530, enem);
         spawnList.addElement(enem);
         //Everything rains at you....
-        enem = new Enemy(30, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(30, 0);
         enem = new Spawn(540, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(13, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(13, 0);
         enem = new Spawn(570, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(79, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(79, 0);
         enem = new Spawn(600, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(55, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(55, 0);
         enem = new Spawn(630, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(33, 0, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        enem = new StupidEnemy(33, 0);
         enem = new Spawn(640, enem);
         spawnList.addElement(enem);
         enem = airCraft1_factory(28, 0);
