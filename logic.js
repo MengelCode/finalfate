@@ -283,15 +283,28 @@ class StupidEnemy extends Enemy {
 }
 
 
-class Blinky extends Enemy{
+class Blinky extends Enemy {
     /**
      * Create a blinky enemy object.
      * @param {type} middleX
      * @param {type} middleY
      * @returns {Blinky}
      */
-    constructor(middleX,middleY){
+    constructor(middleX, middleY) {
         super(middleX, middleY, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+    }
+}
+
+
+class BlinkyTracer extends Enemy {
+    /**
+     * Create a blinky enemy object.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {Blinky}
+     */
+    constructor(middleX, middleY) {
+        super(middleX, middleY, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
     }
 }
 
@@ -411,15 +424,15 @@ class SpaceShip extends GameObject {
 
 
             }
-            if(!pause){
+            if (!pause) {
                 pauseReleased = true;
             }
-            if(pause && pauseReleased){
-              bgm.pause();
-              pauseReleased = false;  
-              exchangeRenderLoop(gamePause);  
+            if (pause && pauseReleased) {
+                bgm.pause();
+                pauseReleased = false;
+                exchangeRenderLoop(gamePause);
             }
-            
+
             if (this.cooldown > 0)
                 this.cooldown--;
         };
@@ -706,7 +719,7 @@ function solarSystemLoader() {
                 case 52:
                 case 54:
                 case 56:
-                    enem = new Enemy(rand - 2, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinky_damage());
+                    enem = new BlinkyTracer(rand - 2, 0);
                     enem = new Spawn(150 + i * 20, enem);
                     spawnList.addElement(enem);
                     break;
@@ -720,7 +733,7 @@ function solarSystemLoader() {
                 case 53:
                 case 55:
                 case 57:
-                    enem = new Enemy(rand + 3, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinky_damage());
+                    enem = new BlinkyTracer(rand + 3, 0);
                     enem = new Spawn(150 + i * 20, enem);
                     spawnList.addElement(enem);
                     break;
@@ -758,16 +771,16 @@ function solarSystemLoader() {
         spawnListArrayAdd(enem, 1350);
         //Blinky mania!!!
         for (var i = 0; i < 40; i++) {
-            enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            enem = new BlinkyTracer(getRandomX(), 0);
             //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
             enem = new Spawn(1400 + i * 20, enem);
             spawnList.addElement(enem);
             if (i % 5 === 0) {
                 var rando = getRandomX() % 2 === 0;
                 if (rando) {
-                    enem = new Enemy(78, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                    enem = new BlinkyTracer(78, 28);
                 } else
-                    enem = new Enemy(-1, 28, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                    enem = new BlinkyTracer(-1, 28);
                 enem = new Spawn(1400 + i * 20, enem);
                 spawnList.addElement(enem);
             }
@@ -788,7 +801,7 @@ function solarSystemLoader() {
             //Object generation.
             switch (randon) {
                 case 0:
-                    enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                    enem = new BlinkyTracer(getRandomX(), 0);
                     break;
                 case 1:
                 case 2:
@@ -814,16 +827,16 @@ function solarSystemLoader() {
         //Blinky mania!!!
         for (var i = 0; i < 70; i++) {
 
-            enem = new Enemy(getRandomX(), 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+            enem = new BlinkyTracer(getRandomX(), 0);
             //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
             enem = new Spawn(4030 + i * 20, enem);
             spawnList.addElement(enem);
             if (i % 5 === 0) {
                 var rando = getRandomX() % 2 === 0;
                 if (rando) {
-                    enem = new Enemy(78, 11, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                    enem = new BlinkyTracer(78, 11);
                 } else
-                    enem = new Enemy(-1, 11, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+                    enem = new BlinkyTracer(-1, 11);
                 enem = new Spawn(4030 + i * 20, enem);
                 spawnList.addElement(enem);
             }
@@ -970,7 +983,7 @@ function earthLoader() {
         spawnListArrayAdd(enem, 1750);
         enem = airCraft1_factory(55, 0);
         spawnListArrayAdd(enem, 1750);
-        enem = new Enemy(70, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enem = new BlinkyTracer(70, 0);
         enem = new Spawn(1900, enem);
         spawnList.addElement(enem);
         enem = airCraft1_factory(11, 0);
@@ -1024,19 +1037,19 @@ function earthLoader() {
         spawnListArrayAdd(enem, 2055);
         enem = airCraft1_factory(40, -18);
         spawnListArrayAdd(enem, 2055);
-        enem = new Enemy(10, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enem = new BlinkyTracer(10, 0);
         enem = new Spawn(2090, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(40, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enem = new BlinkyTracer(40, 0);
         enem = new Spawn(2120, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(50, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enem = new BlinkyTracer(50, 0);
         enem = new Spawn(2150, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(36, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enem = new BlinkyTracer(36, 0);
         enem = new Spawn(2180, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(19, 0, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enem = new BlinkyTracer(19, 0);
         enem = new Spawn(2210, enem);
         spawnList.addElement(enem);
         //Strange wave, 2 out of 2s.
@@ -1171,14 +1184,14 @@ var pauseReleased = true;
  * @returns {undefined}
  */
 function gamePause() {
-    if(!pause){
-                pauseReleased = true;
-            }
-            if(pause && pauseReleased){
-              pauseReleased = false;  
-              bgm.play();
-              exchangeRenderLoop(gamePlay);  
-            }
+    if (!pause) {
+        pauseReleased = true;
+    }
+    if (pause && pauseReleased) {
+        pauseReleased = false;
+        bgm.play();
+        exchangeRenderLoop(gamePlay);
+    }
     window.requestAnimationFrame(renderInGame);
 }
 
@@ -1323,7 +1336,8 @@ function renderInGame() {
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     if (background !== null) {
-        if(renderFunction !== gamePause)background.updateState();
+        if (renderFunction !== gamePause)
+            background.updateState();
         background.renderState();
     }
     displayList.resetIterator();
@@ -1337,7 +1351,7 @@ function renderInGame() {
     if (renderFunction === gamePause) {
         context.fillStyle = "white";
         context.font = "27px Nonserif";
-        context.fillText("Pause",380,240);
+        context.fillText("Pause", 380, 240);
     }
 }
 
