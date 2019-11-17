@@ -282,6 +282,19 @@ class StupidEnemy extends Enemy {
     }
 }
 
+
+class Blinky extends Enemy{
+    /**
+     * Create a blinky enemy object.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {Blinky}
+     */
+    constructor(middleX,middleY){
+        super(middleX, middleY, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+    }
+}
+
 class Bullet extends GameObject {
 
     constructor(middleX, middleY) {
@@ -788,7 +801,7 @@ function solarSystemLoader() {
                     spawnListArrayAdd(enem, 2217 + i * 15);
                     break;
                 case 6:
-                    enem = new Enemy(getRandomX(), 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+                    enem = new Blinky(getRandomX(), 0);
                     break;
 
             }
@@ -896,13 +909,13 @@ function earthLoader() {
         enem = airCraft1_factory(28, 0);
         spawnListArrayAdd(enem, 670);
         //New enemy....
-        enem = new Enemy(55, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+        enem = new Blinky(55, 0);
         enem = new Spawn(760, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(20, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+        enem = new Blinky(20, 0);
         enem = new Spawn(870, enem);
         spawnList.addElement(enem);
-        enem = new Enemy(70, 0, blinky_dimension, blinky_update, blinky_render, blinky_damage());
+        enem = new Blinky(70, 0);
         enem = new Spawn(1000, enem);
         spawnList.addElement(enem);
         //Strange wave, 1 out of 2s.
