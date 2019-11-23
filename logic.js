@@ -119,7 +119,22 @@ class FireBoost extends GameObject {
     }
 }
 
-
+class LifeBoost extends GameObject {
+    /**
+     * Life boost item.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {FireBoost}
+     */
+    constructor(middleX, middleY) {
+        super();
+        this.middleX = middleX;
+        this.middleY = middleY;
+        super.getOccupiedSpace = lifeBoost_dimension;
+        super.updateState = lifeBoost_update;
+        super.renderState = lifeBoost_render;
+    }
+}
 
 class LinkedList {
     /**
@@ -679,7 +694,57 @@ function loadLevel() {
  */
 function universeLoader() {
     try {
-
+        var enem = null;
+        //4000 frames for part A
+        enem = new FireBoost(20, 3);
+        enem = new Spawn(0, enem, true, true, false, false);
+        spawnList.addElement(enem);
+        //3980 frames left.
+        for (var i = 0; i < 308; i++) {
+            var rando = getRandomX() % 16;
+            switch (rando) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    enem = airCraft2_factory(getRandomX(), -6);
+                    spawnListArrayAdd(enem, 10, true);
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                    enem = new Meteor(getRandomX(), 0);
+                    enem = new Spawn(10, enem, true);
+                    spawnList.addElement(enem);
+                    break;
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                    enem = new Blinky(getRandomX(), 0);
+                    enem = new Spawn(10, enem, true);
+                    spawnList.addElement(enem);
+                    break;
+                case 14:
+                case 15:
+                    enem = airCraft3_factory(getRandomX(), -6);
+                    spawnListArrayAdd(enem, 10, true);
+                    break;
+            }
+            if (i % 100 === 0) {
+                enem = new HealthBoost(getRandomX(), 0);
+                enem = new Spawn(0, enem, true, true, false, false);
+                spawnList.addElement(enem);
+            }
+            else if (i % 180 === 0) {
+                enem = new LifeBoost(getRandomX(), 0);
+                enem = new Spawn(0, enem, true, true, false, false);
+                spawnList.addElement(enem);
+            }
+        }
     } catch (error) {
         loadingException = error;
     }
@@ -1074,11 +1139,18 @@ function earthLoader() {
  * @param enemy_array Array with enemies.
  * @param spawn_time Frame when all enemies should spawn.
  */
-function spawnListArrayAdd(enemy_array, spawn_time) {
+function spawnListArrayAdd(enemy_array, spawn_time, relative = false) {
+    var sp = null;
     for (var i = 0; i < enemy_array.length; i++) {
-        var sp = new Spawn(spawn_time, enemy_array[i]);
+        if (!relative) {
+            sp = new Spawn(spawn_time, enemy_array[i], false);
+        } else if (i === 0) {
+            sp = new Spawn(spawn_time, enemy_array[i], true);
+        } else {
+            sp = new Spawn(0, enemy_array[i], false);
+        }
         spawnList.addElement(sp);
-    }
+}
 
 }
 /**
@@ -1451,6 +1523,9 @@ var healthBoost_dimension = meteor_dimension;
 //"Fire Boost" dimension function.
 var fireBoost_dimension = healthBoost_dimension;
 
+//"Life Boost" dimension function.
+var lifeBoost_dimension = healthBoost_dimension;
+
 //"Boss 2 " dimension function.
 function boss2_dimension() {
     var x = [];
@@ -1725,6 +1800,27 @@ function healthBoost_update() {
 
 }
 
+//"Life Boost" update function.
+function lifeBoost_update() {
+    if (this.collides(player)) {
+        this.invalid = true;
+        sfx2.pause();
+        sfx2.currentTime = 0;
+        sfx2.play();
+        player.lifes = player.lifes + 1;
+        return;
+    }
+    this.middleY = this.middleY + 1;
+    if (this.collides(player)) {
+        this.invalid = true;
+        sfx2.pause();
+        sfx2.currentTime = 0;
+        sfx2.play();
+        player.lifes = player.lifes + 1;
+    }
+
+}
+
 //"Fire Boost" update function.
 function fireBoost_update() {
     if (this.collides(player)) {
@@ -1878,6 +1974,20 @@ function fireBoost_render() {
     //Middle line
     context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) + 5, 24, 7);
 }
+
+//"Life Boost" rendering function
+function lifeBoost_render() {
+    //Num pad on mobile.
+    context.fillStyle = "blue";
+    simpleSquare_render.call(this);
+    context.fillStyle = "white";
+    //F
+    //Left line
+    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) - 6, 7, 24);
+    //Lower line
+    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) + 11, 24, 7);
+}
+
 
 //"Blinky Tracer" rendering function.
 var blinkyTracer_render = blinky_render;
