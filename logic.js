@@ -59,9 +59,7 @@ GameObject.prototype.invalidate = function () {
  * @returns {Array}
  */
 GameObject.prototype.getOccupiedSpace = function () {
-    var x = {};
-    var y = {};
-    return new Array(x, y);
+    return new Array({}, {});
 };
 
 
@@ -738,13 +736,13 @@ function universeLoader() {
                 enem = new HealthBoost(getRandomX(), 0);
                 enem = new Spawn(0, enem, true, true, false, false);
                 spawnList.addElement(enem);
-            }
-            else if (i % 180 === 0) {
+            } else if (i % 180 === 0) {
                 enem = new LifeBoost(getRandomX(), 0);
                 enem = new Spawn(0, enem, true, true, false, false);
                 spawnList.addElement(enem);
             }
         }
+        spawnList.addElement(new Spawn(80, boss3_factory(30, 0), true));
     } catch (error) {
         loadingException = error;
     }
@@ -1470,7 +1468,7 @@ function renderHUD() {
 //TODO 
 
 //All "invalidate" functions. Mostly required for bosses.
-function boss1_invalidate() {
+function boss_invalidate() {
     if (this.hp > 0)
         this.hp = this.hp - 7;
     //Don't die if HP higher than 
@@ -1481,9 +1479,15 @@ function boss1_invalidate() {
     }
     invalidate_Badjacent.call(this);
 }
-//Copy the function for boss 2.
-var boss2_invalidate = boss1_invalidate;
 
+//Copy the function for boss 1.
+var boss1_invalidate = boss_invalidate;
+
+//Copy the function for boss 2.
+var boss2_invalidate = boss_invalidate;
+
+//Copy the function for boss 3 heating unit.
+var boss3_heating_invalidate = boss_invalidate;
 
 //All "Score" functions. Not always required.
 
@@ -1558,6 +1562,11 @@ function meteor_dimension(trueMiddleX = this.middleX, trueMiddleY = this.middleY
     var y = [trueMiddleY - 3, trueMiddleY - 3, trueMiddleY - 3, trueMiddleY - 2, trueMiddleY - 2, trueMiddleY - 2, trueMiddleY - 1, trueMiddleY - 1, trueMiddleY - 1, trueMiddleY, trueMiddleY, trueMiddleY, trueMiddleY + 1, trueMiddleY + 1, trueMiddleY + 1];
     return new Array(x, y);
 }
+//"Boss 3 hatch" dimension function.
+var boss3_hatch_dimension = meteor_dimension;
+
+//"Boss 3 heating unit" dimension function.
+var boss3_heating_dimension = meteor_dimension;
 
 //"Boss 2" dimension function.
 var boss2_dimension = meteor_dimension;
@@ -1586,7 +1595,42 @@ function bullet_update() {
 function background1_update() {
     this.middleY = this.middleY + 0.1;
 }
+//Boss 3 hatch.
+function boss3_hatch_update() {
+//Check if this is executed in context of first hatch piece and if there is need
+//for initializiation of the construction.
+//Init for all the remaining hatch objects.
+if(this.previous === null && this.next === null){
+    var tempArray =  [];
+    //Peer elements in upper row.
+    for (var i = 0; i < 6; i++) {
+        tempArray.push(new Enemy(this.middleX + 3 + (i * 3), this.middleY, boss3_hatch_dimension, boss3_hatch_update, boss3_hatch_render, damage = 8, true, 0, func_noOp, 270));
+    }
+    //Peer elements in middle row.
+    for (var i = 1; i < 6; i++) {
+         tempArray.push(new Enemy(this.middleX + (i * 3), this.middleY + 3, boss3_hatch_dimension, boss3_hatch_update, boss3_hatch_render, damage = 8, true, 0, func_noOp, 270));
+    }
+    //Link all remaining pieces together.
+    combineEnemyBricks(tempArray);
+    //Connect this piece with the second.
+    this.linkTogether(tempArray[0]);
+    //Add all pieces to display and enemy list.
+    for(var i = 0; i<tempArray.length; i++){
+        displayList.addElement(tempArray[i],false);
+        enemyList.addElement(tempArray[i],false);
+    }
+    //Add the heating units.
+     var enem = new Enemy(this.middleX + 3 , this.middleY + 6 , boss3_heating_dimension, boss3_heating_update, boss3_heating_render, damage = 8, true, 12000, boss_invalidate, 270);
+                displayList.addElement(enem, false);
+                enemyList.addElement(enem, false);
+}
+}
 
+
+//Boss 3 heating unit update function.
+function boss3_heating_update(){
+    this.frameCounter++;
+}
 
 //Boss 1 not attackable part update function.
 function boss1na_update() {
@@ -1998,6 +2042,20 @@ function boss2_render() {
     context.fillRect(this.middleX * 10, this.middleY * 10, 10 * boss2_constants.prototype.abs_x_pos, 10 * boss2_constants.prototype.abs_y_pos);
 }
 
+//Boss 3 hatch rendering function.
+function boss3_hatch_render() {
+    context.fillStyle = "gray";
+    simpleSquare_render.call(this);
+
+}
+// Boss 3 heater rendering function.
+function boss3_heating_render(){
+    if(this.frameCounter%2===0){
+        context.fillStyle = "yellow";
+    }
+    else context.fillStyle = "red";
+    simpleSquare_render.call(this);
+}
 
 //"Blinky" rendering function
 function blinky_render() {
@@ -2016,7 +2074,19 @@ function blinky_render() {
 }
 //Factory Functions.
 
-//Boss 2
+
+
+//Boss 3 - Heater Master 9000
+
+function boss3_factory(middleX, middleY) {
+    var enemy_array = [];
+//The first tile of the boss.
+    enemy_obj = new Enemy(middleX, middleY, boss3_hatch_dimension, boss3_hatch_update, boss3_hatch_render, damage = 8, true, 0, func_noOp, 270);
+    giant_boss = enemy_obj;
+    return enemy_obj;
+}
+
+//Boss 2 - Mega Aircraft 2
 function boss2_factory(middleX, middleY) {
     var enemy_obj = null;
     //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
@@ -2027,7 +2097,7 @@ function boss2_factory(middleX, middleY) {
 }
 
 
-//Boss 1
+//Boss 1 - Mega Aircraft 1
 function boss1_factory(middleX, middleY) {
     //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
     var enemy_array = [];
@@ -2396,3 +2466,9 @@ function exchangeRenderLoop(func) {
     aniCountRelative = 0;
     renderTimer = setInterval(renderFunction, FRAME_RATE);
 }
+
+/**
+ * Function which does nothing. Sometimes useful.
+ * @returns {undefined}
+ */
+function func_noOp() {}
