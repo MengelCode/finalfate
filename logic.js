@@ -23,26 +23,21 @@ class GameObject {
         /**Returns an array of 2 arrays.
          //X positions occupied = array 0.
          Y positions occupied = array 1.
-         
-         */
-        //this.getOccupiedSpace = null;
-
-        /**
-         * Update the state of this game object.
-         * 
-         */
-        this.updateState = null;
-        /**
-         * Render this object.
-         */
-        this.renderState = null;
-
-
-
-
+         **/
     }
 
 }
+
+/**
+ * Update routine for an object. Every game object should have one.
+ */
+GameObject.prototype.updateState = func_noOp;
+
+/**
+ * Rendering routine for an object. Required to make a game object visible.
+ */
+GameObject.prototype.renderState = func_noOp;
+
 
 /**
  * 
@@ -233,6 +228,7 @@ class Enemy extends GameObject {
      * @param {function} renderRoutine
      * @param {boolean} killable
      * @param {integer} damage
+     * @param {integer} hp
      * @returns {Enemy}
      */
     constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null, hp = 100) {
@@ -463,6 +459,7 @@ class SpaceShip extends GameObject {
             }
         };
         /**
+         * CHEAT ZONE. Default: 100
          * Health Points of the player. If this value goes down to 0(or theoretically less, it costs you a life.
          */
         this.health = 100;
@@ -520,6 +517,17 @@ class Star extends Decoration {
 
 }
 
+class Heat extends Decoration {
+    /**
+     * Creates a Heat decoration object.
+     * @returns {Heat}
+     */
+    constructor() {
+        super(0, 0, heat_render, func_noOp);
+
+    }
+
+}
 
 //TODO INIT
 //try{
@@ -1405,11 +1413,16 @@ function bulletOnEnemies() {
 function renderInGame() {
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
-    if (background !== null) {
+    if (background !== null && background instanceof GameObject) {
         if (renderFunction !== gamePause)
             background.updateState();
         background.renderState();
+    } else if (background !== null && background instanceof Decoration) {
+        if (renderFunction !== gamePause)
+            background.updateRoutine();
+        background.renderRoutine();
     }
+
     displayList.resetIterator();
     while (displayList.peekNext() !== null) {
         var v = displayList.getNext();
@@ -1488,6 +1501,14 @@ var boss2_invalidate = boss_invalidate;
 
 //Copy the function for boss 3 heating unit.
 var boss3_heating_invalidate = boss_invalidate;
+
+/**
+ * Shooting 
+ * @returns {undefined}
+ */
+function boss3_arm_not_active_invalidate() {
+    player.health--;
+}
 
 //All "Score" functions. Not always required.
 
@@ -1600,36 +1621,105 @@ function boss3_hatch_update() {
 //Check if this is executed in context of first hatch piece and if there is need
 //for initializiation of the construction.
 //Init for all the remaining hatch objects.
-if(this.previous === null && this.next === null){
-    var tempArray =  [];
-    //Peer elements in upper row.
-    for (var i = 0; i < 6; i++) {
-        tempArray.push(new Enemy(this.middleX + 3 + (i * 3), this.middleY, boss3_hatch_dimension, boss3_hatch_update, boss3_hatch_render, damage = 8, true, 0, func_noOp, 270));
-    }
-    //Peer elements in middle row.
-    for (var i = 1; i < 6; i++) {
-         tempArray.push(new Enemy(this.middleX + (i * 3), this.middleY + 3, boss3_hatch_dimension, boss3_hatch_update, boss3_hatch_render, damage = 8, true, 0, func_noOp, 270));
-    }
-    //Link all remaining pieces together.
-    combineEnemyBricks(tempArray);
-    //Connect this piece with the second.
-    this.linkTogether(tempArray[0]);
-    //Add all pieces to display and enemy list.
-    for(var i = 0; i<tempArray.length; i++){
-        displayList.addElement(tempArray[i],false);
-        enemyList.addElement(tempArray[i],false);
-    }
-    //Add the heating units.
-     var enem = new Enemy(this.middleX + 3 , this.middleY + 6 , boss3_heating_dimension, boss3_heating_update, boss3_heating_render, damage = 8, true, 12000, boss_invalidate, 270);
+    if (this.previous === null && this.next === null) {
+        var tempArray = [];
+        //Peer elements in upper row.
+        for (var i = 0; i < 6; i++) {
+            tempArray.push(new Enemy(this.middleX + 3 + (i * 3), this.middleY, boss3_hatch_dimension, boss3_hatch_update, boss3_hatch_render, damage = 8, true, 0, func_noOp, 270));
+        }
+        //Peer elements in middle row.
+        for (var i = 1; i < 6; i++) {
+            tempArray.push(new Enemy(this.middleX + (i * 3), this.middleY + 3, boss3_hatch_dimension, boss3_hatch_update, boss3_hatch_render, damage = 8, true, 0, func_noOp, 270));
+        }
+        //Link all remaining pieces together.
+        combineEnemyBricks(tempArray);
+        //Connect this piece with the second.
+        this.linkTogether(tempArray[0]);
+        //Add all pieces to display and enemy list.
+        for (var i = 0; i < tempArray.length; i++) {
+            displayList.addElement(tempArray[i], false);
+            enemyList.addElement(tempArray[i], false);
+        }
+        //Add the heating units.
+        var enem = new Array(5);
+        for (var i = 0; i < enem.length; i++) {
+            enem[i] = new Enemy(this.middleX + 3 + (i * 3), this.middleY + 6, boss3_heating_dimension, boss3_heating_update, boss3_heating_render, damage = 8, true, 12000, boss_invalidate, 270);
+            displayList.addElement(enem[i], false);
+            enemyList.addElement(enem[i], false);
+        }
+        combineEnemyBricks(enem);
+        //Prototyping one arm, lower left. (Take the word "prototype" not too literally!)
+        enem = new Array(6);
+        for (var i = 0; i < enem.length; i++) {
+            enem[i] = new Enemy(2 + (i * 6), 52 - (i * 4) - 1, function () {
+                return [{}, {}];
+            }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            displayList.addElement(enem[i], false);
+            enemyList.addElement(enem[i], false);
+        }
+        //Prototyping one arm, lower right. (Take the word "prototype" not too literally!)
+        enem = new Array(6);
+        for (var i = 0; i < enem.length; i++) {
+            enem[i] = new Enemy(74 - (i * 6), 52 - (i * 4) - 1, function () {
+                return [{}, {}];
+            }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            displayList.addElement(enem[i], false);
+            enemyList.addElement(enem[i], false);
+        }
+        //Prototyping one arm, upper left. (Take the word "prototype" not too literally!)
+        enem = new Array(6);
+        for (var i = 0; i < enem.length; i++) {
+            enem[i] = new Enemy(2 + (i * 6), 2 + (i * 4), function () {
+                return [{}, {}];
+            }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            displayList.addElement(enem[i], false);
+            enemyList.addElement(enem[i], false);
+        }
+        //Prototyping one arm, upper right. (Take the word "prototype" not too literally!)
+        enem = new Array(6);
+        for (var i = 0; i < enem.length; i++) {
+            enem[i] = new Enemy(74 - (i * 6), 2 + (i * 4), function () {
+                return [{}, {}];
+            }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            displayList.addElement(enem[i], false);
+            enemyList.addElement(enem[i], false);
+        }
+        enem = null;
+        //Prototyping the thing in the middle. The H is awesome and will be used wisely!
+        for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 2; j++) {
+                enem = new Enemy(32 + (i *3), 25 + (j * 3), function () {
+                    return [{}, {}];
+                }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, func_noOp, 270);
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
+            }
+        }
+    }
 }
-}
-
+var deathCounter = 0;
 
 //Boss 3 heating unit update function.
-function boss3_heating_update(){
+function boss3_heating_update() {
     this.frameCounter++;
+    //Most of the rest should not be run by any brick except the first.
+    if (this.previous !== null)
+        return;
+    //Only remove health every few seconds if HP is more than one.
+    if (this.frameCounter > 40 && this.frameCounter % 140 === 0 && player.health !== 1) {
+        player.health--;
+        deathCounter = 0;
+    }
+    //Death counter if only one hp left.
+    else if (this.frameCounter > 40 && player.health === 1) {
+        deathCounter++;
+        if (deathCounter > 2400)
+            player.health--;
+    }
+    //Add red background.
+    else if (this.frameCounter === 35) {
+        background = new Heat();
+    }
 }
 
 //Boss 1 not attackable part update function.
@@ -1751,7 +1841,7 @@ function boss2fb_update() {
     }
     //Spawn middle if if X modulo 15 != 0 && X modulo 10 != 0 && X mod 5 == 90
     else if (this.frameCounter % 5 === 0) {
-        enemb = new Enemy(this.middleX - 3, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
+        enemb = new Enemy(this.middleX - 3, this.middleY, blinky_dimension, blinkyTracer_update, blinky_render, damage = 8, true);
         enema = new Enemy(this.middleX, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
     }
     //If enem was created, add it.
@@ -2049,11 +2139,11 @@ function boss3_hatch_render() {
 
 }
 // Boss 3 heater rendering function.
-function boss3_heating_render(){
-    if(this.frameCounter%2===0){
+function boss3_heating_render() {
+    if (this.frameCounter % 2 === 0) {
         context.fillStyle = "yellow";
-    }
-    else context.fillStyle = "red";
+    } else
+        context.fillStyle = "red";
     simpleSquare_render.call(this);
 }
 
@@ -2071,6 +2161,12 @@ function blinky_render() {
     } else
         context.fillStyle = "green";
     simpleSquare_render.call(this);
+}
+
+//"Heat" rendering function
+function heat_render() {
+    context.fillStyle = "#550000";
+    context.fillRect(0, 0, 800, 600);
 }
 //Factory Functions.
 
@@ -2426,6 +2522,7 @@ function invalidate_Badjacent() {
     if (this.previous !== null && this.hp <= 0 && this.previous.hp > this.hp) {
         this.previous.hp = 0;
         this.previous.invalidate();
+        background = null;
     }
 
     if (this.next !== null && this.hp <= 0 && this.next.hp > this.hp) {
