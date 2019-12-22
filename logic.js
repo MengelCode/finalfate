@@ -598,6 +598,10 @@ var spawnList = null;
 var gamePad_mem = false;
 //Remember button.
 var button_mem = false;
+//Remember gamepad index.
+var gamePad_mem_index = -1;
+//Remember button index.
+var button_mem_index = -1;
 //Player instance.
 var player = null;
 //Major boss. Death of it indicates that the next level should come.
@@ -2572,7 +2576,10 @@ function pollButtonMemory() {
         for (var j = 0; testController.buttons.length && j < 40; j++) {
             if (testController.buttons[j] !== undefined && testController.buttons[j].pressed) {
                 gamepad_mem = testController;
+                gamepad_mem_index = i;
                 button_mem = testController.buttons[j];
+                button_mem_index = j;
+                setInterval(gamepadWatchdog,15);
                 return true;
             }
 
@@ -2692,6 +2699,17 @@ function exchangeRenderLoop(func) {
     aniCountRelative = 0;
     renderTimer = setInterval(renderFunction, FRAME_RATE);
 }
+
+/**
+ * Replace the gamepad data structure.
+ * @returns {undefined}
+ */
+function gamepadWatchdog(){
+    controllers = navigator.getGamepads();
+    gamepad_mem = controllers[gamepad_mem_index];
+    button_mem = gamepad_mem.buttons[button_mem_index];
+}
+
 
 /**
  * Function which does nothing. Sometimes useful.
