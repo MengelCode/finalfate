@@ -620,8 +620,11 @@ window.addEventListener("keyup", getKeyRelease);
 var controllers = [];
 
 if (navigator.getGamepads !== undefined) {
-
-//Gamepad connect/disconnect catching, easier way.
+//Triggering the corresponding function blindly. Does neither work for Chrome or FF.    
+//controllerAttached();    
+//Trying to do an interval - does neither work for Chrome or Firefox.
+//setInterval(controllerAttached,FRAME_RATE);
+//Gamepad connect/disconnect catching, easier way. Buggy for Chrome.
     window.addEventListener("gamepadconnected", controllerAttached);
     window.addEventListener("gamepaddisconnected", controllerRemoved);
     controllersSupported = true;
@@ -637,6 +640,28 @@ boss2_constants.prototype.dimension = null;
 //CHEAT ZONE!!
 boss2_constants.prototype.DebugSpawnInstantly = false;
 
+
+
+//Boss 3 middle part.
+
+function boss3_middle_constants() {}
+//Default hp of middle part.
+boss3_middle_constants.prototype.hpDefault = 60;
+//Current hp of middle part.
+boss3_middle_constants.prototype.hp = boss3_middle_constants.prototype.hpDefault;
+
+
+
+//Boss 3 arms.
+
+function boss3_arm_values() {}
+//Default hp of one arm.
+boss3_arm_values.prototype.hpDefault = 30;
+//HP for each arm. 
+boss3_arm_values.prototype.hpValues = new Array(4);
+for (var i = 0; i < boss3_arm_values.prototype.hpValues.length; i++) {
+    boss3_arm_values.prototype.hpValues[i] = boss3_arm_values.prototype.hpDefault;
+}
 
 
 //FUNCTIONS
@@ -1503,11 +1528,27 @@ var boss2_invalidate = boss_invalidate;
 var boss3_heating_invalidate = boss_invalidate;
 
 /**
- * Shooting 
+ * Boss 3 middle part invalidation.
+ * @returns {undefined}
+ */
+function boss3_middle_invalidate() {
+    boss3_middle_constants.prototype.hp -= 7;
+}
+
+/**
+ * Shooting the arms when they are not triggered will be bad for you. 
  * @returns {undefined}
  */
 function boss3_arm_not_active_invalidate() {
     player.health--;
+}
+
+/**
+ * 
+ * @returns {undefined}
+ */
+function boss3_arm_active_invalidate() {
+    boss3_arm_values.prototype.hpValues[this.partId] -= 7;
 }
 
 //All "Score" functions. Not always required.
@@ -1589,6 +1630,9 @@ var boss3_hatch_dimension = meteor_dimension;
 //"Boss 3 heating unit" dimension function.
 var boss3_heating_dimension = meteor_dimension;
 
+//"Boss 3 middle part" dimension function.
+var boss3_middle_dimension = meteor_dimension;
+
 //"Boss 2" dimension function.
 var boss2_dimension = meteor_dimension;
 
@@ -1616,6 +1660,47 @@ function bullet_update() {
 function background1_update() {
     this.middleY = this.middleY + 0.1;
 }
+
+
+//Boss 3 middle.
+function boss3_middle_update() {
+    if (boss3_middle_constants.prototype.hp <= 0 && this.getOccupiedSpace !== func_noDim) {
+        sfx1.pause();
+        sfx1.currentTime = 0;
+        sfx1.play();
+        this.getOccupiedSpace = func_noDim;
+        this.renderState = func_noOp;
+    } else if (boss3_middle_constants.prototype.hp > 0 && this.getOccupiedSpace === func_noDim) {
+        this.getOccupiedSpace = boss3_middle_dimension;
+        this.renderState = boss3_hatch_render;
+    }
+    //Only the first block of the middle element should trigger this code.
+    if (this.firstElement && boss3_middle_constants.prototype.hp > 0) {
+        //Use internal counter.
+        this.frameCounter++;
+        if (this.frameCounter > 30) {
+            //Check for possibilities to place enemy objects and reset counter.
+            lowLeftX = 2 + (5 * 6);
+            lowLeftY = 52 - (5 * 4) - 1;
+            lowRightX = 74 - (5 * 6);
+            lowRightY = 52 - (5 * 4) - 1;
+            //Case 1: All arms present.
+            if (boss3_arm_values.prototype.hpValues[0] > 0 && boss3_arm_values.prototype.hpValues[1] > 0 && boss3_arm_values.prototype.hpValues[2] > 0 && boss3_arm_values.prototype.hpValues[3] > 0) {
+                //Spawn meteor left.
+                enem = new Meteor(lowLeftX, lowLeftY);
+                displayList.addElement(enem, false);
+                enemyList.addElement(enem, false);
+                //Spawn meteor right.
+                enem = new Meteor(lowRightX, lowRightY);
+                displayList.addElement(enem, false);
+                enemyList.addElement(enem, false);
+            }
+            this.frameCounter = 0;
+        }
+    }
+}
+
+
 //Boss 3 hatch.
 function boss3_hatch_update() {
 //Check if this is executed in context of first hatch piece and if there is need
@@ -1641,7 +1726,7 @@ function boss3_hatch_update() {
             enemyList.addElement(tempArray[i], false);
         }
         //Add the heating units.
-        var enem = new Array(5);
+        var enem = new Array(4);
         for (var i = 0; i < enem.length; i++) {
             enem[i] = new Enemy(this.middleX + 3 + (i * 3), this.middleY + 6, boss3_heating_dimension, boss3_heating_update, boss3_heating_render, damage = 8, true, 12000, boss_invalidate, 270);
             displayList.addElement(enem[i], false);
@@ -1651,54 +1736,89 @@ function boss3_hatch_update() {
         //Prototyping one arm, lower left. (Take the word "prototype" not too literally!)
         enem = new Array(6);
         for (var i = 0; i < enem.length; i++) {
-            enem[i] = new Enemy(2 + (i * 6), 52 - (i * 4) - 1, function () {
-                return [{}, {}];
-            }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            enem[i] = new Enemy(2 + (i * 6), 52 - (i * 4) - 1, boss3_hatch_dimension, boss3_arm_update, boss3_arm_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            enem[i].partId = 0;
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
+        //HP for arm 0. (lower left)
+        boss3_arm_values.prototype.hpValues[0] = boss3_arm_values.prototype.hpDefault;
         //Prototyping one arm, lower right. (Take the word "prototype" not too literally!)
         enem = new Array(6);
         for (var i = 0; i < enem.length; i++) {
-            enem[i] = new Enemy(74 - (i * 6), 52 - (i * 4) - 1, function () {
-                return [{}, {}];
-            }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            enem[i] = new Enemy(74 - (i * 6), 52 - (i * 4) - 1, boss3_hatch_dimension, boss3_arm_update, boss3_arm_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            enem[i].partId = 1;
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
+        //HP for arm 1. (lower right)
+        boss3_arm_values.prototype.hpValues[1] = boss3_arm_values.prototype.hpDefault;
         //Prototyping one arm, upper left. (Take the word "prototype" not too literally!)
         enem = new Array(6);
         for (var i = 0; i < enem.length; i++) {
-            enem[i] = new Enemy(2 + (i * 6), 2 + (i * 4), function () {
-                return [{}, {}];
-            }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            enem[i] = new Enemy(2 + (i * 6), 2 + (i * 4), boss3_hatch_dimension, boss3_arm_update, boss3_arm_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            enem[i].partId = 2;
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
+        //HP for arm 2. (upper left)
+        boss3_arm_values.prototype.hpValues[2] = boss3_arm_values.prototype.hpDefault;
         //Prototyping one arm, upper right. (Take the word "prototype" not too literally!)
         enem = new Array(6);
         for (var i = 0; i < enem.length; i++) {
-            enem[i] = new Enemy(74 - (i * 6), 2 + (i * 4), function () {
-                return [{}, {}];
-            }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            enem[i] = new Enemy(74 - (i * 6), 2 + (i * 4), boss3_hatch_dimension, boss3_arm_update, boss3_arm_render, damage = 8, true, 12000, boss3_arm_not_active_invalidate, 270);
+            enem[i].partId = 3;
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
+        //HP for arm 3. (upper right)
+        boss3_arm_values.prototype.hpValues[3] = boss3_arm_values.prototype.hpDefault;
         enem = null;
         //Prototyping the thing in the middle. The H is awesome and will be used wisely!
+        //Health generation.
+        boss3_middle_constants.prototype.hp = boss3_middle_constants.prototype.hpDefault;
         for (var i = 0; i < 5; i++) {
             for (var j = 0; j < 2; j++) {
-                enem = new Enemy(32 + (i *3), 25 + (j * 3), function () {
-                    return [{}, {}];
-                }, func_noOp, boss3_hatch_render, damage = 8, true, 12000, func_noOp, 270);
+                enem = new Enemy(32 + (i * 3), 25 + (j * 3), boss3_middle_dimension, boss3_middle_update, boss3_hatch_render, damage = 8, true, 12000, boss3_middle_invalidate, 270);
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
+                //Mark first element.
+                if (i === 0 && j === 0) {
+                    enem.firstElement = true;
+                }
             }
         }
     }
 }
-var deathCounter = 0;
 
+// Boss 3 arms update function.
+function boss3_arm_update() {
+//Check if arm is dead.
+    if (boss3_arm_values.prototype.hpValues[this.partId] <= 0) {
+        this.invalid = true;
+        return;
+    }
+
+//Check if middle thing is away and needs no revival yet.
+    if (boss3_middle_constants.prototype.hp <= 0 && this.frameCounter < 100) {
+        this.invalidate = boss3_arm_active_invalidate;
+        this.frameCounter++;
+    }
+    // Check if middle thing is away and should be revived.
+    else if (boss3_middle_constants.prototype.hp <= 0) {
+        boss3_middle_constants.prototype.hp = boss3_middle_constants.prototype.hpDefault;
+        this.frameCounter = 0;
+        this.invalidate = boss3_arm_not_active_invalidate;
+    }
+//Otherwise reset the revival counter and make arm part invincible.
+    else {
+        this.frameCounter = 0;
+        this.invalidate = boss3_arm_not_active_invalidate;
+    }
+}
+
+//Counting variable belonging to boss 3 heating unit update function.
+var deathCounter = 0;
 //Boss 3 heating unit update function.
 function boss3_heating_update() {
     this.frameCounter++;
@@ -2062,6 +2182,15 @@ function meteor_render() {
     simpleSquare_render.call(this);
 }
 
+//"Boss 3 arm" rendering function
+function boss3_arm_render() {
+    if (boss3_middle_constants.prototype.hp > 0) {
+        boss3_hatch_render.call(this);
+        return;
+    }
+    context.fillStyle = "yellow";
+    simpleSquare_render.call(this);
+}
 
 //"Health Boost" rendering function
 function healthBoost_render() {
@@ -2398,7 +2527,7 @@ function getKeyRelease(event) {
  * Triggered when a new controller is attached. Not working on all modern browsers.
  * @param {type} event
  */
-function controllerAttached(event) {
+function controllerAttached(event = null) {
     controllers = navigator.getGamepads();
     //window.alert("Gamepad connected at index " + gp.index + ": " + gp.id + " " + gp.buttons.length + " buttons, " + gp.axes.length + "%d axes.");
 }
@@ -2569,3 +2698,14 @@ function exchangeRenderLoop(func) {
  * @returns {undefined}
  */
 function func_noOp() {}
+
+
+
+/**
+ * Function which does return an empty collision matrix.
+ * Useful to make something not touchable.
+ * @returns {Array}
+ */
+function func_noDim() {
+    return [[], []];
+}
