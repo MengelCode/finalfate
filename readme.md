@@ -2,7 +2,7 @@
 
 ## The Project
 
-I decided to train JavaScript in my spare-time. I am in the creation of a HTML 5 space game. Your goal is it to successfully win all levels by shooting the bad guys down and challenging the level bosses. You can control the game with the arrow keys and the space key on your keyboard or go ahead and use a GamePad with an analogue stick and a designated fire button (chosen by pressing it on the title screen). Keep in mind that this feature is experimental and only applicable for Firefox browsers right now.
+I decided to train JavaScript in my spare-time. I am in the creation of a HTML 5 space game. Your goal is it to successfully win all levels by shooting the bad guys down and challenging the level bosses. You can control the game with the arrow keys and the space key on your keyboard or go ahead and use a GamePad with an analogue stick and a designated fire button (chosen by pressing it on the title screen). Keep in mind that this feature is experimental.
 
 
 ## The Goal
