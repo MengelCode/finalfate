@@ -602,6 +602,8 @@ var button_mem = false;
 var gamePad_mem_index = -1;
 //Remember button index.
 var button_mem_index = -1;
+//Remember gamepad interval call.
+var gamepad_thread = null;
 //Player instance.
 var player = null;
 //Major boss. Death of it indicates that the next level should come.
@@ -1227,6 +1229,10 @@ function loseLife() {
 function titleScreen() {
     button_mem = false;
     controller_mem = false;
+    if(gamepad_thread!==null){
+        clearInterval(gamepad_thread);
+        gamepad_thread = null;
+    }
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     context.font = "60px Serif";
@@ -2579,7 +2585,7 @@ function pollButtonMemory() {
                 gamepad_mem_index = i;
                 button_mem = testController.buttons[j];
                 button_mem_index = j;
-                setInterval(gamepadWatchdog,15);
+                gamepad_thread = setInterval(gamepadWatchdog,30);
                 return true;
             }
 
