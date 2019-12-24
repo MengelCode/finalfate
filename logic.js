@@ -542,13 +542,16 @@ var right = 0;
 var pause = 0;
 //HTML Canvas
 var canvas = document.getElementById("myScreen");
-var newWidth = window.innerWidth - (window.innerWidth / 100 * 3);
-var newHeight = window.innerHeight - (window.innerHeight / 100 * 3);
-canvas.setAttribute("width", newWidth);
-canvas.setAttribute("height", newHeight);
+const oldestWidth = 800;
+const oldestHeight = 600;
+var oldWidth = oldestWidth;
+var oldHeight = oldestHeight;
+var newWidth = null;
+var newHeight = null;
 //Context
 var context = canvas.getContext("2d");
-context.scale(newWidth / 800, newHeight / 600);
+//Fit canvas and context to actual screen size.
+sizeChanged();
 //Function Pointer to what should happen in the next rendering cycle.
 var renderFunction = null;
 //Time to reset the frame counter to.
@@ -563,7 +566,7 @@ var sfx1 = document.getElementById("sfx-channel-1");
 var sfx2 = document.getElementById("sfx-channel-2");
 //Die.
 var sfx3 = document.getElementById("sfx-channel-3");
-//
+//Game over tune.
 var game_over = document.getElementById("game-over");
 //Exception occured.
 var loadingException = null;
@@ -622,6 +625,7 @@ var renderTimer = setInterval(renderFunction, FRAME_RATE);
 //Keyboard input catching.
 window.addEventListener("keydown", getKeyPress);
 window.addEventListener("keyup", getKeyRelease);
+window.addEventListener("resize", sizeChanged);
 //Controller list.
 var controllers = [];
 
@@ -1229,7 +1233,7 @@ function loseLife() {
 function titleScreen() {
     button_mem = false;
     controller_mem = false;
-    if(gamepad_thread!==null){
+    if (gamepad_thread !== null) {
         clearInterval(gamepad_thread);
         gamepad_thread = null;
     }
@@ -2585,7 +2589,7 @@ function pollButtonMemory() {
                 gamepad_mem_index = i;
                 button_mem = testController.buttons[j];
                 button_mem_index = j;
-                gamepad_thread = setInterval(gamepadWatchdog,30);
+                gamepad_thread = setInterval(gamepadWatchdog, 30);
                 return true;
             }
 
@@ -2710,7 +2714,7 @@ function exchangeRenderLoop(func) {
  * Replace the gamepad data structure.
  * @returns {undefined}
  */
-function gamepadWatchdog(){
+function gamepadWatchdog() {
     controllers = navigator.getGamepads();
     gamepad_mem = controllers[gamepad_mem_index];
     button_mem = gamepad_mem.buttons[button_mem_index];
@@ -2733,3 +2737,22 @@ function func_noOp() {}
 function func_noDim() {
     return [[], []];
 }
+
+
+/**
+ * Event handler triggered when windows size changes.
+ * @returns {undefined}
+ */
+function sizeChanged() {
+    newWidth = window.innerWidth - (window.innerWidth / 100 * 3);
+    newHeight = window.innerHeight - (window.innerHeight / 100 * 3);
+    canvas.setAttribute("width", newWidth);
+    canvas.setAttribute("height", newHeight);
+    //context.scale(newWidth / oldWidth, newHeight / oldHeight);
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.scale(newWidth / oldestWidth, newHeight / oldestHeight);
+    oldWidth = newWidth;
+    oldHeight = newHeight;
+    //window.alert("New canvas resolution: " + newWidth + "x" + newHeight + "<br> New inner window size: " + window.innerWidth + "x" + window.innerHeight);
+}
+
