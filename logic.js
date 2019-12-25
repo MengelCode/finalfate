@@ -433,6 +433,8 @@ class SpaceShip extends GameObject {
 
 
             }
+            
+            //gamepad_mem.buttons[button_mem_index]
             if (!pause) {
                 pauseReleased = true;
             }
@@ -607,6 +609,8 @@ var gamePad_mem_index = -1;
 var button_mem_index = -1;
 //Remember gamepad interval call.
 var gamepad_thread = null;
+//Periodically check if gamepad button 9 is pressed.
+var pause_thread = null;
 //Player instance.
 var player = null;
 //Major boss. Death of it indicates that the next level should come.
@@ -1235,6 +1239,7 @@ function titleScreen() {
     controller_mem = false;
     if (gamepad_thread !== null) {
         clearInterval(gamepad_thread);
+        clearInterval(pause_thread);
         gamepad_thread = null;
     }
     context.fillStyle = "black";
@@ -2590,6 +2595,7 @@ function pollButtonMemory() {
                 button_mem = testController.buttons[j];
                 button_mem_index = j;
                 gamepad_thread = setInterval(gamepadWatchdog, 30);
+                pause_thread = setInterval(pauseWatchdog,30);
                 return true;
             }
 
@@ -2720,6 +2726,16 @@ function gamepadWatchdog() {
     button_mem = gamepad_mem.buttons[button_mem_index];
 }
 
+/**
+ * Checks if button 9 is pressed.
+ * @returns {undefined}
+ */
+function pauseWatchdog(){
+    if(gamepad_mem.buttons[9].pressed){
+        pause = true;
+    }
+    else pause = false;
+}
 
 /**
  * Function which does nothing. Sometimes useful.
