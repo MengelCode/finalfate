@@ -1,0 +1,7 @@
+#!/bin/bash
+
+docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
+echo "DEBUG: Exiting pre_build"
+
+exit 0
