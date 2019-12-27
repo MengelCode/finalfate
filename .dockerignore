@@ -1,0 +1,4 @@
+*
+# We ignore everything
+# But including the finalfate directory
+!finalfate/

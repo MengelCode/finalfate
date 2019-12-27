@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Local test values
+DEST_ARCHES="amd64 arm32v7 arm64v8"
+# Environment
+DOCKERHUB_NAME="mengel38"
+DEST_REPO="finalfate"
+SRC_REPO="httpd"
+SRC_TAG="alpine"
+
+# dynamic Values
+apt-get update && apt-get install git -y -q
+VCS_REF="$(git rev-parse --short HEAD)"
+BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+DEST_TAG="${DOCKER_TAG}"
+
+echo "DEBUG: ${VCSREF} and ${BUILD_DATE}"
+
+# Begin generating manifest file
+echo "image: ${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}" > auto-docker-manifest.yaml
+echo "manifests:" >> auto-docker-manifest.yaml
+
+# Cycle trough the the arches
+for DEST_BUILD_ARCH in ${DEST_ARCHES}
+do
+echo "DEBUG: Begin Cycle ${DEST_BUILD_ARCH}"
+    DEST_OS="linux"
+    # Set AMD64
+    if [ ${DEST_BUILD_ARCH} == "amd64" ]; then
+        SRC_NAME="amd64"
+        DEST_ARCH=${DEST_BUILD_ARCH}
+        DOCKER_PREFIX=""
+        echo "  - image: ${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}" >> auto-docker-manifest.yaml
+        echo "    platform:" >> auto-docker-manifest.yaml
+        echo "      architecture: ${DEST_ARCH}" >> auto-docker-manifest.yaml
+        echo "      os: ${DEST_OS}" >> auto-docker-manifest.yaml
+
+    # Set armhf
+    elif [ ${DEST_BUILD_ARCH} == "arm32v7" ]; then
+        SRC_NAME="arm32v7"
+        DEST_ARCH="arm"
+        DOCKERFILE_PREFIX="armhf."
+        echo "  - image: ${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}" >> auto-docker-manifest.yaml
+        echo "    platform:" >> auto-docker-manifest.yaml
+        echo "      architecture: ${DEST_ARCH}" >> auto-docker-manifest.yaml
+        echo "      os: ${DEST_OS}" >> auto-docker-manifest.yaml
+        echo "      variant: v7" >> auto-docker-manifest.yaml
+
+    # Set arm64
+    elif [ ${DEST_BUILD_ARCH} == "arm64v8" ]; then
+        SRC_NAME="arm64v8"
+        DEST_ARCH="arm64"
+        DOCKERFILE_PREFIX="aarch64."
+        echo "  - image: ${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}" >> auto-docker-manifest.yaml
+        echo "    platform:" >> auto-docker-manifest.yaml
+        echo "      architecture: ${DEST_ARCH}" >> auto-docker-manifest.yaml
+        echo "      os: ${DEST_OS}" >> auto-docker-manifest.yaml
+        echo "      variant: v8" >> auto-docker-manifest.yaml
+
+    # arch not found
+    else
+        echo "FATAL: The buildarch is not referenced here. Exiting"
+        exit 1
+    fi
+
+    echo "Begin Building ${DEST_BUILD_ARCH}"
+    DOCKERFILE="${DOCKERFILE_PREFIX}Dockerfile"
+    # Build the docker image
+    docker build \
+        --compress \
+        --pull \
+        --label description="The Space Game created from Mengel38" \
+        --label docker.cmd="docker run -d ${DOCKERHUB_NAME}/${DEST_REPO}" \
+        --label maintainer="mengel38" \
+        --label vendor="mengel38" \
+        --label vcs-url="https://github.com/mengel38/finalfate" \
+        --label url="https://github.com/mengel38/finalfate" \
+        --label name="${IMAGE_NAME}" \
+        --label version="${BUILD_VERSION}"\
+        --label build-date="${BUILD_DATE}" \
+        --label vcs-ref="${VCS_REF}" \
+        --label schema-version="1.0.0-rc1" \
+        --file "${DOCKERFILE}" \
+        --build-arg SRC_REPO="${SRC_REPO}" \
+        --build-arg SRC_TAG="${SRC_TAG}" \
+        --build-arg SRC_NAME="${SRC_NAME}" \
+        --tag "${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}" \
+        .
+done
+
+echo "Exit build hook"
+
+exit 0
