@@ -10,14 +10,6 @@ wget -cO - https://github.com/estesp/manifest-tool/releases/download/v1.0.0/mani
 
 chmod +x manifest-tool
 
-echo "Push the docker images"
-
-# Cycle trough the the arches again and push the images
-for DEST_BUILD_ARCH in ${DEST_ARCHES}
-do
-    docker push ${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}
-done
-
 echo "Push the manifest"
 
 ./manifest-tool push from-spec auto-docker-manifest.yaml
