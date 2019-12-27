@@ -81,9 +81,6 @@ echo "DEBUG: Begin Cycle ${DEST_BUILD_ARCH}"
         --label vcs-ref="${VCS_REF}" \
         --label schema-version="1.0.0-rc1" \
         --file "${DOCKERFILE}" \
-        --build-arg SRC_REPO="${SRC_REPO}" \
-        --build-arg SRC_TAG="${SRC_TAG}" \
-        --build-arg SRC_NAME="${SRC_NAME}" \
         --tag "${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}" \
         .
 done
