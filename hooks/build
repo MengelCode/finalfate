@@ -69,10 +69,10 @@ echo "DEBUG: Begin Cycle ${DEST_BUILD_ARCH}"
     docker build \
         --compress \
         --pull \
-        --label description="The Space Game created from Mengel38" \
+        --label description="The Final Fate - a 2D space shooter created by Mengel38" \
         --label docker.cmd="docker run -d ${DOCKERHUB_NAME}/${DEST_REPO}" \
-        --label maintainer="mengel38" \
-        --label vendor="mengel38" \
+        --label maintainer="manuel-engel-97@gmx.de" \
+        --label vendor="manuel-engel-97@gmx.de" \
         --label vcs-url="https://github.com/mengel38/finalfate" \
         --label url="https://github.com/mengel38/finalfate" \
         --label name="${IMAGE_NAME}" \
