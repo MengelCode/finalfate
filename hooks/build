@@ -66,7 +66,7 @@ echo "DEBUG: Begin Cycle ${DEST_BUILD_ARCH}"
     echo "Begin Building ${DEST_BUILD_ARCH}"
     DOCKERFILE="${DOCKERFILE_PREFIX}Dockerfile"
     # Build the docker image
-docker build \
+    docker build \
         --compress \
         --pull \
         --label description="The Final Fate - a 2D space shooter created by Mengel38" \
@@ -86,7 +86,7 @@ docker build \
         --build-arg SRC_NAME="${SRC_NAME}" \
         --tag "${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}" \
         .
-docker push ${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}
+    docker push ${DOCKERHUB_NAME}/${DEST_REPO}:${DEST_TAG}-${DEST_BUILD_ARCH}
 done
 
 echo "Exit build hook"
