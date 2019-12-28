@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Local test values
-DEST_ARCHES="amd64 arm32v7 arm64v8"
+DEST_ARCHES="amd64"
 # Environment
 DOCKERHUB_NAME="mengel38"
 DEST_REPO="finalfate"
