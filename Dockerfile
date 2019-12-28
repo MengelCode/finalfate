@@ -1,7 +1,7 @@
 # Setup variables
-ARG SRC_NAME=amd64
-ARG SRC_REPO=httpd
-ARG SRC_TAG=alpine
+ARG SRC_NAME
+ARG SRC_REPO
+ARG SRC_TAG
 
 # Pull image
 FROM ${SRC_NAME}/${SRC_REPO}:${SRC_TAG}
