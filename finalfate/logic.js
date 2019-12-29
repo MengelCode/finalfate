@@ -379,7 +379,8 @@ class SpaceShip extends GameObject {
         this.cooldown = 0;
         super.updateState = function () {
             //If memorized button here, then poll that from controller.
-            if (button_mem) {
+            //Disabled for now.
+            if (false) {
                 pollAxisX();
                 pollAxisY();
                 pollDatButton();
@@ -433,7 +434,7 @@ class SpaceShip extends GameObject {
 
 
             }
-            
+
             //gamepad_mem.buttons[button_mem_index]
             if (!pause) {
                 pauseReleased = true;
@@ -542,6 +543,15 @@ var down = 0;
 var left = 0;
 var right = 0;
 var pause = 0;
+//"Boolean" for specific input source.
+//"Keyboard" boolean.
+var keyboard = false;
+//"Gamepad" boolean.
+var gamepad = false;
+//Gamepad index. ( false = no button assigned)
+var gamepad_button = false;
+//Gamepad event handle.
+var gamepad_handle = null;
 //HTML Canvas
 var canvas = document.getElementById("myScreen");
 const oldestWidth = 800;
@@ -599,18 +609,6 @@ var enemyList = null;
 var bulletList = null;
 //Linked List for spawners.
 var spawnList = null;
-//Remember gamepad
-var gamePad_mem = false;
-//Remember button.
-var button_mem = false;
-//Remember gamepad index.
-var gamePad_mem_index = -1;
-//Remember button index.
-var button_mem_index = -1;
-//Remember gamepad interval call.
-var gamepad_thread = null;
-//Periodically check if gamepad button 9 is pressed.
-var pause_thread = null;
 //Player instance.
 var player = null;
 //Major boss. Death of it indicates that the next level should come.
@@ -626,23 +624,12 @@ y_dimension = 33;
 x_dimension = 20;
 //Enter rendering cycle.
 var renderTimer = setInterval(renderFunction, FRAME_RATE);
-//Keyboard input catching.
-window.addEventListener("keydown", getKeyPress);
-window.addEventListener("keyup", getKeyRelease);
+initAllInput();
+//Changed window size.
 window.addEventListener("resize", sizeChanged);
-//Controller list.
-var controllers = [];
 
-if (navigator.getGamepads !== undefined) {
-//Triggering the corresponding function blindly. Does neither work for Chrome or FF.    
-//controllerAttached();    
-//Trying to do an interval - does neither work for Chrome or Firefox.
-//setInterval(controllerAttached,FRAME_RATE);
-//Gamepad connect/disconnect catching, easier way. Buggy for Chrome.
-    window.addEventListener("gamepadconnected", controllerAttached);
-    window.addEventListener("gamepaddisconnected", controllerRemoved);
-    controllersSupported = true;
-}
+
+
 //"STATIC" PROTOTYPES
 //Boss 2 constants carrier.
 function boss2_constants() {}
@@ -681,6 +668,27 @@ for (var i = 0; i < boss3_arm_values.prototype.hpValues.length; i++) {
 //FUNCTIONS
 
 //Auxillary functions for level transitions.
+
+/**
+ * Resets all knowledge about used devices
+ * and makes sure every input device is checked.
+ * @returns {undefined}
+ */
+function initAllInput() {
+    if (!keyboard) {
+        //Keyboard input catching.
+        window.addEventListener("keydown", getKeyPress);
+        window.addEventListener("keyup", getKeyRelease);
+    }
+    if (gamepad_handle !== null) {
+        //Terminate polling of specific (?) gamepad.
+        clearInterval(gamepad_handle);
+    }//Gamepad input catching.
+    gamepad_handle = setInterval(gamepadAskAnyButton,FRAME_RATE);
+    //Reset used state.
+    keyboard = false;
+    gamepad = false;
+}
 /**
  * 
  * Define the beginning state of the game, then start with the first level.
@@ -1235,13 +1243,6 @@ function loseLife() {
  * Render the title screen.
  */
 function titleScreen() {
-    button_mem = false;
-    controller_mem = false;
-    if (gamepad_thread !== null) {
-        clearInterval(gamepad_thread);
-        clearInterval(pause_thread);
-        gamepad_thread = null;
-    }
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     context.font = "60px Serif";
@@ -1256,7 +1257,17 @@ function titleScreen() {
             context.fillStyle = "gold";
             context.fillText("PRESS SPACE TO START", 230, 520);
             //Let the show begin!
-            if (shoot === 5 || pollButtonMemory()) {
+            //Disabled game pad functionality.
+            //if (shoot === 5 || pollButtonMemory()) {
+            if (keyboard) {
+                clearInterval(gamepad_handle);
+                initGame();
+            }
+            if (gamepad !== false) {
+                window.removeEventListener("keydown", getKeyPress);
+                window.removeEventListener("keyup", getKeyRelease);
+                clearInterval(gamepad_handle);
+                gamepad_handle = setInterval(gamepadPoll,FRAME_RATE);
                 initGame();
             }
         }
@@ -1286,6 +1297,7 @@ function gameOver() {
     context.fillStyle = "yellow";
     context.fillText("GAME OVER", 180, 320);
     if (aniCount === 90) {
+        initAllInput();
         exchangeRenderLoop(titleScreen);
     }
 }
@@ -1300,7 +1312,7 @@ function finalFate() {
 
 
 var pauseReleased = true;
-
+var selectedOption = 0;
 /**
  * Game Pause.
  * @returns {undefined}
@@ -1313,6 +1325,15 @@ function gamePause() {
         pauseReleased = false;
         bgm.play();
         exchangeRenderLoop(gamePlay);
+    }
+    if (up && selectedOption) {
+        selectedOption--;
+        axisReleased = false;
+    }
+    //Check for selecting an option below
+    else if (down && selectedOption < pauseText.length - 1) {
+        selectedOption++;
+        axisReleased = false;
     }
     window.requestAnimationFrame(renderInGame);
 }
@@ -1453,7 +1474,8 @@ function bulletOnEnemies() {
 
 
 // 4 -  Render game objects.
-
+//String array with pause menu constants.
+var pauseText = ["Continue", "Save", "Return to title", "Close application tab"];
 function renderInGame() {
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
@@ -1476,9 +1498,22 @@ function renderInGame() {
     }
     renderHUD();
     if (renderFunction === gamePause) {
-        context.fillStyle = "white";
         context.font = "27px Nonserif";
-        context.fillText("Pause", 380, 240);
+        //Shared Y,X coordinates
+        let y = 245;
+        let x = 330;
+        //Display the pause menu options. (treat the case selected / not selected)
+        for (var i = 0; i < pauseText.length; i++) {
+            if (selectedOption === i) {
+                context.fillStyle = "yellow";
+                if (aniCount % 5 === aniCount % 10) {
+                    context.fillText(pauseText[i], x, y + i * 30);
+                }
+            } else {
+                context.fillStyle = "white";
+                context.fillText(pauseText[i], x, y + i * 30);
+            }
+        }
     }
 }
 
@@ -2494,7 +2529,8 @@ function keyInvalidator() {
 
 //Event receiver for key presses.
 function getKeyPress(event) {
-
+    //Keyboard press detected!
+    keyboard = 1;
     //window.alert("It works....");
     //window.alert(event.keyCode);
     //Key Codes supported?
@@ -2543,115 +2579,62 @@ function getKeyRelease(event) {
 }
 
 /**
- * Triggered when a new controller is attached. Not working on all modern browsers.
- * @param {type} event
- */
-function controllerAttached(event = null) {
-    controllers = navigator.getGamepads();
-    //window.alert("Gamepad connected at index " + gp.index + ": " + gp.id + " " + gp.buttons.length + " buttons, " + gp.axes.length + "%d axes.");
-}
-/**
- * Triggered when a controller is removed. Not working on all modern browsers.
- * @param {type} event
- */
-function controllerRemoved(event) {
-    //navigator.getGamepads()[event.gamepad.index] = undefined;
-}
-
-
-/**
- * ERRORNOUS. Works only one time before everything crashes.
- * @returns {boolean} Is a key pressed on any gamepad?
- */
-function pollButtonTrivial() {
-    for (var i = 0; i < controllers.length; i++) {
-        var testController = controllers[i];
-        if (testController === undefined)
-            continue;
-        if (testController.buttons === undefined)
-            continue;
-        for (var j = 0; testController.buttons.length; j++) {
-            if (testController.buttons[j] !== undefined && testController.buttons[j].pressed)
-                return true;
-        }
-    }
-    return false;
-}
-/**
- * Same as before, but remember button!
+ * Poll every button on every gamepad.
  * @returns {Boolean}
  */
-function pollButtonMemory() {
+function gamepadAskAnyButton() {
+    var controllers = navigator.getGamepads();
     for (var i = 0; i < controllers.length && i < 10; i++) {
         var testController = controllers[i];
-        if (testController === undefined)
+        if (!testController)
             continue;
-        if (testController.buttons === undefined)
+        if (!testController.buttons)
             continue;
-        for (var j = 0; testController.buttons.length && j < 40; j++) {
-            if (testController.buttons[j] !== undefined && testController.buttons[j].pressed) {
-                gamepad_mem = testController;
-                gamepad_mem_index = i;
-                button_mem = testController.buttons[j];
-                button_mem_index = j;
-                gamepad_thread = setInterval(gamepadWatchdog, 30);
-                pause_thread = setInterval(pauseWatchdog,30);
-                return true;
+        for (var j = 0; testController.buttons.length && j < testController.buttons.length; j++) {
+            //Prevent "Start button" from ever becoming the fire button.
+            if (j === 9)
+                continue;
+            if (testController.connected && testController.buttons[j] && testController.buttons[j].pressed) {
+                gamepad = i;
+                gamepad_button = j;
             }
 
         }
     }
-    return false;
+
 }
-/**
- * Poll remembered button.
- * @returns {undefined}
- */
-function pollDatButton() {
-    if (button_mem.pressed) {
-        shoot = 5;
-    } else {
-        shoot = 0;
+
+
+
+//Poll gamepad.
+function gamepadPoll() {
+    var controller = navigator.getGamepads()[gamepad];
+    //Error condition: Controller is no object or even null or undefined.
+    if (!controller) {
+        return;
     }
-}
-
-/**
- * Poll X Axis of gamepad.
- * @returns {undefined}
- */
-function pollAxisX() {
-    //I think this is right?
-    if (gamepad_mem.axes[0] > 0.4) {
-        left = false;
-        right = true;
-    } else if (gamepad_mem.axes[0] < -0.4) {
-        left = true;
-        right = false;
-    } else {
-        left = false;
-        right = false;
+    //Error condition: Controller.buttons is no array or even null or undefined.
+    if (!controller.buttons || !controller.buttons.length) {
+        return;
     }
-}
-
-
-/**
- * Poll Y Axis of gamepad.
- * @returns {undefined}
- */
-function pollAxisY() {
-    //I think this is right?
-    if (gamepad_mem.axes[1] > 0.4) {
-        up = false;
-        down = true;
-    } else if (gamepad_mem.axes[1] < -0.4) {
-        up = true;
-        down = false;
-    } else {
-        up = false;
-        down = false;
+    //Error condition: Gamepad is disconnected.
+    if (!controller.connected) {
+        return;
     }
+    //Error condition: Fire button did magically disappear.
+    if (controller.buttons[gamepad_button] === undefined || controller.buttons[gamepad_button] === null) {
+        return;
+    }
+    //Is button pressed?
+    shoot = controller.buttons[gamepad_button].pressed;
+    //Validate axis states.
+    left = controller.axes[0] < -0.4;
+    right = controller.axes[0] > 0.4;
+    up = controller.axes[1] < -0.4;
+    down = controller.axes[1] > 0.4;
+    //Is pause pressed?
+    pause = controller.buttons[9].pressed;
 }
-
 
 /**
  }
@@ -2716,26 +2699,7 @@ function exchangeRenderLoop(func) {
     renderTimer = setInterval(renderFunction, FRAME_RATE);
 }
 
-/**
- * Replace the gamepad data structure.
- * @returns {undefined}
- */
-function gamepadWatchdog() {
-    controllers = navigator.getGamepads();
-    gamepad_mem = controllers[gamepad_mem_index];
-    button_mem = gamepad_mem.buttons[button_mem_index];
-}
 
-/**
- * Checks if button 9 is pressed.
- * @returns {undefined}
- */
-function pauseWatchdog(){
-    if(gamepad_mem.buttons[9].pressed){
-        pause = true;
-    }
-    else pause = false;
-}
 
 /**
  * Function which does nothing. Sometimes useful.
