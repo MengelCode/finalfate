@@ -367,6 +367,9 @@ class SpaceShip extends GameObject {
         super.getOccupiedSpace = function () {
             var x = [this.middleX, this.middleX, this.middleX, this.middleX - 1, this.middleX - 2, this.middleX + 1, this.middleX + 2, this.middleX - 2, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
             var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY, this.middleY, this.middleY, this.middleY, this.middleY - 1, this.middleY - 1, this.middleY + 1, this.middleY + 1, this.middleY + 1];
+            for(var i = 0; i<y.length; i++ ){
+                y[i]-=5;
+            }
             return new Array(x, y);
         };
         //Keyboard thingie released?
