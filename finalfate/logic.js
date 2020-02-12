@@ -1250,7 +1250,7 @@ function titleScreen() {
     context.fillText("THE FINAL FATE", 120, 150);
     context.font = "17px Nonserif";
     context.fillStyle = "white";
-    context.fillText("(C) 2019 Manuel Engel", 270, 580);
+    context.fillText("GAME (C) 2019-2020 Manuel Engel", 220, 580);
     try {
         if (aniCount % 5 === aniCount % 10) {
             context.font = "23px Nonserif";
