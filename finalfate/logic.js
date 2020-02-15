@@ -367,6 +367,26 @@ class SpaceShip extends GameObject {
         super.getOccupiedSpace = function () {
             var x = [this.middleX, this.middleX, this.middleX, this.middleX - 1, this.middleX - 2, this.middleX + 1, this.middleX + 2, this.middleX - 2, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
             var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY, this.middleY, this.middleY, this.middleY, this.middleY - 1, this.middleY - 1, this.middleY + 1, this.middleY + 1, this.middleY + 1];
+            for (var i = 0; i < y.length; i++) {
+                y[i] -= 5;
+            }
+            var x_org_length = x.length;
+
+            for (var i = 0; i < x_org_length; i++) {
+                x.push(x[i] - 1);
+                y.push(y[i]);
+            }
+            if (left) {
+                for (var i = 0; i < x.length; i++) {
+                    x[i] -= 2;
+                }
+            }
+             if (right) {
+                for (var i = 0; i < x.length; i++) {
+                    x[i] += 2;
+                }
+            }
+
             return new Array(x, y);
         };
         //Keyboard thingie released?
@@ -684,7 +704,7 @@ function initAllInput() {
         //Terminate polling of specific (?) gamepad.
         clearInterval(gamepad_handle);
     }//Gamepad input catching.
-    gamepad_handle = setInterval(gamepadAskAnyButton,FRAME_RATE);
+    gamepad_handle = setInterval(gamepadAskAnyButton, FRAME_RATE);
     //Reset used state.
     keyboard = false;
     gamepad = false;
@@ -1267,7 +1287,7 @@ function titleScreen() {
                 window.removeEventListener("keydown", getKeyPress);
                 window.removeEventListener("keyup", getKeyRelease);
                 clearInterval(gamepad_handle);
-                gamepad_handle = setInterval(gamepadPoll,FRAME_RATE);
+                gamepad_handle = setInterval(gamepadPoll, FRAME_RATE);
                 initGame();
             }
         }
@@ -1631,6 +1651,13 @@ function meteor_damage() {
 //All dimension matrix functions.
 
 
+//"Stupid Enemy" dimension function.
+function stupidEnemy_dimension(dummyX, dummyY) {
+    var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
+    var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
+    return new Array(x, y);
+}
+
 //"Background" dimension function.
 function background_dimension() {
     return null;
@@ -1638,7 +1665,7 @@ function background_dimension() {
 
 
 //"Health Boost" dimension function.
-var healthBoost_dimension = meteor_dimension;
+var healthBoost_dimension = stupidEnemy_dimension;
 
 //"Fire Boost" dimension function.
 var fireBoost_dimension = healthBoost_dimension;
@@ -1656,28 +1683,17 @@ function boss2_dimension() {
     return new Array(x, y);
 }
 
-
-
 //"Bullet" dimension function.
 function bullet_dimension() {
     var x = [this.middleX, this.middleX, this.middleX, this.middleX, this.middleX - 1, this.middleX - 1, this.middleX - 1, this.middleX - 1];
     var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY - 3, this.middleY, this.middleY - 1, this.middleY - 2, this.middleY - 3];
     return new Array(x, y);
 }
-//"Stupid Enemy" dimension function.
-function stupidEnemy_dimension() {
-    var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
-    var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
-    return new Array(x, y);
-}
+
 
 //"Meteor" dimension function.
-function meteor_dimension(trueMiddleX = this.middleX, trueMiddleY = this.middleY) {
-    //think of a mobile key pad to understand the coords. 2 shadow layers added.
-    var x = [trueMiddleX - 1, trueMiddleX, trueMiddleX + 1, trueMiddleX - 1, trueMiddleX, trueMiddleX + 1, trueMiddleX - 1, trueMiddleX, trueMiddleX + 1, trueMiddleX - 1, trueMiddleX, trueMiddleX + 1, trueMiddleX - 1, trueMiddleX, trueMiddleX + 1];
-    var y = [trueMiddleY - 3, trueMiddleY - 3, trueMiddleY - 3, trueMiddleY - 2, trueMiddleY - 2, trueMiddleY - 2, trueMiddleY - 1, trueMiddleY - 1, trueMiddleY - 1, trueMiddleY, trueMiddleY, trueMiddleY, trueMiddleY + 1, trueMiddleY + 1, trueMiddleY + 1];
-    return new Array(x, y);
-}
+var meteor_dimension = stupidEnemy_dimension;
+
 //"Boss 3 hatch" dimension function.
 var boss3_hatch_dimension = meteor_dimension;
 
