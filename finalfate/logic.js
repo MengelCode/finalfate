@@ -672,6 +672,9 @@ boss3_middle_constants.prototype.hpDefault = 60;
 boss3_middle_constants.prototype.hp = boss3_middle_constants.prototype.hpDefault;
 
 
+//Boss 3 heater unit dead flag.
+
+var boss3_oven_dead = false;
 
 //Boss 3 arms.
 
@@ -745,7 +748,7 @@ function loadLevel() {
     try {
         //throw new Error("Test");
         if (loaders[player.level] === undefined) {
-            window.alert("More has yet to come. I am already on the way, if I am not sleeping! -Manuel");
+            window.alert("D.J. Mengel is evil.");
             //Make everything stop.
             exchangeRenderLoop(null);
         } else {
@@ -1598,8 +1601,14 @@ var boss1_invalidate = boss_invalidate;
 //Copy the function for boss 2.
 var boss2_invalidate = boss_invalidate;
 
-//Copy the function for boss 3 heating unit.
-var boss3_heating_invalidate = boss_invalidate;
+//Call the function for boss 3 heating unit and add to additional flag.
+function boss3_heating_invalidate (){
+    boss_invalidate.call(this);
+    if(this.invalid)boss3_oven_dead = true;
+}
+
+
+
 
 /**
  * Boss 3 middle part invalidation.
@@ -1866,8 +1875,14 @@ function boss3_middle_update() {
 function boss3_hatch_update() {
 //Check if this is executed in context of first hatch piece and if there is need
 //for initializiation of the construction.
+if(!boss3_overall_alive())this.invalid = true;
 //Init for all the remaining hatch objects.
     if (this.previous === null && this.next === null) {
+        //Restoring HP values of everything.
+       boss3_oven_dead = false;
+        for (var i = 0; i < boss3_arm_values.prototype.hpValues.length; i++) {
+            boss3_arm_values.prototype.hpValues[i] = boss3_arm_values.prototype.hpDefault;
+        }
         var tempArray = [];
         //Peer elements in upper row.
         for (var i = 0; i < 6; i++) {
@@ -1889,7 +1904,7 @@ function boss3_hatch_update() {
         //Add the heating units.
         var enem = new Array(4);
         for (var i = 0; i < enem.length; i++) {
-            enem[i] = new Enemy(this.middleX + 3 + (i * 3), this.middleY + 6, boss3_heating_dimension, boss3_heating_update, boss3_heating_render, damage = 8, true, 12000, boss_invalidate, 270);
+            enem[i] = new Enemy(this.middleX + 3 + (i * 3), this.middleY + 6, boss3_heating_dimension, boss3_heating_update, boss3_heating_render, damage = 8, true, 12000, boss3_heating_invalidate, 270);
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
@@ -1902,8 +1917,6 @@ function boss3_hatch_update() {
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
-        //HP for arm 0. (lower left)
-        boss3_arm_values.prototype.hpValues[0] = boss3_arm_values.prototype.hpDefault;
         //Prototyping one arm, lower right. (Take the word "prototype" not too literally!)
         enem = new Array(6);
         for (var i = 0; i < enem.length; i++) {
@@ -1912,8 +1925,6 @@ function boss3_hatch_update() {
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
-        //HP for arm 1. (lower right)
-        boss3_arm_values.prototype.hpValues[1] = boss3_arm_values.prototype.hpDefault;
         //Prototyping one arm, upper left. (Take the word "prototype" not too literally!)
         enem = new Array(6);
         for (var i = 0; i < enem.length; i++) {
@@ -1922,8 +1933,6 @@ function boss3_hatch_update() {
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
-        //HP for arm 2. (upper left)
-        boss3_arm_values.prototype.hpValues[2] = boss3_arm_values.prototype.hpDefault;
         //Prototyping one arm, upper right. (Take the word "prototype" not too literally!)
         enem = new Array(6);
         for (var i = 0; i < enem.length; i++) {
@@ -1932,8 +1941,6 @@ function boss3_hatch_update() {
             displayList.addElement(enem[i], false);
             enemyList.addElement(enem[i], false);
         }
-        //HP for arm 3. (upper right)
-        boss3_arm_values.prototype.hpValues[3] = boss3_arm_values.prototype.hpDefault;
         enem = null;
         //Prototyping the thing in the middle. The H is awesome and will be used wisely!
         //Health generation.
@@ -1951,6 +1958,24 @@ function boss3_hatch_update() {
         }
     }
 }
+//Boss 3 check if most parts are still alive.
+
+function boss3_overall_alive() {
+    return (boss3_arm_values.prototype.hpValues[0]>0 ||
+            boss3_arm_values.prototype.hpValues[1]>0 ||
+            boss3_arm_values.prototype.hpValues[2]>0 ||
+            boss3_arm_values.prototype.hpValues[3]>0 ||
+            boss3_middle_constants.prototype.hp>0 || 
+            !boss3_oven_dead);
+}
+
+//Boss 3 laser cannon update function.
+
+function boss3_final_cannon_update() {
+//Not do anything if arms and heater are not yet broken.
+    if (boss3_overall_alive)
+        return;
+}
 
 // Boss 3 arms update function.
 function boss3_arm_update() {
@@ -1965,7 +1990,7 @@ function boss3_arm_update() {
         this.invalidate = boss3_arm_active_invalidate;
         this.frameCounter++;
     }
-    // Check if middle thing is away and should be revived.
+// Check if middle thing is away and should be revived.
     else if (boss3_middle_constants.prototype.hp <= 0) {
         boss3_middle_constants.prototype.hp = boss3_middle_constants.prototype.hpDefault;
         this.frameCounter = 0;
@@ -2005,7 +2030,7 @@ function boss3_heating_update() {
 
 //Boss 1 not attackable part update function.
 function boss1na_update() {
-    //Init frame counter of needed.
+//Init frame counter of needed.
     if (this.frameCounter === 0)
         this.frameCounter = 1;
     //Moving right...
@@ -2015,18 +2040,18 @@ function boss1na_update() {
         if (this.frameCounter % 1 === 0) {
             this.middleX++;
         }
-        //If count exceeded, invert the direction.
+//If count exceeded, invert the direction.
         if (this.frameCounter > 60)
             this.frameCounter = -1;
     }
-    //Moving left...
+//Moving left...
     else if (this.frameCounter < 0) {
         this.frameCounter--;
         //Do actual movement to the right.
         if (this.frameCounter % 1 === 0) {
             this.middleX--;
         }
-        //If count exceeded, invert the direction.
+//If count exceeded, invert the direction.
         if (this.frameCounter < -60)
             this.frameCounter = 1;
     }
@@ -2088,13 +2113,12 @@ function aircraft3sc_update() {
 
 //Boss 2 first brick function.
 function boss2fb_update() {
-    //Create other bricks if they aren't yet created.
+//Create other bricks if they aren't yet created.
     var length = 10;
     var height = 5;
     if (this.next === null) {
         var enemArray = [];
         enemArray.push(this);
-
         for (i = 0; i < length; i++) {
             for (j = 0; j < height; j++) {
                 if (i === 0 && j === 0)
@@ -2107,7 +2131,7 @@ function boss2fb_update() {
         }
         combineEnemyBricks(enemArray);
     }
-    //Increase frame counter.
+//Increase frame counter.
     this.frameCounter++;
     var enema = null;
     //Spawn right enemy if X modulo 15 == 0
@@ -2115,31 +2139,30 @@ function boss2fb_update() {
         enemb = new Enemy(this.middleX + 3 + 2 * length - 1, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
         enema = new Enemy(this.middleX + 2 * length - 1, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
     }
-    //Spawn middle if if X modulo 15 != 0 && X modulo 10 == 0
+//Spawn middle if if X modulo 15 != 0 && X modulo 10 == 0
     else if (this.frameCounter % 10 === 0) {
         enemb = new Enemy(this.middleX + 3 + 2 * length / 2, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
         enema = new Enemy(this.middleX + 2 * length / 2, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
     }
-    //Spawn middle if if X modulo 15 != 0 && X modulo 10 != 0 && X mod 5 == 90
+//Spawn middle if if X modulo 15 != 0 && X modulo 10 != 0 && X mod 5 == 90
     else if (this.frameCounter % 5 === 0) {
         enemb = new Enemy(this.middleX - 3, this.middleY, blinky_dimension, blinkyTracer_update, blinky_render, damage = 8, true);
         enema = new Enemy(this.middleX, this.middleY, blinky_dimension, blinky_update, blinky_render, damage = 8, true);
     }
-    //If enem was created, add it.
+//If enem was created, add it.
     if (enema !== null) {
         displayList.addElement(enema, false);
         enemyList.addElement(enema, false);
         displayList.addElement(enemb, false);
         enemyList.addElement(enemb, false);
-
     }
-    //Forcing player back in when he leaves to the left.
+//Forcing player back in when he leaves to the left.
     if (player.middleX < this.middleX - 2) {
         player.health = player.health - 12;
         player.middleX = player.middleX + 4;
     }
-    //Uncomment this if you want pinball action.....
-    //else if(player.middleX>this.middleX+10){
+//Uncomment this if you want pinball action.....
+//else if(player.middleX>this.middleX+10){
     else if (player.middleX > this.middleX + 18) {
         player.health = player.health - 12;
         player.middleX = player.middleX - 4;
@@ -2182,15 +2205,12 @@ function blinkyTracer_update() {
 //"Meteor" update function.
 function meteor_update() {
     slowMove_update.call(this);
-
 }
 
 //"Meteor 2" update function.
 function meteor2_update() {
 
     this.middleY = this.middleY + 1;
-
-
 }
 
 
@@ -2245,7 +2265,6 @@ function fireBoost_update() {
         sfx2.play();
         if (player.massfire) {
             player.health = player.health + 120;
-
         }
         player.massfire = true;
         return;
@@ -2258,7 +2277,6 @@ function fireBoost_update() {
         sfx2.play();
         if (player.massfire) {
             player.health = player.health + 120;
-
         }
         player.massfire = true;
     }
@@ -2331,14 +2349,14 @@ function bullet_render() {
 
 //"Stupid Enemy" rendering function
 function stupidEnemy_render() {
-    //Num pad on mobile.
+//Num pad on mobile.
     context.fillStyle = "white";
     simpleSquare_render.call(this);
 }
 
 //"Meteor" rendering function
 function meteor_render() {
-    //Num pad on mobile.
+//Num pad on mobile.
     context.fillStyle = "brown";
     simpleSquare_render.call(this);
 }
@@ -2355,7 +2373,7 @@ function boss3_arm_render() {
 
 //"Health Boost" rendering function
 function healthBoost_render() {
-    //Num pad on mobile.
+//Num pad on mobile.
     context.fillStyle = "green";
     simpleSquare_render.call(this);
     context.fillStyle = "white";
@@ -2386,7 +2404,7 @@ function simpleSquare_render(usingMiddleX = this.middleX, usingMiddleY = this.mi
 
 //"Fire Boost" rendering function
 function fireBoost_render() {
-    //Num pad on mobile.
+//Num pad on mobile.
     context.fillStyle = "red";
     simpleSquare_render.call(this);
     context.fillStyle = "white";
@@ -2401,7 +2419,7 @@ function fireBoost_render() {
 
 //"Life Boost" rendering function
 function lifeBoost_render() {
-    //Num pad on mobile.
+//Num pad on mobile.
     context.fillStyle = "blue";
     simpleSquare_render.call(this);
     context.fillStyle = "white";
@@ -2415,7 +2433,6 @@ function lifeBoost_render() {
 
 //"Blinky Tracer" rendering function.
 var blinkyTracer_render = blinky_render;
-
 //"Boss 2" rendering function.#
 function boss2_render() {
     context.fillStyle = "gray";
@@ -2426,7 +2443,6 @@ function boss2_render() {
 function boss3_hatch_render() {
     context.fillStyle = "gray";
     simpleSquare_render.call(this);
-
 }
 // Boss 3 heater rendering function.
 function boss3_heating_render() {
@@ -2439,7 +2455,7 @@ function boss3_heating_render() {
 
 //"Blinky" rendering function
 function blinky_render() {
-    //Num pad on mobile.
+//Num pad on mobile.
     if (aniCount % 5 === 0) {
         context.fillStyle = "red";
     } else if (aniCount % 4 === 0) {
@@ -2485,7 +2501,7 @@ function boss2_factory(middleX, middleY) {
 
 //Boss 1 - Mega Aircraft 1
 function boss1_factory(middleX, middleY) {
-    //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
+//middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
     var enemy_array = [];
     var enemy_obj = null;
     middleX = middleX - 2;
@@ -2498,7 +2514,7 @@ function boss1_factory(middleX, middleY) {
             enemy_array.push(enemy_obj);
         }
     }
-    //Left stone-spawner part
+//Left stone-spawner part
     for (var i = 0; i < 3; i++) {
         if (i === 1) {
             enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1sa_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
@@ -2506,7 +2522,7 @@ function boss1_factory(middleX, middleY) {
             enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
         enemy_array.push(enemy_obj);
     }
-    //Middle stone-spawner part
+//Middle stone-spawner part
     for (var i = 3; i < 11; i++) {
         if (i === 6 || i === 7) {
             enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1a_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
@@ -2515,7 +2531,7 @@ function boss1_factory(middleX, middleY) {
         enemy_array.push(enemy_obj);
     }
 
-    //Right stone-spawner part
+//Right stone-spawner part
     for (var i = 11; i < 14; i++) {
         if (i === 12) {
             enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1sa_update, stupidEnemy_render, 170, false, 5000);
@@ -2524,10 +2540,9 @@ function boss1_factory(middleX, middleY) {
         enemy_array.push(enemy_obj);
     }
 
-    //Linking it all together.
+//Linking it all together.
     combineEnemyBricks(enemy_array);
     return enemy_array;
-
 }
 //Air Craft 1
 function airCraft1_factory(middleX, middleY) {
@@ -2636,13 +2651,13 @@ function keyInvalidator() {
 
 //Event receiver for key presses.
 function getKeyPress(event) {
-    //Keyboard press detected!
+//Keyboard press detected!
     keyboard = 1;
     //window.alert("It works....");
     //window.alert(event.keyCode);
     //Key Codes supported?
     if (event.keyCode !== undefined) {
-        // window.alert(event.which);
+// window.alert(event.which);
         if (event.keyCode === 32) {
             shoot = 5;
         } else if (event.keyCode === 37) {
@@ -2663,11 +2678,11 @@ function getKeyPress(event) {
 //Event receiver for key release.
 function getKeyRelease(event) {
 
-    // window.alert("It works....");
+// window.alert("It works....");
 
-    //Firefox based?
+//Firefox based?
     if (event.keyCode !== undefined) {
-        //  window.alert(event.which);
+//  window.alert(event.which);
         if (event.keyCode === 32) {
             shoot = 0;
         } else if (event.keyCode === 37) {
@@ -2698,7 +2713,7 @@ function gamepadAskAnyButton() {
         if (!testController.buttons)
             continue;
         for (var j = 0; testController.buttons.length && j < testController.buttons.length; j++) {
-            //Prevent "Start button" from ever becoming the fire button.
+//Prevent "Start button" from ever becoming the fire button.
             if (j === 9)
                 continue;
             if (testController.connected && testController.buttons[j] && testController.buttons[j].pressed) {
@@ -2720,19 +2735,19 @@ function gamepadPoll() {
     if (!controller) {
         return;
     }
-    //Error condition: Controller.buttons is no array or even null or undefined.
+//Error condition: Controller.buttons is no array or even null or undefined.
     if (!controller.buttons || !controller.buttons.length) {
         return;
     }
-    //Error condition: Gamepad is disconnected.
+//Error condition: Gamepad is disconnected.
     if (!controller.connected) {
         return;
     }
-    //Error condition: Fire button did magically disappear.
+//Error condition: Fire button did magically disappear.
     if (controller.buttons[gamepad_button] === undefined || controller.buttons[gamepad_button] === null) {
         return;
     }
-    //Is button pressed?
+//Is button pressed?
     shoot = controller.buttons[gamepad_button].pressed;
     //Validate axis states.
     left = controller.axes[0] < -0.4;
@@ -2840,6 +2855,6 @@ function sizeChanged() {
     context.scale(newWidth / oldestWidth, newHeight / oldestHeight);
     oldWidth = newWidth;
     oldHeight = newHeight;
-    //window.alert("New canvas resolution: " + newWidth + "x" + newHeight + "<br> New inner window size: " + window.innerWidth + "x" + window.innerHeight);
+//window.alert("New canvas resolution: " + newWidth + "x" + newHeight + "<br> New inner window size: " + window.innerWidth + "x" + window.innerHeight);
 }
 
