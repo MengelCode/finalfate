@@ -462,7 +462,7 @@ class SpaceShip extends GameObject {
             if (pause && pauseReleased) {
                 bgm.pause();
                 pauseReleased = false;
-                exchangeRenderLoop(gamePause);
+                exchangeRenderLoop(gamePause,true);
             }
 
             if (this.cooldown > 0)
@@ -613,6 +613,8 @@ loaders[2] = universeLoader;
 var aniCount = 0;
 //Animation counter. Relative
 var aniCountRelative = 0;
+//Animation counter for pause.
+var pauseCount = 0;
 //Black background.
 context.fillRect(0, 0, 800, 600);
 //Render function assigning.
@@ -1347,7 +1349,7 @@ function gamePause() {
     if (pause && pauseReleased) {
         pauseReleased = false;
         bgm.play();
-        exchangeRenderLoop(gamePlay);
+        exchangeRenderLoop(gamePlay,true);
     }
     if (up && selectedOption) {
         selectedOption--;
@@ -1500,6 +1502,7 @@ function bulletOnEnemies() {
 //String array with pause menu constants.
 var pauseText = ["Continue", "Save", "Return to title", "Close application tab"];
 function renderInGame() {
+    
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     if (background !== null && background instanceof GameObject) {
@@ -1520,7 +1523,7 @@ function renderInGame() {
 
     }
     renderHUD();
-    if (renderFunction === gamePause) {
+   if (renderFunction === gamePause) {
         context.font = "27px Nonserif";
         //Shared Y,X coordinates
         let y = 245;
@@ -1529,7 +1532,7 @@ function renderInGame() {
         for (var i = 0; i < pauseText.length; i++) {
             if (selectedOption === i) {
                 context.fillStyle = "yellow";
-                if (aniCount % 5 === aniCount % 10) {
+                if (pauseCount % 5 === pauseCount % 10) {
                     context.fillText(pauseText[i], x, y + i * 30);
                 }
             } else {
@@ -1537,7 +1540,9 @@ function renderInGame() {
                 context.fillText(pauseText[i], x, y + i * 30);
             }
         }
-    }
+        renderHUD();
+       
+    } 
 }
 
 // 5 - Delete all elements which declared themselves as no longer needed. Or left the screen.
@@ -1602,9 +1607,10 @@ var boss1_invalidate = boss_invalidate;
 var boss2_invalidate = boss_invalidate;
 
 //Call the function for boss 3 heating unit and add to additional flag.
-function boss3_heating_invalidate (){
+function boss3_heating_invalidate() {
     boss_invalidate.call(this);
-    if(this.invalid)boss3_oven_dead = true;
+    if (this.invalid)
+        boss3_oven_dead = true;
 }
 
 
@@ -1875,11 +1881,12 @@ function boss3_middle_update() {
 function boss3_hatch_update() {
 //Check if this is executed in context of first hatch piece and if there is need
 //for initializiation of the construction.
-if(!boss3_overall_alive())this.invalid = true;
+    if (!boss3_overall_alive())
+        this.invalid = true;
 //Init for all the remaining hatch objects.
     if (this.previous === null && this.next === null) {
         //Restoring HP values of everything.
-       boss3_oven_dead = false;
+        boss3_oven_dead = false;
         for (var i = 0; i < boss3_arm_values.prototype.hpValues.length; i++) {
             boss3_arm_values.prototype.hpValues[i] = boss3_arm_values.prototype.hpDefault;
         }
@@ -1961,11 +1968,11 @@ if(!boss3_overall_alive())this.invalid = true;
 //Boss 3 check if most parts are still alive.
 
 function boss3_overall_alive() {
-    return (boss3_arm_values.prototype.hpValues[0]>0 ||
-            boss3_arm_values.prototype.hpValues[1]>0 ||
-            boss3_arm_values.prototype.hpValues[2]>0 ||
-            boss3_arm_values.prototype.hpValues[3]>0 ||
-            boss3_middle_constants.prototype.hp>0 || 
+    return (boss3_arm_values.prototype.hpValues[0] > 0 ||
+            boss3_arm_values.prototype.hpValues[1] > 0 ||
+            boss3_arm_values.prototype.hpValues[2] > 0 ||
+            boss3_arm_values.prototype.hpValues[3] > 0 ||
+            boss3_middle_constants.prototype.hp > 0 ||
             !boss3_oven_dead);
 }
 
@@ -2619,6 +2626,10 @@ function star_factory() {
 
 //Make sure that frame counter always continues.
 function increaseCount() {
+    if (renderFunction === gamePause) {
+        pauseCount++;
+        return;
+    }
     aniCount++;
     aniCountRelative++;
 }
@@ -2810,14 +2821,17 @@ function getRandomY() {
 /**
  * Exchange the rendering loop with another function.
  * Takes care of necessary cleanup and resets frame counter.
- * @param {function} func
+ * @param {function} func Function which will be executed as rendering loop.
+ * @param {boolean} preserveCounters Do not reset counters. Default: false
  * @returns {undefined}
  */
-function exchangeRenderLoop(func) {
+function exchangeRenderLoop(func, preserveCounters = false) {
     clearInterval(renderTimer);
     renderFunction = func;
-    aniCount = renderReset;
-    aniCountRelative = 0;
+    if (!preserveCounters) {
+        aniCount = renderReset;
+        aniCountRelative = 0;
+    }
     renderTimer = setInterval(renderFunction, FRAME_RATE);
 }
 
