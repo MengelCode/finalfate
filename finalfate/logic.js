@@ -462,7 +462,8 @@ class SpaceShip extends GameObject {
             if (pause && pauseReleased) {
                 bgm.pause();
                 pauseReleased = false;
-                exchangeRenderLoop(gamePause,true);
+                selectedOption = 0;
+                exchangeRenderLoop(gamePause, true);
             }
 
             if (this.cooldown > 0)
@@ -598,6 +599,8 @@ var sfx1 = document.getElementById("sfx-channel-1");
 var sfx2 = document.getElementById("sfx-channel-2");
 //Die.
 var sfx3 = document.getElementById("sfx-channel-3");
+//Menu select.
+var sfx4 = document.getElementById("sfx-channel-4");
 //Game over tune.
 var game_over = document.getElementById("game-over");
 //Exception occured.
@@ -1336,29 +1339,63 @@ function finalFate() {
 }
 
 
-var pauseReleased = true;
 var selectedOption = 0;
+var selectedSureOption = 0;
 /**
  * Game Pause.
  * @returns {undefined}
  */
 function gamePause() {
-    if (!pause) {
-        pauseReleased = true;
-    }
-    if (pause && pauseReleased) {
+    validateReleasedState();
+    //Check for an unpausing condition.
+    if ((pause && pauseReleased) || (!selectedOption && shoot && shootReleased)) {
+        simplyPlaySound(sfx4);
         pauseReleased = false;
         bgm.play();
-        exchangeRenderLoop(gamePlay,true);
+        exchangeRenderLoop(gamePlay, true);
+
     }
-    if (up && selectedOption) {
+    //Check for confirming something that does not mean continue.
+    else if (selectedOption && selectedOption < pauseText.length && shoot && shootReleased) {
+        simplyPlaySound(sfx4);
+        shootReleased = false;
+        selectedOption += 3;
+        selectedSureOption = 0;
+    }
+    //Check for selecting an option above.
+    else if (up && selectedOption && selectedOption < pauseText.length && axisYReleased) {
         selectedOption--;
-        axisReleased = false;
+        simplyPlaySound(sfx4);
+        axisYReleased = false;
     }
-    //Check for selecting an option below
-    else if (down && selectedOption < pauseText.length - 1) {
+    //Check for selecting an option below.
+    else if (down && selectedOption < pauseText.length - 1 && axisYReleased) {
         selectedOption++;
-        axisReleased = false;
+        simplyPlaySound(sfx4);
+        axisYReleased = false;
+    }
+    //Checks for "Are you sure?" dialogues.
+    //Select "No".
+    else if (left && selectedOption >= pauseText.length && selectedSureOption && axisXReleased) {
+        selectedSureOption--;
+        simplyPlaySound(sfx4);
+        axisXReleased = false;
+    }
+    //Select "Yes".
+    else if (right && selectedOption >= pauseText.length && !selectedSureOption && axisXReleased) {
+        selectedSureOption++;
+        simplyPlaySound(sfx4);
+        axisXReleased = false;
+    }
+    //Confirming "No" when being asked for something.
+    else if (shoot && selectedOption >= pauseText.length && !selectedSureOption && shootReleased) {
+        selectedOption -= 3;
+        simplyPlaySound(sfx4);
+        shootReleased = false;
+    }
+    //Confirm ing "Yes" when being asked to truly close the browser tab.
+    else if (shoot && selectedOption === pauseText.length+2 && selectedSureOption && shootReleased) {
+        window.close();
     }
     window.requestAnimationFrame(renderInGame);
 }
@@ -1500,9 +1537,11 @@ function bulletOnEnemies() {
 
 // 4 -  Render game objects.
 //String array with pause menu constants.
-var pauseText = ["Continue", "Save", "Return to title", "Close application tab"];
+var pauseText = ["Continue", "Save", "Return To Title", "Exit Game"];
+var youSure = ["No", "Yes"];
+var youSureQuestion = ["Are you sure?"];
 function renderInGame() {
-    
+
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     if (background !== null && background instanceof GameObject) {
@@ -1523,7 +1562,7 @@ function renderInGame() {
 
     }
     renderHUD();
-   if (renderFunction === gamePause) {
+    if (renderFunction === gamePause) {
         context.font = "27px Nonserif";
         //Shared Y,X coordinates
         let y = 245;
@@ -1541,8 +1580,34 @@ function renderInGame() {
             }
         }
         renderHUD();
-       
-    } 
+        if (selectedOption >= pauseText.length) {
+            context.fillStyle = "gray";
+            context.fillRect(290, 190, 260, 200);
+            context.fillStyle = "black";
+            context.fillRect(290, 190, 260, 35);
+            context.font = "27px Nonserif";
+            context.fillStyle = "white";
+            context.fillText(pauseText[selectedOption - 3], 290, 220);
+            context.fillText(youSureQuestion, 290, 250);
+            if (!selectedSureOption) {
+                if (pauseCount % 5 === pauseCount % 10) {
+                    context.fillStyle = "yellow";
+                    context.fillText(youSure[0], 290, 385);
+                }
+                context.fillStyle = "white";
+                context.fillText(youSure[1], 420, 385);
+            }
+            else {
+              if (pauseCount % 5 === pauseCount % 10) {
+                    context.fillStyle = "yellow";
+                    context.fillText(youSure[1], 420, 385);
+                }
+                context.fillStyle = "white";
+                context.fillText(youSure[0], 290, 385);  
+            }
+
+        }
+    }
 }
 
 // 5 - Delete all elements which declared themselves as no longer needed. Or left the screen.
@@ -2872,3 +2937,35 @@ function sizeChanged() {
 //window.alert("New canvas resolution: " + newWidth + "x" + newHeight + "<br> New inner window size: " + window.innerWidth + "x" + window.innerHeight);
 }
 
+//Values and function for the released state of (once pressed) keys.
+
+var shootReleased = true;
+var pauseReleased = true;
+var axisXReleased = true;
+var axisYReleased = true;
+
+//Validates if the statements above are still true.
+function validateReleasedState() {
+    if (!shoot) {
+        shootReleased = true;
+    }
+    if (!pause) {
+        pauseReleased = true;
+    }
+    if (!up && !down) {
+        axisYReleased = true;
+    }
+    if (!left && !right) {
+        axisXReleased = true;
+    }
+}
+/**
+ * (Re-)Play sound with just one call instead of three.
+ * @param {type} object
+ * @returns {undefined}
+ */
+function simplyPlaySound(object) {
+    object.pause();
+    object.currentTime = 0;
+    object.play();
+}
