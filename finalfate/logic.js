@@ -1394,8 +1394,14 @@ function gamePause() {
         shootReleased = false;
     }
     //Confirm ing "Yes" when being asked to truly close the browser tab.
+    else if (shoot && selectedOption === pauseText.length+1 && selectedSureOption && shootReleased) {
+        simplyPlaySound(sfx4);
+        pauseReleased = false;
+        exchangeRenderLoop(gamePlay, true);
+        player.health = 0;
+    }
     else if (shoot && selectedOption === pauseText.length+2 && selectedSureOption && shootReleased) {
-        window.close();
+        exchangeRenderLoop(gameOver);
     }
     window.requestAnimationFrame(renderInGame);
 }
@@ -1537,7 +1543,7 @@ function bulletOnEnemies() {
 
 // 4 -  Render game objects.
 //String array with pause menu constants.
-var pauseText = ["Continue", "Save", "Return To Title", "Exit Game"];
+var pauseText = ["Continue", "Save","Retry Level", "Return To Title"];
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];
 function renderInGame() {
