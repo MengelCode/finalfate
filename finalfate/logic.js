@@ -1341,6 +1341,7 @@ function finalFate() {
 
 var selectedOption = 0;
 var selectedSureOption = 0;
+
 /**
  * Game Pause.
  * @returns {undefined}
@@ -1349,6 +1350,8 @@ function gamePause() {
     validateReleasedState();
     //Check for an unpausing condition.
     if ((pause && pauseReleased) || (!selectedOption && shoot && shootReleased)) {
+        saveCompleteTimer = 0;
+        saveFailureTimer = 0;
         simplyPlaySound(sfx4);
         pauseReleased = false;
         bgm.play();
@@ -1393,13 +1396,30 @@ function gamePause() {
         simplyPlaySound(sfx4);
         shootReleased = false;
     }
-    //Confirm ing "Yes" when being asked to truly close the browser tab.
+     //Confirm ing "Yes" when being asked to save.
+    else if (shoot && selectedOption === pauseText.length && selectedSureOption && shootReleased) {
+        saveCompleteTimer = 0;
+        saveFailureTimer = 0;
+        shootReleased = false;
+        selectedOption -= 3;
+        simplyPlaySound(sfx4);
+        pauseReleased = false;
+        saveGame();
+        if(saveError){
+        saveFailureTimer = 100;        
+        }
+        else {
+        saveCompleteTimer = 100;    
+        }
+    }
+    //Confirm ing "Yes" when being asked to restart level.
     else if (shoot && selectedOption === pauseText.length+1 && selectedSureOption && shootReleased) {
         simplyPlaySound(sfx4);
         pauseReleased = false;
         exchangeRenderLoop(gamePlay, true);
         player.health = 0;
     }
+    //Confirming "Yes" when being asked to return to title.
     else if (shoot && selectedOption === pauseText.length+2 && selectedSureOption && shootReleased) {
         exchangeRenderLoop(gameOver);
     }
@@ -1546,6 +1566,11 @@ function bulletOnEnemies() {
 var pauseText = ["Continue", "Save","Retry Level", "Return To Title"];
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];
+//Rendering of result of saving mechanism is displayed here until counter is zero.
+var saveCompleteTimer = 0;
+var saveFailureTimer = 0;
+var saveComplete = "Saved.";
+var saveFailure = "Error. Save failed!";
 function renderInGame() {
 
     context.fillStyle = "black";
@@ -1586,6 +1611,7 @@ function renderInGame() {
             }
         }
         renderHUD();
+        //"Are you sure?" options.
         if (selectedOption >= pauseText.length) {
             context.fillStyle = "gray";
             context.fillRect(290, 190, 260, 200);
@@ -1613,6 +1639,23 @@ function renderInGame() {
             }
 
         }
+        //Save success notification.
+        if(saveCompleteTimer){
+            context.fillStyle = "black";
+            context.fillRect(290, 190, 260, 35);
+            context.fillStyle = "white";
+            context.font = "27px Nonserif";
+            context.fillText(saveComplete, 290, 220);
+            saveCompleteTimer--;
+        }
+        else if(saveFailureTimer){
+            context.fillStyle = "black";
+            context.fillRect(290, 190, 260, 35);
+            context.fillStyle = "white";
+            context.font = "27px Nonserif";
+            context.fillText(saveFailure, 290, 220);
+            saveFailureTimer--;
+        } 
     }
 }
 
@@ -2693,6 +2736,84 @@ function star_factory() {
 }
 
 
+//Functions and variables, storage-related.
+
+/**
+ * Gets the HTML 5 local storage object.
+ * 
+ * @returns {Storage|Window.localStorage}
+ */
+function getLocalStorage(){
+    return window.localStorage;
+}
+var gameStorageName = "TheFinalFate1ByME_Level";
+var savedLevel = 0;
+var saveError = false;
+
+/**
+ * Save the game.
+ * @returns {undefined}
+ */
+function saveGame(){
+try{    
+getLocalStorage().setItem(gameStorageName,player.level);
+var referenceValue = Number(getLocalStorage().getItem(gameStorageName));
+if(referenceValue !== player.level){
+saveError = true;    
+}
+else{
+    saveError = false;
+}
+}
+catch(error){
+    saveError = true;
+    
+}
+}
+/**
+ * Status in regard of the HTML 5 local storage.
+ * undefined = Unknown.
+ * null = Not usable, general error.
+ * "CORRUPT" = Corrupted game save.
+ * "UPGRADE" = Upgrade to game version supporting the saved game.
+ * false = No data.
+ * true =  Data here.
+ * @type undefined
+ */
+var storageStatus = undefined;
+
+function testStorageState(){
+//Reset memory about read data.
+savedLevel = 0;
+//Test 1 : Check if local storage object does even exist.
+//Desired outcome: object !== undefined
+//If not fulfilled: storageStatus = null
+var storageTest = getLocalStorage();
+if(storageTest===undefined){
+    storageStatus = null;
+    return;
+}
+// Test 2 : Check if game is saved.
+var storageValue = storageTest.getItem(gameStorageName);
+if(storageValue === null){
+    storageStatus = false;
+    return;
+}
+// Test 3: Check if saved information is eitmher valid or corrupt.
+// Test 3A: Check if data is NaN or in negative range.
+if(isNaN(storageValue) || storageValue<0){
+    storageStatus = "CORRUPT";
+    return;
+}
+if(loaders[storageValue]){
+    storageStatus = "UPGRADE";
+    return;
+}
+savedLevel = storageValue;
+storageStatue = true;
+
+}
+
 //All other functions.
 
 //Make sure that frame counter always continues.
@@ -2904,6 +3025,7 @@ function exchangeRenderLoop(func, preserveCounters = false) {
         aniCountRelative = 0;
     }
     renderTimer = setInterval(renderFunction, FRAME_RATE);
+    testStorageState();
 }
 
 
@@ -2974,4 +3096,4 @@ function simplyPlaySound(object) {
     object.pause();
     object.currentTime = 0;
     object.play();
-}
+    }
