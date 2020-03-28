@@ -2,6 +2,10 @@
 # Have a look into the hooks folder to see them per arch
 # https://github.com/mengel38/finalfate/tree/master/hooks/
 
+# Set global environment variables
+ARG SRC_REPO
+ARG SRC_TAG
+
 FROM scratch AS buildcontext
 
 COPY . .

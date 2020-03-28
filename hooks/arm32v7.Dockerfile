@@ -4,6 +4,8 @@
 # To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
 
 # Set global environment variables
+ARG SRC_REPO
+ARG SRC_TAG
 
 FROM scratch AS buildcontext
 
