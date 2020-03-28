@@ -1,7 +1,14 @@
 #!/bin/bash
 
+# https://github.com/ichbestimmtnicht/docker-autobuild-release
+# Template created 2020 by Ludwig Werner Döhnert
+# This work is licensed under the Creative Commons Attribution 4.0 International License.
+# To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
+
+echo "SCRIPT_INFO: initialise mutliarch"
+
 docker run --rm --privileged multiarch/qemu-user-static:register --reset
 
-echo "DEBUG: Exiting pre_build"
+echo "SCRIPT_INFO: Exiting pre_build"
 
 exit 0
