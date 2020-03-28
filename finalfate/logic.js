@@ -621,7 +621,7 @@ var pauseCount = 0;
 //Black background.
 context.fillRect(0, 0, 800, 600);
 //Render function assigning.
-renderFunction = titleScreen;
+renderFunction = boot;
 //Make keys unpressed over time.
 //setInterval(keyInvalidator, FRAME_RATE);
 //Count all the frames.
@@ -648,7 +648,8 @@ var x_dimension = 10;
 y_dimension = 33;
 x_dimension = 20;
 //Enter rendering cycle.
-var renderTimer = setInterval(renderFunction, FRAME_RATE);
+var renderTimer = null;
+exchangeRenderLoop(renderFunction);
 initAllInput();
 //Changed window size.
 window.addEventListener("resize", sizeChanged);
@@ -1267,6 +1268,16 @@ function loseLife() {
 
 
 //Game Screens
+
+/* Boot sequence.
+ * 
+ * @returns {undefined}
+ * 
+ */
+function boot(){
+    exchangeRenderLoop(titleScreen);
+}
+
 /*
  * Render the title screen.
  */
@@ -1306,6 +1317,42 @@ function titleScreen() {
 
 }
 
+var info_string = "Data Management";
+var data_corrupt = ["Saved game corrupted.","Deletion required.","Press SPACE on keyboard or any", "key on gamepad to continue."];
+var data_corrupt_ok = "Confirm";
+/**
+ * Should never be happening. But it can, especially if an explorer plays with the value on their own.
+ * @returns {undefined}
+ */
+function saveCorrupt() {
+    context.fillStyle = "black";
+    context.fillRect(0, 0, 800, 600);
+    context.fillStyle = "red";
+    context.fillRect(290, 190, 260, 200);
+    context.font = "27px Nonserif";
+    context.fillStyle = "white";
+    context.fillText(info_string, 290, 220);
+    context.font = "14px Nonserif";
+    context.fillText(data_corrupt[0], 290, 250);
+    context.fillText(data_corrupt[1], 290, 275);
+    context.fillText(data_corrupt[2], 290, 290);
+    context.fillText(data_corrupt[3], 290, 305);
+    if(aniCount === 3){
+         initAllInput();
+    }
+    if(keyboard || gamepad !==false){
+    simplyPlaySound(sfx4);
+    getLocalStorage().removeItem(gameStorageName);
+    initAllInput();
+    exchangeRenderLoop(titleScreen);
+    }
+    if (aniCount % 5 === aniCount % 10) {
+        context.font = "27px Nonserif";
+        context.fillStyle = "yellow";
+        context.fillText(data_corrupt_ok, 360, 380 );
+    }
+}
+
 /**
  * Prevent that from happening!!
  * @returns {undefined}
@@ -1341,7 +1388,6 @@ function finalFate() {
 
 var selectedOption = 0;
 var selectedSureOption = 0;
-
 /**
  * Game Pause.
  * @returns {undefined}
@@ -1356,7 +1402,6 @@ function gamePause() {
         pauseReleased = false;
         bgm.play();
         exchangeRenderLoop(gamePlay, true);
-
     }
     //Check for confirming something that does not mean continue.
     else if (selectedOption && selectedOption < pauseText.length && shoot && shootReleased) {
@@ -1396,7 +1441,7 @@ function gamePause() {
         simplyPlaySound(sfx4);
         shootReleased = false;
     }
-     //Confirm ing "Yes" when being asked to save.
+    //Confirm ing "Yes" when being asked to save.
     else if (shoot && selectedOption === pauseText.length && selectedSureOption && shootReleased) {
         saveCompleteTimer = 0;
         saveFailureTimer = 0;
@@ -1405,29 +1450,27 @@ function gamePause() {
         simplyPlaySound(sfx4);
         pauseReleased = false;
         saveGame();
-        if(saveError){
-        saveFailureTimer = 100;        
-        }
-        else {
-        saveCompleteTimer = 100;    
+        if (saveError) {
+            saveFailureTimer = 100;
+        } else {
+            saveCompleteTimer = 100;
         }
     }
     //Confirm ing "Yes" when being asked to restart level.
-    else if (shoot && selectedOption === pauseText.length+1 && selectedSureOption && shootReleased) {
+    else if (shoot && selectedOption === pauseText.length + 1 && selectedSureOption && shootReleased) {
         simplyPlaySound(sfx4);
         pauseReleased = false;
         exchangeRenderLoop(gamePlay, true);
         player.health = 0;
     }
     //Confirming "Yes" when being asked to return to title.
-    else if (shoot && selectedOption === pauseText.length+2 && selectedSureOption && shootReleased) {
+    else if (shoot && selectedOption === pauseText.length + 2 && selectedSureOption && shootReleased) {
         exchangeRenderLoop(gameOver);
     }
     window.requestAnimationFrame(renderInGame);
 }
 
 var musicAlreadyPlayed = false;
-
 /**
  * 
  * Actual game loop.
@@ -1462,7 +1505,6 @@ function updateBullets() {
     bulletList.resetIterator();
     while (bulletList.peekNext() !== null) {
         bulletList.getNext().updateSpecial();
-
     }
 }
 
@@ -1484,7 +1526,6 @@ function updateGameObjects() {
     displayList.resetIterator();
     while (displayList.peekNext() !== null) {
         displayList.getNext().updateState();
-
     }
     var next = spawnList.peekNext();
     while (next !== null && ((next.isRelative === false && aniCount > next.frameDelta) || (next.isRelative === true && aniCountRelative > next.frameDelta))) {
@@ -1506,7 +1547,6 @@ function updateGameObjects() {
 function checkForColli() {
     checkForEnemyHit();
     bulletOnEnemies();
-
 }
 // 3A - Check for collisions of the player with enemies or enemy bullets
 
@@ -1563,7 +1603,7 @@ function bulletOnEnemies() {
 
 // 4 -  Render game objects.
 //String array with pause menu constants.
-var pauseText = ["Continue", "Save","Retry Level", "Return To Title"];
+var pauseText = ["Continue", "Save", "Retry Level", "Return To Title"];
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];
 //Rendering of result of saving mechanism is displayed here until counter is zero.
@@ -1590,7 +1630,6 @@ function renderInGame() {
         var v = displayList.getNext();
         if (!v.invalid)
             v.renderState();
-
     }
     renderHUD();
     if (renderFunction === gamePause) {
@@ -1628,34 +1667,32 @@ function renderInGame() {
                 }
                 context.fillStyle = "white";
                 context.fillText(youSure[1], 420, 385);
-            }
-            else {
-              if (pauseCount % 5 === pauseCount % 10) {
+            } else {
+                if (pauseCount % 5 === pauseCount % 10) {
                     context.fillStyle = "yellow";
                     context.fillText(youSure[1], 420, 385);
                 }
                 context.fillStyle = "white";
-                context.fillText(youSure[0], 290, 385);  
+                context.fillText(youSure[0], 290, 385);
             }
 
         }
         //Save success notification.
-        if(saveCompleteTimer){
+        if (saveCompleteTimer) {
             context.fillStyle = "black";
             context.fillRect(290, 190, 260, 35);
             context.fillStyle = "white";
             context.font = "27px Nonserif";
             context.fillText(saveComplete, 290, 220);
             saveCompleteTimer--;
-        }
-        else if(saveFailureTimer){
+        } else if (saveFailureTimer) {
             context.fillStyle = "black";
             context.fillRect(290, 190, 260, 35);
             context.fillStyle = "white";
             context.font = "27px Nonserif";
             context.fillText(saveFailure, 290, 220);
             saveFailureTimer--;
-        } 
+        }
     }
 }
 
@@ -1694,7 +1731,6 @@ function renderHUD() {
     context.fillText("HEALTH", 245, 595);
     context.fillText("LIVE", 350, 595);
     context.fillText("LEVEL", 700, 595);
-
 }
 
 
@@ -1716,10 +1752,8 @@ function boss_invalidate() {
 
 //Copy the function for boss 1.
 var boss1_invalidate = boss_invalidate;
-
 //Copy the function for boss 2.
 var boss2_invalidate = boss_invalidate;
-
 //Call the function for boss 3 heating unit and add to additional flag.
 function boss3_heating_invalidate() {
     boss_invalidate.call(this);
@@ -1795,13 +1829,10 @@ function background_dimension() {
 
 //"Health Boost" dimension function.
 var healthBoost_dimension = stupidEnemy_dimension;
-
 //"Fire Boost" dimension function.
 var fireBoost_dimension = healthBoost_dimension;
-
 //"Life Boost" dimension function.
 var lifeBoost_dimension = healthBoost_dimension;
-
 //"Boss 2 " dimension function.
 function boss2_dimension() {
     var x = [];
@@ -1822,31 +1853,23 @@ function bullet_dimension() {
 
 //"Meteor" dimension function.
 var meteor_dimension = stupidEnemy_dimension;
-
 //"Boss 3 hatch" dimension function.
 var boss3_hatch_dimension = meteor_dimension;
-
 //"Boss 3 heating unit" dimension function.
 var boss3_heating_dimension = meteor_dimension;
-
 //"Boss 3 middle part" dimension function.
 var boss3_middle_dimension = meteor_dimension;
-
 //"Boss 2" dimension function.
 var boss2_dimension = meteor_dimension;
-
 //"Blinky" dimension function.
 var blinky_dimension = meteor_dimension;
-
 //"Blinky Tracer" dimension function.
 var blinkyTracer_dimension = blinky_dimension;
-
 //All update routines.
 
 //"Wingman" update function.
 function wingman_update() {
     this.middleY = this.middleY + 1;
-
 }
 
 //"Bullet" update function.
@@ -2743,32 +2766,28 @@ function star_factory() {
  * 
  * @returns {Storage|Window.localStorage}
  */
-function getLocalStorage(){
+function getLocalStorage() {
     return window.localStorage;
 }
 var gameStorageName = "TheFinalFate1ByME_Level";
 var savedLevel = 0;
 var saveError = false;
-
 /**
  * Save the game.
  * @returns {undefined}
  */
-function saveGame(){
-try{    
-getLocalStorage().setItem(gameStorageName,player.level);
-var referenceValue = Number(getLocalStorage().getItem(gameStorageName));
-if(referenceValue !== player.level){
-saveError = true;    
-}
-else{
-    saveError = false;
-}
-}
-catch(error){
-    saveError = true;
-    
-}
+function saveGame() {
+    try {
+        getLocalStorage().setItem(gameStorageName, player.level);
+        var referenceValue = Number(getLocalStorage().getItem(gameStorageName));
+        if (referenceValue !== player.level) {
+            saveError = true;
+        } else {
+            saveError = false;
+        }
+    } catch (error) {
+        saveError = true;
+    }
 }
 /**
  * Status in regard of the HTML 5 local storage.
@@ -2781,37 +2800,36 @@ catch(error){
  * @type undefined
  */
 var storageStatus = undefined;
-
-function testStorageState(){
+function testStorageState() {
 //Reset memory about read data.
-savedLevel = 0;
+    savedLevel = 0;
 //Test 1 : Check if local storage object does even exist.
 //Desired outcome: object !== undefined
 //If not fulfilled: storageStatus = null
-var storageTest = getLocalStorage();
-if(storageTest===undefined){
-    storageStatus = null;
-    return;
-}
+    var storageTest = getLocalStorage();
+    if (storageTest === undefined) {
+        storageStatus = null;
+        return;
+    }
 // Test 2 : Check if game is saved.
-var storageValue = storageTest.getItem(gameStorageName);
-if(storageValue === null){
-    storageStatus = false;
-    return;
-}
+    var storageValue = storageTest.getItem(gameStorageName);
+    savedLevel = storageValue;
+    if (storageValue === null) {
+        storageStatus = false;
+        return;
+    }
 // Test 3: Check if saved information is eitmher valid or corrupt.
 // Test 3A: Check if data is NaN or in negative range.
-if(isNaN(storageValue) || storageValue<0){
-    storageStatus = "CORRUPT";
-    return;
-}
-if(loaders[storageValue]){
-    storageStatus = "UPGRADE";
-    return;
-}
-savedLevel = storageValue;
-storageStatue = true;
-
+    if (isNaN(storageValue) || storageValue < 0) {
+        storageStatus = "CORRUPT";
+        return;
+    }
+    // Test 3B: Check if data is invalid in this version, but not necessarily always invalid.
+    if (!loaders[storageValue]) {
+        storageStatus = "UPGRADE";
+        return;
+    }
+    storageStatus = true;
 }
 
 //All other functions.
@@ -3018,14 +3036,19 @@ function getRandomY() {
  * @returns {undefined}
  */
 function exchangeRenderLoop(func, preserveCounters = false) {
-    clearInterval(renderTimer);
-    renderFunction = func;
+    if(renderTimer!==null)clearInterval(renderTimer);
     if (!preserveCounters) {
         aniCount = renderReset;
         aniCountRelative = 0;
     }
-    renderTimer = setInterval(renderFunction, FRAME_RATE);
     testStorageState();
+    if(storageStatus === "CORRUPT"){
+   renderFunction = saveCorrupt;
+    }
+    else{
+     renderFunction = func;   
+    }
+    renderTimer = setInterval(renderFunction, FRAME_RATE);
 }
 
 
@@ -3071,7 +3094,6 @@ var shootReleased = true;
 var pauseReleased = true;
 var axisXReleased = true;
 var axisYReleased = true;
-
 //Validates if the statements above are still true.
 function validateReleasedState() {
     if (!shoot) {
@@ -3096,4 +3118,4 @@ function simplyPlaySound(object) {
     object.pause();
     object.currentTime = 0;
     object.play();
-    }
+}
