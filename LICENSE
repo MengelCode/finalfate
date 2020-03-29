@@ -1,6 +1,9 @@
+-License for the game-
+
+
 MIT License
 
-Copyright (c) 2019-2020 Manuel Engel (Game), Ludwig Werner Döhnert (Docker Container)
+Copyright (c) 2019-2020 Manuel Engel 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +22,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+-License for the Docker-related files-
+
+
+# https://github.com/ichbestimmtnicht/docker-autobuild-release
+# Template created 2020 by Ludwig Werner Döhnert
+# This work is licensed under the Creative Commons Attribution 4.0 International License.
+# To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
