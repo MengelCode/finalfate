@@ -278,16 +278,16 @@ class Meteor extends Enemy {
 
 }
 
-class StupidEnemy extends Enemy {
+class SimpleEnemy extends Enemy {
 
     /**
-     * Create a stupid enemy object.
+     * Create a simple enemy object.
      * @param {type} middleX
      * @param {type} middleY
      * @returns {Meteor}
      */
     constructor(middleX, middleY) {
-        super(middleX, middleY, stupidEnemy_dimension, stupidEnemy_update, stupidEnemy_render);
+        super(middleX, middleY, simpleEnemy_dimension, simpleEnemy_update, simpleEnemy_render);
     }
 }
 
@@ -1016,10 +1016,10 @@ function earthLoader() {
         spawnList.addElement(enem);
         enem = airCraft1_factory(72, 0);
         spawnListArrayAdd(enem, 260);
-        enem = new StupidEnemy(9, 0);
+        enem = new SimpleEnemy(9, 0);
         enem = new Spawn(290, enem);
         spawnList.addElement(enem);
-        enem = new StupidEnemy(69, 0);
+        enem = new SimpleEnemy(69, 0);
         enem = new Spawn(310, enem);
         spawnList.addElement(enem);
         //Gets a bit more...hurried.
@@ -1036,10 +1036,10 @@ function earthLoader() {
         enem = new Meteor(23, 0);
         enem = new Spawn(410, enem);
         spawnList.addElement(enem);
-        enem = new StupidEnemy(55, 0);
+        enem = new SimpleEnemy(55, 0);
         enem = new Spawn(440, enem);
         spawnList.addElement(enem);
-        enem = new StupidEnemy(33, 0);
+        enem = new SimpleEnemy(33, 0);
         enem = new Spawn(460, enem);
         spawnList.addElement(enem);
         enem = new Meteor(40, 0);
@@ -1051,19 +1051,19 @@ function earthLoader() {
         enem = new Spawn(530, enem);
         spawnList.addElement(enem);
         //Everything rains at you....
-        enem = new StupidEnemy(30, 0);
+        enem = new SimpleEnemy(30, 0);
         enem = new Spawn(540, enem);
         spawnList.addElement(enem);
-        enem = new StupidEnemy(13, 0);
+        enem = new SimpleEnemy(13, 0);
         enem = new Spawn(570, enem);
         spawnList.addElement(enem);
-        enem = new StupidEnemy(79, 0);
+        enem = new SimpleEnemy(79, 0);
         enem = new Spawn(600, enem);
         spawnList.addElement(enem);
-        enem = new StupidEnemy(55, 0);
+        enem = new SimpleEnemy(55, 0);
         enem = new Spawn(630, enem);
         spawnList.addElement(enem);
-        enem = new StupidEnemy(33, 0);
+        enem = new SimpleEnemy(33, 0);
         enem = new Spawn(640, enem);
         spawnList.addElement(enem);
         enem = airCraft1_factory(28, 0);
@@ -1815,7 +1815,7 @@ function meteor_damage() {
 
 
 //"Stupid Enemy" dimension function.
-function stupidEnemy_dimension(dummyX, dummyY) {
+function simpleEnemy_dimension(dummyX, dummyY) {
     var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
     var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
     return new Array(x, y);
@@ -1828,7 +1828,7 @@ function background_dimension() {
 
 
 //"Health Boost" dimension function.
-var healthBoost_dimension = stupidEnemy_dimension;
+var healthBoost_dimension = simpleEnemy_dimension;
 //"Fire Boost" dimension function.
 var fireBoost_dimension = healthBoost_dimension;
 //"Life Boost" dimension function.
@@ -1852,7 +1852,7 @@ function bullet_dimension() {
 
 
 //"Meteor" dimension function.
-var meteor_dimension = stupidEnemy_dimension;
+var meteor_dimension = simpleEnemy_dimension;
 //"Boss 3 hatch" dimension function.
 var boss3_hatch_dimension = meteor_dimension;
 //"Boss 3 heating unit" dimension function.
@@ -2267,7 +2267,7 @@ function boss2fb_update() {
             for (j = 0; j < height; j++) {
                 if (i === 0 && j === 0)
                     continue;
-                var enem = new Enemy(this.middleX + (2 * i), this.middleY + (1 * j), boss2_dimension, boss2_update, stupidEnemy_render, damage = 8, true, 5000, boss2_invalidate, 270);
+                var enem = new Enemy(this.middleX + (2 * i), this.middleY + (1 * j), boss2_dimension, boss2_update, simpleEnemy_render, damage = 8, true, 5000, boss2_invalidate, 270);
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 enemArray.push(enem);
@@ -2320,7 +2320,7 @@ function boss2_update() {
 }
 
 //"Stupid Enemy" update function.
-function stupidEnemy_update() {
+function simpleEnemy_update() {
     this.frameCounter++;
     this.frameCounter = this.frameCounter % 2;
     if (this.frameCounter === 1) {
@@ -2492,7 +2492,7 @@ function bullet_render() {
 
 
 //"Stupid Enemy" rendering function
-function stupidEnemy_render() {
+function simpleEnemy_render() {
 //Num pad on mobile.
     context.fillStyle = "white";
     simpleSquare_render.call(this);
@@ -2637,7 +2637,7 @@ function boss2_factory(middleX, middleY) {
     var enemy_obj = null;
     //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
     //Not touchable. Middle point of over
-    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, stupidEnemy_render, damage = 8, true, 0, boss2_invalidate, 270);
+    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, simpleEnemy_render, damage = 8, true, 0, boss2_invalidate, 270);
     giant_boss = enemy_obj;
     return enemy_obj;
 }
@@ -2653,7 +2653,7 @@ function boss1_factory(middleX, middleY) {
     //Not touchable part.
     for (var i = 0; i < 14; i++) {
         for (var j = 0; j < 9; j++) {
-            enemy_obj = new Enemy(middleX + i, middleY + j, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000, boss1_invalidate);
+            enemy_obj = new Enemy(middleX + i, middleY + j, simpleEnemy_dimension, boss1na_update, simpleEnemy_render, 170, false, 5000, boss1_invalidate);
             giant_boss = enemy_obj;
             enemy_array.push(enemy_obj);
         }
@@ -2661,26 +2661,26 @@ function boss1_factory(middleX, middleY) {
 //Left stone-spawner part
     for (var i = 0; i < 3; i++) {
         if (i === 1) {
-            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1sa_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
+            enemy_obj = new Enemy(middleX + i, middleY + 9, simpleEnemy_dimension, boss1sa_update, simpleEnemy_render, 170, true, 5000, boss1_invalidate);
         } else
-            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
+            enemy_obj = new Enemy(middleX + i, middleY + 9, simpleEnemy_dimension, boss1na_update, simpleEnemy_render, 170, true, 5000, boss1_invalidate);
         enemy_array.push(enemy_obj);
     }
 //Middle stone-spawner part
     for (var i = 3; i < 11; i++) {
         if (i === 6 || i === 7) {
-            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1a_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
+            enemy_obj = new Enemy(middleX + i, middleY + 9, simpleEnemy_dimension, boss1a_update, simpleEnemy_render, 170, true, 5000, boss1_invalidate);
         } else
-            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, true, 5000, boss1_invalidate);
+            enemy_obj = new Enemy(middleX + i, middleY + 9, simpleEnemy_dimension, boss1na_update, simpleEnemy_render, 170, true, 5000, boss1_invalidate);
         enemy_array.push(enemy_obj);
     }
 
 //Right stone-spawner part
     for (var i = 11; i < 14; i++) {
         if (i === 12) {
-            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1sa_update, stupidEnemy_render, 170, false, 5000);
+            enemy_obj = new Enemy(middleX + i, middleY + 9, simpleEnemy_dimension, boss1sa_update, simpleEnemy_render, 170, false, 5000);
         } else
-            enemy_obj = new Enemy(middleX + i, middleY + 9, stupidEnemy_dimension, boss1na_update, stupidEnemy_render, 170, false, 5000);
+            enemy_obj = new Enemy(middleX + i, middleY + 9, simpleEnemy_dimension, boss1na_update, simpleEnemy_render, 170, false, 5000);
         enemy_array.push(enemy_obj);
     }
 
@@ -2691,15 +2691,15 @@ function boss1_factory(middleX, middleY) {
 //Air Craft 1
 function airCraft1_factory(middleX, middleY) {
     var enemy_array = [];
-    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
     combineEnemyBricks(enemy_array);
     return enemy_array;
@@ -2708,15 +2708,15 @@ function airCraft1_factory(middleX, middleY) {
 //Air Craft 2
 function airCraft2_factory(middleX, middleY) {
     var enemy_array = [];
-    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft2sc_update, stupidEnemy_render, meteor_damage());
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft2sc_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, aircraft2sc_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, aircraft2sc_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
     combineEnemyBricks(enemy_array);
     return enemy_array;
@@ -2726,15 +2726,15 @@ function airCraft2_factory(middleX, middleY) {
 //Air Craft 3
 function airCraft3_factory(middleX, middleY) {
     var enemy_array = [];
-    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft3sc_update, stupidEnemy_render, meteor_damage());
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft3sc_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
-    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, aircraft3sc_update, stupidEnemy_render, meteor_damage());
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, aircraft3sc_update, simpleEnemy_render, meteor_damage());
     enemy_array.push(enem_obj);
     combineEnemyBricks(enemy_array);
     return enemy_array;
