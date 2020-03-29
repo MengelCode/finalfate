@@ -722,10 +722,10 @@ function initAllInput() {
  * 
  * Define the beginning state of the game, then start with the first level.
  */
-function initGame() {
+function initGame(savedLevel = undefined) {
     player = new SpaceShip(38, 52);
     //CHEAT ZONE!!!
-    player.level = 0;
+    player.level = savedLevel === undefined ? 0 : savedLevel ;
     savedScore = 0;
     // renderReset = 9000;
     //CHEAT ZONE end.
@@ -1278,18 +1278,83 @@ function boot(){
     exchangeRenderLoop(titleScreen);
 }
 
+//Additional strings for the loading prompt.
+var loadingSelections = ["Load","New","Erase"];
+var savedGameFound = ["A saved game was detected.","Resume at level ", "Start anew, delete the saved game?"];
+var loadSelected = undefined;
+/**
+ * Opened when it is detected that there is
+ * a saved game. 
+ * @returns {undefined}
+ */
+function loadPrompt() {
+    title_and_copyright_render();
+    validateReleasedState();
+    if (aniCount > 5) {
+
+    }
+    context.fillStyle = "blue";
+    context.fillRect(290, 190, 260, 200);
+    context.font = "27px Nonserif";
+    context.fillStyle = "white";
+    context.fillText(info_string, 290, 220);
+    context.font = "14px Nonserif";
+    context.fillText(savedGameFound[0], 290, 250);
+    context.fillStyle = "gold";
+    var savedLevelUserFriendly = Number(savedLevel) + 1;
+    context.fillText(savedGameFound[1] + savedLevelUserFriendly + "?", 290, 275);
+    context.fillText(savedGameFound[2], 290, 290);
+    if (aniCount < 4) {
+        loadSelected = undefined;
+    } else if (aniCount === 5) {
+        loadSelected = 0;
+    } else {
+        context.font = "27px Nonserif";
+        context.fillStyle = "white";
+        for (var i = 0; i < loadingSelections.length; i++) {
+            if (loadSelected === i) {
+                context.fillStyle = "yellow";
+            } else {
+                context.fillStyle = "white";
+            }
+            context.fillText(loadingSelections[i], 290 + i * 75, 385);
+        }
+        //Selecting around.
+        if (right && axisXReleased && loadSelected < 2) {
+            simplyPlaySound(sfx4);
+            loadSelected++;
+            axisXReleased = false;
+        } else if (left && axisXReleased && loadSelected > 0) {
+            simplyPlaySound(sfx4);
+            loadSelected--;
+            axisXReleased = false;
+        }
+        //Confirmations:
+        //loadSelected = 0 --> Load game.
+        //loadSelected = 1 --> New game.
+        //loadSelected = 2 --> Delete old game and start anew.
+        if(shoot && shootReleased){
+            switch(loadSelected){
+                case 0:
+                    initGame(Number(savedLevel));
+                    return;
+                case 1:
+                    initGame();
+                    return;
+                case 2:
+                     getLocalStorage().removeItem(gameStorageName);
+                     initGame();
+            }
+        }
+    }
+}
+
+
 /*
  * Render the title screen.
  */
 function titleScreen() {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
-    context.font = "60px Serif";
-    context.fillStyle = "red";
-    context.fillText("THE FINAL FATE", 120, 150);
-    context.font = "17px Nonserif";
-    context.fillStyle = "white";
-    context.fillText("GAME (C) 2019-2020 Manuel Engel", 220, 580);
+    title_and_copyright_render();
     try {
         if (aniCount % 5 === aniCount % 10) {
             context.font = "23px Nonserif";
@@ -1300,14 +1365,24 @@ function titleScreen() {
             //if (shoot === 5 || pollButtonMemory()) {
             if (keyboard) {
                 clearInterval(gamepad_handle);
-                initGame();
+                shootReleased = false;
             }
             if (gamepad !== false) {
                 window.removeEventListener("keydown", getKeyPress);
                 window.removeEventListener("keyup", getKeyRelease);
                 clearInterval(gamepad_handle);
                 gamepad_handle = setInterval(gamepadPoll, FRAME_RATE);
-                initGame();
+                shootReleased = false;
+            }
+            if (keyboard || gamepad !== false) {
+                if (storageStatus === false) {
+                    initGame();
+                }
+                else{
+                    shootReleased = false;
+                    exchangeRenderLoop(loadPrompt);
+                }
+
             }
         }
     } catch (error) {
@@ -2429,6 +2504,20 @@ function fireBoost_update() {
 
 //All rendering routines.
 
+/**
+ * Renders "THE FINAL FATE" and the copyright info.
+ * @returns {undefined}
+ */
+function title_and_copyright_render(){
+ context.fillStyle = "black";
+    context.fillRect(0, 0, 800, 600);
+    context.font = "60px Serif";
+    context.fillStyle = "red";
+    context.fillText("THE FINAL FATE", 120, 150);
+    context.font = "17px Nonserif";
+    context.fillStyle = "white";
+    context.fillText("GAME (C) 2019-2020 Manuel Engel", 220, 580);   
+}
 
 //Level 1 - The Earth rendering function
 function background1_render() {
