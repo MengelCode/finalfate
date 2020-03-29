@@ -1,17 +1,23 @@
-#!/bin/bash
-
 # https://github.com/ichbestimmtnicht/docker-autobuild-release
 # Template created 2020 by Ludwig Werner Döhnert
 # This work is licensed under the Creative Commons Attribution 4.0 International License.
 # To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
 
-source hooks/env.sh
+# Set global environment variables
+ARG SRC_REPO
+ARG SRC_TAG
 
-# Cycle through the arches
+FROM scratch AS buildcontext
 
-for SR_DEST_BUILD_ARCH in ${DEST_ARCHES}
-do
-    sh "${SR_DEST_BUILD_ARCH}.build.sh"
-done
+COPY . .
 
-exit 0
+# Setup arguments for next image
+ARG SRC_REPO
+ARG SRC_TAG
+
+# Pull image
+FROM amd64/${SRC_REPO}:${SRC_TAG} AS bundle
+
+COPY --from=buildcontext finalfate/ /usr/local/apache2/htdocs/
+
+EXPOSE 80
