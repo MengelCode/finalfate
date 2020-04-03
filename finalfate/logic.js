@@ -610,6 +610,7 @@ var loaders = new Array(7);
 loaders[0] = earthLoader;
 loaders[1] = solarSystemLoader;
 loaders[2] = universeLoader;
+loaders[3] = blinkyHomeworldLoader;
 //Level background rendering functions.
 //var backgroundRenderers = new Array(6);
 //Animation counter. Absolute
@@ -770,6 +771,31 @@ function loadLevel() {
         exchangeRenderLoop(null);
     }
 }
+
+var fog_bomb_count = 0;
+
+
+/**
+ * Level 4 - Blinky Homeworld
+ * 
+ */
+function blinkyHomeworldLoader(){
+ try{
+ var enem = null;
+ enem = new FireBoost(38,3);
+ enem = new Spawn(0, enem, true, true, false, false);
+ spawnList.addElements(enem);
+ enem = new HealthBoost(38,3);
+ enem = new Spawn(0, enem, true, true, false, false);
+ spawnList.addElements(enem);
+ 
+ }   
+ catch(error){
+     loadingException  = error;
+ }   
+}
+
+
 /**
  * 
  * Level 3 - The Universe
@@ -2306,6 +2332,9 @@ function slowMove_update() {
     }
 }
 
+//"Fog Block" update function.
+
+var fogBlock_update = slowMove_update;
 
 //"Aircraft 2 -  shooting cannon" update function
 
@@ -2593,6 +2622,10 @@ function meteor_render() {
     context.fillStyle = "brown";
     simpleSquare_render.call(this);
 }
+
+//"Fog Block" rendering function.
+var fogBlock_render = meteor_render;
+
 
 //"Boss 3 arm" rendering function
 function boss3_arm_render() {
