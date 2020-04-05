@@ -265,6 +265,37 @@ class Enemy extends GameObject {
     }
 }
 
+
+class Bomb extends Enemy {
+  
+    /**
+     * Bomb constructor. For general use.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @param {type} dimensionMatrix
+     * @param {type} updateRoutine
+     * @param {type} renderRoutine
+     * @param {type} killable
+     * @param {type} damage
+     * @param {type} hp
+     * @param {type} invalidate_special 
+     * @returns {Bomb}
+     */
+    constructor(middleX,middleY,dimensionMatrix,updateRoutine,renderRoutine,damage,hp,invalidate_special,detonation_time){
+//         if(this.frameCounter >= this.detonationTime){
+//        this.invalidateSpecial();
+//    }
+//    this.updateSpecial();
+        super(middleX,middleY,dimensionMatrix,bomb_update,renderRoutine,true,damage,hp);
+        this.updateSpecial = updateRoutine;
+        this.invalidateSpecial = invalidate_special;
+        this.detonationTime = detonation_time;
+        
+    }
+    
+}
+
+
 class Meteor extends Enemy {
     /**
      * Create a meteor object.
@@ -603,7 +634,7 @@ var sfx3 = document.getElementById("sfx-channel-3");
 var sfx4 = document.getElementById("sfx-channel-4");
 //Game over tune.
 var game_over = document.getElementById("game-over");
-//Exception occured.
+//Exception occurred.
 var loadingException = null;
 //Level Loaders.
 var loaders = new Array(7);
@@ -772,7 +803,7 @@ function loadLevel() {
     }
 }
 
-var fog_bomb_count = 0;
+
 
 
 /**
@@ -784,10 +815,10 @@ function blinkyHomeworldLoader(){
  var enem = null;
  enem = new FireBoost(38,3);
  enem = new Spawn(0, enem, true, true, false, false);
- spawnList.addElements(enem);
+ spawnList.addElement(enem);
  enem = new HealthBoost(38,3);
- enem = new Spawn(0, enem, true, true, false, false);
- spawnList.addElements(enem);
+ enem = new Spawn(40, enem, true, true, false, false);
+ spawnList.addElement(enem);
  
  }   
  catch(error){
@@ -2421,6 +2452,15 @@ function boss2fb_update() {
 //Boss 2 update function.
 function boss2_update() {
 
+}
+
+//"Bomb" generalized update function.
+function bomb_update(){
+    if(this.frameCounter >= this.detonationTime){
+        this.invalidateSpecial();
+    }
+    this.updateSpecial();
+    
 }
 
 //"Stupid Enemy" update function.
