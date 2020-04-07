@@ -2435,7 +2435,7 @@ function meteor2_update() {
 
 //"Health Boost" update function.
 function healthBoost_update() {
-    if (this.collides(player)) {
+    if (player.collides(this)) {
         this.invalid = true;
         sfx2.pause();
         sfx2.currentTime = 0;
@@ -2444,7 +2444,7 @@ function healthBoost_update() {
         return;
     }
     this.middleY = this.middleY + 1;
-    if (this.collides(player)) {
+    if (player.collides(this)) {
         this.invalid = true;
         sfx2.pause();
         sfx2.currentTime = 0;
@@ -2456,7 +2456,7 @@ function healthBoost_update() {
 
 //"Life Boost" update function.
 function lifeBoost_update() {
-    if (this.collides(player)) {
+    if (player.collides(this)) {
         this.invalid = true;
         sfx2.pause();
         sfx2.currentTime = 0;
@@ -2465,7 +2465,7 @@ function lifeBoost_update() {
         return;
     }
     this.middleY = this.middleY + 1;
-    if (this.collides(player)) {
+    if (player.collides(this)) {
         this.invalid = true;
         sfx2.pause();
         sfx2.currentTime = 0;
@@ -2476,8 +2476,9 @@ function lifeBoost_update() {
 }
 
 //"Fire Boost" update function.
+fix_me
 function fireBoost_update() {
-    if (this.collides(player)) {
+    if (player.collides(this)) {
         this.invalid = true;
         sfx2.pause();
         sfx2.currentTime = 0;
@@ -2489,7 +2490,7 @@ function fireBoost_update() {
         return;
     }
     this.middleY = this.middleY + 1;
-    if (this.collides(player)) {
+    if (player.collides(this)) {
         this.invalid = true;
         sfx2.pause();
         sfx2.currentTime = 0;
