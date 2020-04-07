@@ -34,7 +34,7 @@ BUILD_TARGET_STAGE=false
 # which arches to build
 DEST_ARCHES="amd64 arm32v7 arm64v8"
 # username to push to
-#DEST_USER="ichbestimmtnicht"
+DEST_USER="mengel38"
 # repo to push to
 DEST_REPO="finalfate"
 # destination tag for the manifest
