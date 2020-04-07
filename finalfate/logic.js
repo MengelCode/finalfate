@@ -2475,8 +2475,7 @@ function lifeBoost_update() {
 
 }
 
-//"Fire Boost" update function.
-fix_me
+//"Fire Boost" update function
 function fireBoost_update() {
     if (player.collides(this)) {
         this.invalid = true;
