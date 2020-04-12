@@ -265,28 +265,36 @@ class Enemy extends GameObject {
     }
 }
 
+class Fog extends Enemy{
+   /**
+    * "Fog" to be constructed by FogBomb when one detonates.
+    * @returns {Fog}
+    */ 
+    constructor(){
+        super(0,0,func_noOp,fog_update,fog_render);
+    }
+    
+}
 
 class Bomb extends Enemy {
   
     /**
-     * Bomb constructor. For general use.
+     * Bomb constructor. For general use. To be inherited from.
      * @param {type} middleX
      * @param {type} middleY
      * @param {type} dimensionMatrix
      * @param {type} updateRoutine
      * @param {type} renderRoutine
-     * @param {type} killable
-     * @param {type} damage
-     * @param {type} hp
      * @param {type} invalidate_special 
+     * @param {type} detonation_time
      * @returns {Bomb}
      */
-    constructor(middleX,middleY,dimensionMatrix,updateRoutine,renderRoutine,damage,hp,invalidate_special,detonation_time){
+    constructor(middleX,middleY,dimensionMatrix,updateRoutine,renderRoutine,invalidate_special,detonation_time){
 //         if(this.frameCounter >= this.detonationTime){
 //        this.invalidateSpecial();
 //    }
 //    this.updateSpecial();
-        super(middleX,middleY,dimensionMatrix,bomb_update,renderRoutine,true,damage,hp);
+        super(middleX,middleY,dimensionMatrix,bomb_update,renderRoutine);
         this.updateSpecial = updateRoutine;
         this.invalidateSpecial = invalidate_special;
         this.detonationTime = detonation_time;
@@ -294,7 +302,19 @@ class Bomb extends Enemy {
     }
     
 }
-
+class FogBomb extends Bomb{
+    /**
+     * Create a fog bomb.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {FogBomb}
+     */
+    constructor(middleX,middleY){
+        super(middleX,middleY,fogBomb_dimension,fogBomb_update,fogBomb_render,fogBomb_invalidateSpecial,100);
+    }
+    
+    
+}
 
 class Meteor extends Enemy {
     /**
@@ -814,10 +834,13 @@ function blinkyHomeworldLoader(){
  try{
  var enem = null;
  enem = new FireBoost(38,3);
- enem = new Spawn(0, enem, true, true, false, false);
+ enem = new Spawn(0, enem, false, true, false, false);
  spawnList.addElement(enem);
  enem = new HealthBoost(38,3);
- enem = new Spawn(40, enem, true, true, false, false);
+ enem = new Spawn(40, enem, false, true, false, false);
+ spawnList.addElement(enem);
+ enem = new FogBomb(40,20);
+ enem = new Spawn(90, enem);
  spawnList.addElement(enem);
  
  }   
@@ -1920,6 +1943,11 @@ function boss3_arm_active_invalidate() {
     boss3_arm_values.prototype.hpValues[this.partId] -= 7;
 }
 
+//"Special Invalidate" functions. First use: Bomb detonation in-game.
+function fogBomb_invalidateSpecial(){
+    displayList.addElement(new Fog(),false);
+}
+
 //All "Score" functions. Not always required.
 
 function default_score() {
@@ -1985,6 +2013,8 @@ function bullet_dimension() {
 
 //"Meteor" dimension function.
 var meteor_dimension = simpleEnemy_dimension;
+//"Fog Bomb" dimension function.
+var fogBomb_dimension = meteor_dimension;
 //"Boss 3 hatch" dimension function.
 var boss3_hatch_dimension = meteor_dimension;
 //"Boss 3 heating unit" dimension function.
@@ -2454,10 +2484,16 @@ function boss2_update() {
 
 }
 
+//"Fog Bomb" update function. (Does nothing, as I think it should be.)
+var fogBomb_update = func_noOp;
+
+
 //"Bomb" generalized update function.
 function bomb_update(){
+    this.frameCounter++;
     if(this.frameCounter >= this.detonationTime){
         this.invalidateSpecial();
+        this.invalidate();
     }
     this.updateSpecial();
     
@@ -2500,7 +2536,11 @@ function meteor2_update() {
 
     this.middleY = this.middleY + 1;
 }
-
+//"Fog" update function.
+function fog_update(){
+this.frameCounter++;    
+if(this.frameCounter === 30)this.invalidate();    
+}
 
 //"Health Boost" update function.
 function healthBoost_update() {
@@ -2609,6 +2649,12 @@ function background2_render() {
         var star = this.next.getNext();
         star.renderRoutine();
     }
+}
+//Fog Bomb rendering function.
+function fogBomb_render (){
+    performFadeIn.call(this,3,13);
+    meteor_render.call(this);
+    context.globalAlpha = 1.0;
 }
 
 //Star Rendering function
@@ -2780,6 +2826,13 @@ function heat_render() {
     context.fillStyle = "#550000";
     context.fillRect(0, 0, 800, 600);
 }
+
+//"Fog" rendering function
+function fog_render(){
+context.fillStyle = "#444444";    
+context.fillRect(0,0,800,600);    
+}
+
 //Factory Functions.
 
 
@@ -3280,4 +3333,21 @@ function simplyPlaySound(object) {
     object.pause();
     object.currentTime = 0;
     object.play();
+}
+/**
+ * Function in order to make a nice looking fade in via transparency.
+ * Do not call directly, only via its call function, because the calling enemy
+ * object is required.
+ * @param {type} startValue Frame in lifecycle of object when the effect should start.
+ * @param {type} endValue Frame in lifecycle of object when the effect should end.
+ * @returns {undefined}
+ */
+function performFadeIn(startValue = 0,endValue = 10){
+ if(this.frameCounter < startValue){
+        context.globalAlpha = 0.0;
+    }
+    else if(this.frameCounter <= endValue-startValue){
+        context.globalAlpha = (this.frameCounter-startValue) * 0.1; 
+    }    
+    
 }
