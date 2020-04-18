@@ -2539,7 +2539,7 @@ function meteor2_update() {
 //"Fog" update function.
 function fog_update(){
 this.frameCounter++;    
-if(this.frameCounter === 30)this.invalidate();    
+if(this.frameCounter === 40)this.invalidate();    
 }
 
 //"Health Boost" update function.
@@ -2828,9 +2828,49 @@ function heat_render() {
 }
 
 //"Fog" rendering function
-function fog_render(){
-context.fillStyle = "#444444";    
-context.fillRect(0,0,800,600);    
+function fog_render() {
+    if (this.frameCounter < 30) {
+        performFadeIn.call(this, 0, 10);
+
+    } else {
+        //I do not want this solution, but floating point precision limits my way of life.
+        switch (this.frameCounter) {
+            case 30:
+            context.globalAlpha = 0.9;
+            break;
+            case 31:
+            context.globalAlpha = 0.8;
+            break;
+            case 32:
+            context.globalAlpha = 0.7;
+            break;
+            case 33:
+            context.globalAlpha = 0.6;
+            break;
+            case 34:
+            context.globalAlpha = 0.5;
+            break;
+            case 35:
+            context.globalAlpha = 0.4;
+            break;
+            case 36:
+            context.globalAlpha = 0.3;
+            break;
+            case 37:
+            context.globalAlpha = 0.2;
+            break;
+            case 38:
+            context.globalAlpha = 0.1;
+            break;
+            default:
+            context.globalAlpha = 0;
+        
+        }
+    }
+    context.fillStyle = "#441111";
+    context.fillRect(0,0,800,600);
+    //Uncomment this to have the best "Motion blur" ever.
+    context.globalAlpha = 1.0;
 }
 
 //Factory Functions.
@@ -3342,12 +3382,33 @@ function simplyPlaySound(object) {
  * @param {type} endValue Frame in lifecycle of object when the effect should end.
  * @returns {undefined}
  */
-function performFadeIn(startValue = 0,endValue = 10){
+function performFadeIn(startValue = 0,endValue = startValue + 10){
  if(this.frameCounter < startValue){
         context.globalAlpha = 0.0;
     }
     else if(this.frameCounter <= endValue-startValue){
         context.globalAlpha = (this.frameCounter-startValue) * 0.1; 
+    }    
+    
+}
+/**
+ * Function in order to make a nice looking fade out via transparency.
+ * Do not call directly, only via its call function, because the calling enemy
+ * object is required. 
+ * @param {type} startValue Frame in lifecycle of object when the effect should start.
+ * @param {type} endValue Frame in lifecycle of object when the effect should end.
+ * @returns {undefined}
+ * @deprecated Using it cannot be recommended due to malfunction.
+ */
+function performFadeOut(startValue = 0,endValue = startValue + 10){
+    //window.alert("I am called.");
+ if(this.frameCounter < startValue){
+        context.globalAlpha = 1.0;
+    }  
+//  Did not work. Most likely rounding errors in JavaScript engine.    
+    else if(this.frameCounter <= endValue-startValue){
+           var inverter = (this.frameCounter-startValue) * 0.1;
+           context.globalAlpha = 1 - inverter; 
     }    
     
 }
