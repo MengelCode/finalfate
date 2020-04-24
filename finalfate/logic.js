@@ -440,6 +440,9 @@ class SpaceShip extends GameObject {
                 var bullet = new Bullet(this.middleX - 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
+                bullet = new Bullet(this.middleX, this.middleY - 2);
+                displayList.addElement(bullet, false);
+                bulletList.addElement(bullet, false);
                 bullet = new Bullet(this.middleX + 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
