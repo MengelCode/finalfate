@@ -276,6 +276,16 @@ class Fog extends Enemy{
     
 }
 
+class Boom extends Enemy{
+    /**
+     * Explosion triggered by Ship Buster.
+     * @returns {Boom}
+     */
+    constructor(){
+      super(0,0,func_noOp,boom_update,boom_render);  
+    }
+}
+
 class Bomb extends Enemy {
   
     /**
@@ -311,6 +321,20 @@ class FogBomb extends Bomb{
      */
     constructor(middleX,middleY){
         super(middleX,middleY,fogBomb_dimension,fogBomb_update,fogBomb_render,fogBomb_invalidateSpecial,100);
+    }
+    
+    
+}
+
+class ShipBuster extends Bomb{
+    /**
+     * Create a ship buster.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {FogBomb}
+     */
+    constructor(middleX,middleY){
+        super(middleX,middleY,shipBuster_dimension,shipBuster_update,shipBuster_render,shipBuster_invalidateSpecial,100);
     }
     
     
@@ -842,6 +866,10 @@ function blinkyHomeworldLoader(){
  enem = new FogBomb(40,20);
  enem = new Spawn(90, enem);
  spawnList.addElement(enem);
+ enem = new ShipBuster(40,20);
+ enem = new Spawn(160, enem);
+ spawnList.addElement(enem);
+ 
  
  }   
  catch(error){
@@ -1944,8 +1972,17 @@ function boss3_arm_active_invalidate() {
 }
 
 //"Special Invalidate" functions. First use: Bomb detonation in-game.
+//"Fog Bomb" special invalidation function.
 function fogBomb_invalidateSpecial(){
+    simplyPlaySound(sfx1);
     displayList.addElement(new Fog(),false);
+}
+
+//"Ship Buster" special invalidation function.
+function shipBuster_invalidateSpecial(){
+    simplyPlaySound(sfx1);
+    player.health-=27;
+    displayList.addElement(new Boom(),false);
 }
 
 //All "Score" functions. Not always required.
@@ -2015,6 +2052,8 @@ function bullet_dimension() {
 var meteor_dimension = simpleEnemy_dimension;
 //"Fog Bomb" dimension function.
 var fogBomb_dimension = meteor_dimension;
+//"Ship Buster" dimension function.
+var shipBuster_dimension = meteor_dimension;
 //"Boss 3 hatch" dimension function.
 var boss3_hatch_dimension = meteor_dimension;
 //"Boss 3 heating unit" dimension function.
@@ -2487,6 +2526,8 @@ function boss2_update() {
 //"Fog Bomb" update function. (Does nothing, as I think it should be.)
 var fogBomb_update = func_noOp;
 
+//"Ship Buster" update function.
+var shipBuster_update = func_noOp;
 
 //"Bomb" generalized update function.
 function bomb_update(){
@@ -2540,6 +2581,12 @@ function meteor2_update() {
 function fog_update(){
 this.frameCounter++;    
 if(this.frameCounter === 40)this.invalidate();    
+}
+
+//"Boom" update function.
+function boom_update(){
+this.frameCounter++;    
+if(this.frameCounter === 3)this.invalidate();
 }
 
 //"Health Boost" update function.
@@ -2654,6 +2701,13 @@ function background2_render() {
 function fogBomb_render (){
     performFadeIn.call(this,3,13);
     meteor_render.call(this);
+    context.globalAlpha = 1.0;
+}
+
+//Ship Buster rendering function
+function shipBuster_render() {
+    performFadeIn.call(this, 3, 13);
+    simpleEnemy_render.call(this);
     context.globalAlpha = 1.0;
 }
 
@@ -2826,7 +2880,11 @@ function heat_render() {
     context.fillStyle = "#550000";
     context.fillRect(0, 0, 800, 600);
 }
-
+//"Boom" rendering function
+function boom_render(){
+ context.fillStyle = "#EE0033";
+ context.fillRect(0,0,800,600);   
+}
 //"Fog" rendering function
 function fog_render() {
     if (this.frameCounter < 30) {
