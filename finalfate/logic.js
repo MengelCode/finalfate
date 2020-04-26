@@ -397,6 +397,8 @@ class SpaceShip extends GameObject {
         this.massfire = false;
         //Auto-fire cooldown.
         this.cooldown = 0;
+        //Checkpoint memory. Because levels start to count with zero, I set the default to -1 here.
+        this.checkpoint = -1;
         super.updateState = function () {
             //If memorized button here, then poll that from controller.
             //Disabled for now.
@@ -729,7 +731,7 @@ function initGame(savedLevel = undefined) {
     player = new SpaceShip(38, 52);
     //CHEAT ZONE!!!
     player.level = savedLevel === undefined ? 0 : savedLevel ;
-    savedScore = 0;
+    this.savedScore = 0;
     // renderReset = 9000;
     //CHEAT ZONE end.
     loadLevel();
@@ -784,6 +786,14 @@ function universeLoader() {
         enem = new FireBoost(20, 3);
         enem = new Spawn(0, enem, true, true, false, false);
         spawnList.addElement(enem);
+        if(player.checkpoint === 2){
+        var enem = null;    
+        enem = new HealthBoost(45, 0);
+        enem = new Spawn(20, enem, false, true, false, false);
+        spawnList.addElement(enem);
+        spawnList.addElement(new Spawn(80, boss3_factory(30, 0), true));
+        return;
+        }
         //3980 frames left.
         for (var i = 0; i < 308; i++) {
             var rando = getRandomX() % 16;
@@ -844,11 +854,21 @@ function solarSystemLoader() {
         background = new Enemy(0, 0, background_dimension, background1_update, background2_render);
         var enem = null;
 
-        if (boss2_constants.prototype.DebugSpawnInstantly) {
+        if (boss2_constants.prototype.DebugSpawnInstantly) {          
             enem = boss2_factory(boss2_constants.prototype.x, boss2_constants.prototype.y);
             enem = new Spawn(15, enem);
             spawnList.addElement(enem);
             return;
+        }
+        if(player.checkpoint === 1){
+        var enem = null;    
+        enem = new FireBoost(45, 0);
+        enem = new Spawn(20, enem, false, true, false, false);
+        spawnList.addElement(enem);
+        enem = boss2_factory(boss2_constants.prototype.x, boss2_constants.prototype.y);
+        enem = new Spawn(180, enem);
+        spawnList.addElement(enem);
+        return;
         }
 
         for (var i = 0; i < 58; i++) {
@@ -1007,6 +1027,15 @@ function solarSystemLoader() {
  */
 function earthLoader() {
     try {
+        if(player.checkpoint === 0){
+        var enem = null;    
+        enem = new FireBoost(45, 0);
+        enem = new Spawn(20, enem, false, true, false, false);
+        spawnList.addElement(enem);
+        enem = boss1_factory(20, 15);
+        spawnListArrayAdd(enem,120);
+        return;
+        }
         background = new Enemy(0, 0, background_dimension, background1_update, background1_render);
         var enem = null;
 //Slow beginning...
@@ -1251,7 +1280,7 @@ function spawnListArrayAdd(enemy_array, spawn_time, relative = false) {
 function loseLife() {
     player.massfire = false;
     player.quadfire = false;
-    player.score = savedScore;
+    player.score = this.savedScore;
     sfx3.pause();
     sfx3.currentTime = 0;
     sfx3.play();
@@ -1609,6 +1638,10 @@ function updateGameObjects() {
     while (next !== null && ((next.isRelative === false && aniCount > next.frameDelta) || (next.isRelative === true && aniCountRelative > next.frameDelta))) {
         aniCountRelative = 0;
         spawnList.getNext();
+        if(spawnList.peekNext() === null && giant_boss !== null && !giant_boss.registered){
+            this.savedScore = player.score;
+            giant_boss.registered = true;
+        }
         var subject = next.gameObject;
         if (next.isForDisplay) {
             displayList.addElement(subject);
@@ -1977,6 +2010,7 @@ function boss3_middle_update() {
     //Only the first block of the middle element should trigger this code.
     if (this.firstElement && boss3_middle_constants.prototype.hp > 0) {
         //Use internal counter.
+        player.checkpoint = 2;
         this.frameCounter++;
         if (this.frameCounter > 30) {
             //Check for possibilities to place enemy objects and reset counter.
@@ -2252,6 +2286,8 @@ function boss3_heating_update() {
 
 //Boss 1 not attackable part update function.
 function boss1na_update() {
+//Make sure the game remembers the player was here.
+player.checkpoint = 0;    
 //Init frame counter of needed.
     if (this.frameCounter === 0)
         this.frameCounter = 1;
@@ -2339,6 +2375,7 @@ function boss2fb_update() {
     var length = 10;
     var height = 5;
     if (this.next === null) {
+        player.checkpoint = 1;
         var enemArray = [];
         enemArray.push(this);
         for (i = 0; i < length; i++) {
