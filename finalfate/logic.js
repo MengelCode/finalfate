@@ -397,6 +397,9 @@ class SpaceShip extends GameObject {
         this.massfire = false;
         //Auto-fire cooldown.
         this.cooldown = 0;
+        //Selected difficulty level.
+        //-2 Lowest, 0 Middle, +2 Highest.
+        this.skill = 0;
         //Checkpoint memory. Because levels start to count with zero, I set the default to -1 here.
         this.checkpoint = -1;
         super.updateState = function () {
@@ -727,10 +730,11 @@ function initAllInput() {
  * 
  * Define the beginning state of the game, then start with the first level.
  */
-function initGame(savedLevel = undefined) {
+function initGame(skillLevel, savedLevel = undefined) {
     player = new SpaceShip(38, 52);
     //CHEAT ZONE!!!
     player.level = savedLevel === undefined ? 0 : savedLevel ;
+    player.skill = skillLevel;
     this.savedScore = 0;
     // renderReset = 9000;
     //CHEAT ZONE end.
@@ -1310,6 +1314,57 @@ function boot(){
     exchangeRenderLoop(titleScreen);
 }
 
+//Additional strings for difficulty prompt.
+var skillSelections = ["Easy","Advanced","Normal","Hard","Master"];
+var skillScreenDelta = [-80,0,150,270,360];
+var selectSkill = "Select difficulty level.";
+var skillSelection = undefined;
+function skillPrompt(){
+  title_and_copyright_render();
+  validateReleasedState();
+  context.font = "27px Nonserif";
+  context.fillStyle = "white";
+  context.fillText(selectSkill,220,450);
+   if (aniCount < 4) {
+        skillSelected = undefined;
+    } else if (aniCount === 5) {
+        skillSelected = 0;
+    }
+     for (var i = -2; i < skillSelections.length-2; i++) {
+            if (skillSelected === i) {
+                context.fillStyle = "yellow";
+            } else {
+                context.fillStyle = "white";
+            }
+            context.fillText(skillSelections[i+2], 200 + skillScreenDelta[i+2], 500);
+        }
+        //Selecting around.
+        if (right && axisXReleased && skillSelected < 2) {
+            simplyPlaySound(sfx4);
+            skillSelected++;
+            axisXReleased = false;
+        } else if (left && axisXReleased && skillSelected > -2) {
+            simplyPlaySound(sfx4);
+            skillSelected--;
+            axisXReleased = false;
+        }
+     if(shoot && shootReleased){
+            simplyPlaySound(sfx4);
+            switch(loadSelected){
+                case 0:
+                    initGame(skillSelected,Number(savedLevel));
+                    return;
+                case 1:
+                    initGame(skillSelected);
+                    return;
+                case 2:
+                     getLocalStorage().removeItem(gameStorageName);
+                     initGame(skillSelected);
+                 
+            }
+        }
+}
+
 //Additional strings for the loading prompt.
 var loadingSelections = ["Load","New","Erase"];
 var savedGameFound = ["A saved game was detected.","Resume at level ", "Start anew, delete the saved game?"];
@@ -1322,9 +1377,6 @@ var loadSelected = undefined;
 function loadPrompt() {
     title_and_copyright_render();
     validateReleasedState();
-    if (aniCount > 5) {
-
-    }
     context.fillStyle = "blue";
     context.fillRect(290, 190, 260, 200);
     context.font = "27px Nonserif";
@@ -1366,17 +1418,9 @@ function loadPrompt() {
         //loadSelected = 1 --> New game.
         //loadSelected = 2 --> Delete old game and start anew.
         if(shoot && shootReleased){
-            switch(loadSelected){
-                case 0:
-                    initGame(Number(savedLevel));
-                    return;
-                case 1:
-                    initGame();
-                    return;
-                case 2:
-                     getLocalStorage().removeItem(gameStorageName);
-                     initGame();
-            }
+        simplyPlaySound(sfx4);
+        exchangeRenderLoop(skillPrompt);
+        shootReleased = false;
         }
     }
 }
@@ -1408,10 +1452,12 @@ function titleScreen() {
             }
             if (keyboard || gamepad !== false) {
                 if (storageStatus === false) {
-                    initGame();
+                    simplyPlaySound(sfx4);
+                    exchangeRenderLoop(skillPrompt);
                 }
                 else{
-                    shootReleased = false;
+                     shootReleased = false;
+                     simplyPlaySound(sfx4);
                     exchangeRenderLoop(loadPrompt);
                 }
 
