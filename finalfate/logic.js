@@ -239,7 +239,18 @@ class Enemy extends GameObject {
         super.updateState = updateRoutine;
         super.renderState = renderRoutine;
         this.killable = killable;
-        this.damage = damage;
+        if(player.skill === 2){
+        this.damage = Math.round(damage * 2);
+        }
+        else if(player.skill === -1){
+        this.damage = Math.round(damage / 2);    
+        }
+        else if(player.skill === -2){
+        this.damage = Math.round(damage / 3);    
+        }
+        else{
+            this.damage = damage;
+        }
         this.score = score;
         //HP value. Can be respected by invalidate() function, but it needs not.
         this.hp = hp;
@@ -405,6 +416,7 @@ class SpaceShip extends GameObject {
         super.updateState = function () {
             //If memorized button here, then poll that from controller.
             //Disabled for now.
+
             if (false) {
                 pollAxisX();
                 pollAxisY();
@@ -435,8 +447,11 @@ class SpaceShip extends GameObject {
             if (!shoot) {
                 this.keyReleased = true;
             }
-            if ((shoot && this.keyReleased && this.massfire === false) || (shoot && this.massfire === true && this.cooldown === 0)) {
+            if ((shoot && this.keyReleased && this.massfire === false) || (shoot && this.massfire === true && this.cooldown === 0) || (this.skill < -1 && this.cooldown === 0)) {
                 this.keyReleased = false;
+                if (this.skill < -1) {
+                    this.massfire = true;
+                }
                 if (this.massfire === true)
                     this.cooldown = 5;
                 sfx0.pause();
@@ -445,9 +460,11 @@ class SpaceShip extends GameObject {
                 var bullet = new Bullet(this.middleX - 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
-                bullet = new Bullet(this.middleX, this.middleY - 2);
-                displayList.addElement(bullet, false);
-                bulletList.addElement(bullet, false);
+                if (this.skill < 1) {
+                    bullet = new Bullet(this.middleX, this.middleY - 2);
+                    displayList.addElement(bullet, false);
+                    bulletList.addElement(bullet, false);
+                }
                 bullet = new Bullet(this.middleX + 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
@@ -733,7 +750,7 @@ function initAllInput() {
 function initGame(skillLevel, savedLevel = undefined) {
     player = new SpaceShip(38, 52);
     //CHEAT ZONE!!!
-    player.level = savedLevel === undefined ? 0 : savedLevel ;
+    player.level = savedLevel === undefined ? 0 : savedLevel;
     player.skill = skillLevel;
     this.savedScore = 0;
     // renderReset = 9000;
@@ -790,13 +807,13 @@ function universeLoader() {
         enem = new FireBoost(20, 3);
         enem = new Spawn(0, enem, true, true, false, false);
         spawnList.addElement(enem);
-        if(player.checkpoint === 2){
-        var enem = null;    
-        enem = new HealthBoost(45, 0);
-        enem = new Spawn(20, enem, false, true, false, false);
-        spawnList.addElement(enem);
-        spawnList.addElement(new Spawn(80, boss3_factory(30, 0), true));
-        return;
+        if (player.checkpoint === 2) {
+            var enem = null;
+            enem = new HealthBoost(45, 0);
+            enem = new Spawn(20, enem, false, true, false, false);
+            spawnList.addElement(enem);
+            spawnList.addElement(new Spawn(80, boss3_factory(30, 0), true));
+            return;
         }
         //3980 frames left.
         for (var i = 0; i < 308; i++) {
@@ -858,21 +875,21 @@ function solarSystemLoader() {
         background = new Enemy(0, 0, background_dimension, background1_update, background2_render);
         var enem = null;
 
-        if (boss2_constants.prototype.DebugSpawnInstantly) {          
+        if (boss2_constants.prototype.DebugSpawnInstantly) {
             enem = boss2_factory(boss2_constants.prototype.x, boss2_constants.prototype.y);
             enem = new Spawn(15, enem);
             spawnList.addElement(enem);
             return;
         }
-        if(player.checkpoint === 1){
-        var enem = null;    
-        enem = new FireBoost(45, 0);
-        enem = new Spawn(20, enem, false, true, false, false);
-        spawnList.addElement(enem);
-        enem = boss2_factory(boss2_constants.prototype.x, boss2_constants.prototype.y);
-        enem = new Spawn(180, enem);
-        spawnList.addElement(enem);
-        return;
+        if (player.checkpoint === 1) {
+            var enem = null;
+            enem = new FireBoost(45, 0);
+            enem = new Spawn(20, enem, false, true, false, false);
+            spawnList.addElement(enem);
+            enem = boss2_factory(boss2_constants.prototype.x, boss2_constants.prototype.y);
+            enem = new Spawn(180, enem);
+            spawnList.addElement(enem);
+            return;
         }
 
         for (var i = 0; i < 58; i++) {
@@ -1031,14 +1048,14 @@ function solarSystemLoader() {
  */
 function earthLoader() {
     try {
-        if(player.checkpoint === 0){
-        var enem = null;    
-        enem = new FireBoost(45, 0);
-        enem = new Spawn(20, enem, false, true, false, false);
-        spawnList.addElement(enem);
-        enem = boss1_factory(20, 15);
-        spawnListArrayAdd(enem,120);
-        return;
+        if (player.checkpoint === 0) {
+            var enem = null;
+            enem = new FireBoost(45, 0);
+            enem = new Spawn(20, enem, false, true, false, false);
+            spawnList.addElement(enem);
+            enem = boss1_factory(20, 15);
+            spawnListArrayAdd(enem, 120);
+            return;
         }
         background = new Enemy(0, 0, background_dimension, background1_update, background1_render);
         var enem = null;
@@ -1310,64 +1327,65 @@ function loseLife() {
  * @returns {undefined}
  * 
  */
-function boot(){
+function boot() {
     exchangeRenderLoop(titleScreen);
 }
 
 //Additional strings for difficulty prompt.
-var skillSelections = ["Easy","Advanced","Normal","Hard","Master"];
-var skillScreenDelta = [-80,0,150,270,360];
+var skillSelections = ["Easy", "Advanced", "Normal", "Hard", "Master"];
+var skillScreenDelta = [-80, 0, 150, 270, 360];
 var selectSkill = "Select difficulty level.";
 var skillSelection = undefined;
-function skillPrompt(){
-  title_and_copyright_render();
-  validateReleasedState();
-  context.font = "27px Nonserif";
-  context.fillStyle = "white";
-  context.fillText(selectSkill,220,450);
-   if (aniCount < 4) {
+function skillPrompt() {
+    title_and_copyright_render();
+    validateReleasedState();
+    context.font = "27px Nonserif";
+    context.fillStyle = "white";
+    context.fillText(selectSkill, 220, 450);
+    if (aniCount < 4) {
         skillSelected = undefined;
     } else if (aniCount === 5) {
         skillSelected = 0;
     }
-     for (var i = -2; i < skillSelections.length-2; i++) {
-            if (skillSelected === i) {
-                context.fillStyle = "yellow";
-            } else {
-                context.fillStyle = "white";
-            }
-            context.fillText(skillSelections[i+2], 200 + skillScreenDelta[i+2], 500);
+    for (var i = -2; i < skillSelections.length - 2; i++) {
+        if (skillSelected === i) {
+            context.fillStyle = "yellow";
+        } else {
+            context.fillStyle = "white";
         }
-        //Selecting around.
-        if (right && axisXReleased && skillSelected < 2) {
-            simplyPlaySound(sfx4);
-            skillSelected++;
-            axisXReleased = false;
-        } else if (left && axisXReleased && skillSelected > -2) {
-            simplyPlaySound(sfx4);
-            skillSelected--;
-            axisXReleased = false;
+        context.fillText(skillSelections[i + 2], 200 + skillScreenDelta[i + 2], 500);
+    }
+    //Selecting around.
+    if (right && axisXReleased && skillSelected < 2) {
+        simplyPlaySound(sfx4);
+        skillSelected++;
+        axisXReleased = false;
+    } else if (left && axisXReleased && skillSelected > -2) {
+        simplyPlaySound(sfx4);
+        skillSelected--;
+        axisXReleased = false;
+    }
+    if (shoot && shootReleased) {
+        simplyPlaySound(sfx4);
+        switch (loadSelected) {
+            case 0:
+                initGame(skillSelected, Number(savedLevel));
+                return;
+            case undefined:
+            case 1:
+                initGame(skillSelected);
+                return;
+            case 2:
+                getLocalStorage().removeItem(gameStorageName);
+                initGame(skillSelected);
+
         }
-     if(shoot && shootReleased){
-            simplyPlaySound(sfx4);
-            switch(loadSelected){
-                case 0:
-                    initGame(skillSelected,Number(savedLevel));
-                    return;
-                case 1:
-                    initGame(skillSelected);
-                    return;
-                case 2:
-                     getLocalStorage().removeItem(gameStorageName);
-                     initGame(skillSelected);
-                 
-            }
-        }
+    }
 }
 
 //Additional strings for the loading prompt.
-var loadingSelections = ["Load","New","Erase"];
-var savedGameFound = ["A saved game was detected.","Resume at level ", "Start anew, delete the saved game?"];
+var loadingSelections = ["Load", "New", "Erase"];
+var savedGameFound = ["A saved game was detected.", "Resume at level ", "Start anew, delete the saved game?"];
 var loadSelected = undefined;
 /**
  * Opened when it is detected that there is
@@ -1417,10 +1435,10 @@ function loadPrompt() {
         //loadSelected = 0 --> Load game.
         //loadSelected = 1 --> New game.
         //loadSelected = 2 --> Delete old game and start anew.
-        if(shoot && shootReleased){
-        simplyPlaySound(sfx4);
-        exchangeRenderLoop(skillPrompt);
-        shootReleased = false;
+        if (shoot && shootReleased) {
+            simplyPlaySound(sfx4);
+            exchangeRenderLoop(skillPrompt);
+            shootReleased = false;
         }
     }
 }
@@ -1454,10 +1472,9 @@ function titleScreen() {
                 if (storageStatus === false) {
                     simplyPlaySound(sfx4);
                     exchangeRenderLoop(skillPrompt);
-                }
-                else{
-                     shootReleased = false;
-                     simplyPlaySound(sfx4);
+                } else {
+                    shootReleased = false;
+                    simplyPlaySound(sfx4);
                     exchangeRenderLoop(loadPrompt);
                 }
 
@@ -1471,7 +1488,7 @@ function titleScreen() {
 }
 
 var info_string = "Data Management";
-var data_corrupt = ["Saved game corrupted.","Deletion required.","Press SPACE on keyboard or any", "key on gamepad to continue."];
+var data_corrupt = ["Saved game corrupted.", "Deletion required.", "Press SPACE on keyboard or any", "key on gamepad to continue."];
 var data_corrupt_ok = "Confirm";
 /**
  * Should never be happening. But it can, especially if an explorer plays with the value on their own.
@@ -1490,19 +1507,19 @@ function saveCorrupt() {
     context.fillText(data_corrupt[1], 290, 275);
     context.fillText(data_corrupt[2], 290, 290);
     context.fillText(data_corrupt[3], 290, 305);
-    if(aniCount === 3){
-         initAllInput();
+    if (aniCount === 3) {
+        initAllInput();
     }
-    if(keyboard || gamepad !==false){
-    simplyPlaySound(sfx4);
-    getLocalStorage().removeItem(gameStorageName);
-    initAllInput();
-    exchangeRenderLoop(titleScreen);
+    if (keyboard || gamepad !== false) {
+        simplyPlaySound(sfx4);
+        getLocalStorage().removeItem(gameStorageName);
+        initAllInput();
+        exchangeRenderLoop(titleScreen);
     }
     if (aniCount % 5 === aniCount % 10) {
         context.font = "27px Nonserif";
         context.fillStyle = "yellow";
-        context.fillText(data_corrupt_ok, 360, 380 );
+        context.fillText(data_corrupt_ok, 360, 380);
     }
 }
 
@@ -1684,7 +1701,7 @@ function updateGameObjects() {
     while (next !== null && ((next.isRelative === false && aniCount > next.frameDelta) || (next.isRelative === true && aniCountRelative > next.frameDelta))) {
         aniCountRelative = 0;
         spawnList.getNext();
-        if(spawnList.peekNext() === null && giant_boss !== null && !giant_boss.registered){
+        if (spawnList.peekNext() === null && giant_boss !== null && !giant_boss.registered && player.skill<1) {
             this.savedScore = player.score;
             giant_boss.registered = true;
         }
@@ -2055,8 +2072,10 @@ function boss3_middle_update() {
     }
     //Only the first block of the middle element should trigger this code.
     if (this.firstElement && boss3_middle_constants.prototype.hp > 0) {
+        if (player.skill < 1) {
+            player.checkpoint = 2;
+        }
         //Use internal counter.
-        player.checkpoint = 2;
         this.frameCounter++;
         if (this.frameCounter > 30) {
             //Check for possibilities to place enemy objects and reset counter.
@@ -2333,7 +2352,9 @@ function boss3_heating_update() {
 //Boss 1 not attackable part update function.
 function boss1na_update() {
 //Make sure the game remembers the player was here.
-player.checkpoint = 0;    
+    if (player.skill < 1) {
+        player.checkpoint = 0;
+    }
 //Init frame counter of needed.
     if (this.frameCounter === 0)
         this.frameCounter = 1;
@@ -2421,7 +2442,9 @@ function boss2fb_update() {
     var length = 10;
     var height = 5;
     if (this.next === null) {
-        player.checkpoint = 1;
+        if (player.skill < 1) {
+            player.checkpoint = 1;
+        }
         var enemArray = [];
         enemArray.push(this);
         for (i = 0; i < length; i++) {
@@ -2594,15 +2617,15 @@ function fireBoost_update() {
  * Renders "THE FINAL FATE" and the copyright info.
  * @returns {undefined}
  */
-function title_and_copyright_render(){
- context.fillStyle = "black";
+function title_and_copyright_render() {
+    context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     context.font = "60px Serif";
     context.fillStyle = "red";
     context.fillText("THE FINAL FATE", 120, 150);
     context.font = "17px Nonserif";
     context.fillStyle = "white";
-    context.fillText("GAME (C) 2019-2020 Manuel Engel", 220, 580);   
+    context.fillText("GAME (C) 2019-2020 Manuel Engel", 220, 580);
 }
 
 //Level 1 - The Earth rendering function
@@ -3211,17 +3234,17 @@ function getRandomY() {
  * @returns {undefined}
  */
 function exchangeRenderLoop(func, preserveCounters = false) {
-    if(renderTimer!==null)clearInterval(renderTimer);
+    if (renderTimer !== null)
+        clearInterval(renderTimer);
     if (!preserveCounters) {
         aniCount = renderReset;
         aniCountRelative = 0;
     }
     testStorageState();
-    if(storageStatus === "CORRUPT"){
-   renderFunction = saveCorrupt;
-    }
-    else{
-     renderFunction = func;   
+    if (storageStatus === "CORRUPT") {
+        renderFunction = saveCorrupt;
+    } else {
+        renderFunction = func;
     }
     renderTimer = setInterval(renderFunction, FRAME_RATE);
 }
