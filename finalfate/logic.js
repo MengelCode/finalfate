@@ -2117,10 +2117,12 @@ function boss3_middle_update() {
             if (boss3_arm_values.prototype.hpValues[0] > 0 && boss3_arm_values.prototype.hpValues[1] > 0 && boss3_arm_values.prototype.hpValues[2] > 0 && boss3_arm_values.prototype.hpValues[3] > 0) {
                 //Spawn meteor left.
                 enem = new Meteor(lowLeftX, lowLeftY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 //Spawn meteor right.
                 enem = new Meteor(lowRightX, lowRightY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
             }
@@ -2128,14 +2130,17 @@ function boss3_middle_update() {
             else if (boss3_arm_values.prototype.hpValues[0] <= 0 && boss3_arm_values.prototype.hpValues[1] > 0 && boss3_arm_values.prototype.hpValues[2] > 0 && boss3_arm_values.prototype.hpValues[3] > 0) {
                 //Spawn blinky tracer right.
                 enem = new BlinkyTracer(lowRightX, lowRightY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 //Spawn blinky left.
                 enem = new Blinky(upperLeftX, upperLeftY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 //Spawn blinky right.
                 enem = new Blinky(upperRightX, upperRightY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
             }
@@ -2143,14 +2148,17 @@ function boss3_middle_update() {
             else if (boss3_arm_values.prototype.hpValues[0] > 0 && boss3_arm_values.prototype.hpValues[1] <= 0 && boss3_arm_values.prototype.hpValues[2] > 0 && boss3_arm_values.prototype.hpValues[3] > 0) {
                 //Spawn blinky tracer left.
                 enem = new BlinkyTracer(lowLeftX, lowLeftY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 //Spawn blinky left.
                 enem = new Blinky(upperLeftX, upperLeftY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 //Spawn blinky right.
                 enem = new Blinky(upperRightX, upperRightY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
             }
@@ -2158,10 +2166,12 @@ function boss3_middle_update() {
             else if (boss3_arm_values.prototype.hpValues[0] <= 0 && boss3_arm_values.prototype.hpValues[1] <= 0 && boss3_arm_values.prototype.hpValues[2] > 0 && boss3_arm_values.prototype.hpValues[3] > 0) {
                 //Spawn blinky tr left.
                 enem = new BlinkyTracer(upperLeftX, upperLeftY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 //Spawn blinky tr right.
                 enem = new BlinkyTracer(upperRightX, upperRightY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
             }
@@ -2169,10 +2179,12 @@ function boss3_middle_update() {
             else if (boss3_arm_values.prototype.hpValues[0] <= 0 && boss3_arm_values.prototype.hpValues[1] > 0 && boss3_arm_values.prototype.hpValues[2] <= 0 && boss3_arm_values.prototype.hpValues[3] > 0) {
                 //Spawn blinky tr left.
                 enem = new BlinkyTracer(lowRightX, lowRightY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 //Spawn blinky tr right.
                 enem = new BlinkyTracer(upperRightX, upperRightY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
             }
@@ -2180,10 +2192,12 @@ function boss3_middle_update() {
             else if (boss3_arm_values.prototype.hpValues[0] > 0 && boss3_arm_values.prototype.hpValues[1] <= 0 && boss3_arm_values.prototype.hpValues[2] > 0 && boss3_arm_values.prototype.hpValues[3] <= 0) {
                 //Spawn blinky left.
                 enem = new BlinkyTracer(upperLeftX, upperLeftY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
                 //Spawn blinky right.
                 enem = new BlinkyTracer(lowLeftX, lowLeftY);
+                enem.score = 0;
                 displayList.addElement(enem, false);
                 enemyList.addElement(enem, false);
             }
@@ -2195,17 +2209,20 @@ function boss3_middle_update() {
                 switch (randomNumber) {
                     case 0:
                         enem = new Blinky(upperX, upperY);
+                        enem.score = 0;
                         displayList.addElement(enem, false);
                         enemyList.addElement(enem, false);
                         break;
                     case 1:
                         enem = new Meteor(upperX, upperY);
+                        enem.score = 0;
                         displayList.addElement(enem, false);
                         enemyList.addElement(enem, false);
                         break;
                     case 2:
                     case 3:
                         enem = new BlinkyTracer(upperX, upperY);
+                        enem.score = 0;
                         displayList.addElement(enem, false);
                         enemyList.addElement(enem, false);
                         break;
@@ -2413,6 +2430,7 @@ function boss1sa_update() {
     boss1na_update.call(this);
     if (this.frameCounter % 26 === 0) {
         var enemy = new Enemy(this.middleX, this.middleY, meteor_dimension, meteor2_update, meteor_render, meteor_damage());
+        enemy.score = 0;
         enemyList.addElement(enemy, false);
         displayList.addElement(enemy, false);
     }
@@ -2423,6 +2441,7 @@ function boss1a_update() {
     boss1na_update.call(this);
     if (this.frameCounter % 40 === 0) {
         var enemy = new Enemy(this.middleX, this.middleY, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enemy.score = 0;
         enemyList.addElement(enemy, false);
         displayList.addElement(enemy, false);
     }
@@ -2505,6 +2524,8 @@ function boss2fb_update() {
     }
 //If enem was created, add it.
     if (enema !== null) {
+        enema.score = 0;
+        enemb.score = 0;
         displayList.addElement(enema, false);
         enemyList.addElement(enema, false);
         displayList.addElement(enemb, false);
