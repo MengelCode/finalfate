@@ -1455,6 +1455,8 @@ function loadPrompt() {
  */
 function titleScreen() {
     title_and_copyright_render();
+    //Fix for a potential menu glitch.
+    loadSelected = undefined;
     try {
         if (aniCount % 5 === aniCount % 10) {
             context.font = "23px Nonserif";
