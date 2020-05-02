@@ -1335,7 +1335,7 @@ function boot() {
 }
 
 //Additional strings for difficulty prompt.
-var skillSelections = ["Easy", "Advanced", "Normal", "Hard", "Master"];
+var skillSelections = ["N.A.", "Advanced", "Normal", "Hard", "Master"];
 var skillScreenDelta = [-80, 0, 150, 270, 360];
 var selectSkill = "Select difficulty level.";
 var skillSelection = undefined;
@@ -1351,7 +1351,10 @@ function skillPrompt() {
         skillSelected = 0;
     }
     for (var i = -2; i < skillSelections.length - 2; i++) {
-        if (skillSelected === i) {
+        if (i === -2){
+            context.fillStyle = "gray";
+        }
+        else if (skillSelected === i) {
             context.fillStyle = "yellow";
         } else {
             context.fillStyle = "white";
@@ -1363,7 +1366,7 @@ function skillPrompt() {
         simplyPlaySound(sfx4);
         skillSelected++;
         axisXReleased = false;
-    } else if (left && axisXReleased && skillSelected > -2) {
+    } else if (left && axisXReleased && skillSelected > -1) {
         simplyPlaySound(sfx4);
         skillSelected--;
         axisXReleased = false;
