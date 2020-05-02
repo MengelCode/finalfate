@@ -1335,8 +1335,8 @@ function boot() {
 }
 
 //Additional strings for difficulty prompt.
-var skillSelections = ["N.A.", "Advanced", "Normal", "Hard", "Master"];
-var skillScreenDelta = [-80, 0, 150, 270, 360];
+var skillSelections = ["N.A.", "Beginner", "Normal", "Hard", "Master"];
+var skillScreenDelta = [-80, -30, 120, 240, 330];
 var selectSkill = "Select difficulty level.";
 var skillSelection = undefined;
 function skillPrompt() {
@@ -1350,7 +1350,7 @@ function skillPrompt() {
     } else if (aniCount === 5) {
         skillSelected = 0;
     }
-    for (var i = -2; i < skillSelections.length - 2; i++) {
+    for (var i = -1; i < skillSelections.length - 2; i++) {
         if (i === -2){
             context.fillStyle = "gray";
         }
