@@ -239,16 +239,13 @@ class Enemy extends GameObject {
         super.updateState = updateRoutine;
         super.renderState = renderRoutine;
         this.killable = killable;
-        if(player.skill === 2){
-        this.damage = Math.round(damage * 2);
-        }
-        else if(player.skill === -1){
-        this.damage = Math.round(damage / 2);    
-        }
-        else if(player.skill === -2){
-        this.damage = Math.round(damage / 3);    
-        }
-        else{
+        if (player.skill === 2) {
+            this.damage = Math.round(damage * 2);
+        } else if (player.skill === -1) {
+            this.damage = Math.round(damage / 2);
+        } else if (player.skill === -2) {
+            this.damage = Math.round(damage / 3);
+        } else {
             this.damage = damage;
         }
         this.score = score;
@@ -427,6 +424,12 @@ class SpaceShip extends GameObject {
                 sfx2.currentTime = 0;
                 sfx2.play();
                 this.lifes++;
+                if(player.skill === 2){
+                this.score_newlife = this.score_newlife + 140000;    
+                }
+                else if(player.skill === 1){
+                this.score_newlife = this.score_newlife + 97000;    
+                }
                 this.score_newlife = this.score_newlife + 30000;
             }
 
@@ -1701,7 +1704,7 @@ function updateGameObjects() {
     while (next !== null && ((next.isRelative === false && aniCount > next.frameDelta) || (next.isRelative === true && aniCountRelative > next.frameDelta))) {
         aniCountRelative = 0;
         spawnList.getNext();
-        if (spawnList.peekNext() === null && giant_boss !== null && !giant_boss.registered && player.skill<1) {
+        if (spawnList.peekNext() === null && giant_boss !== null && !giant_boss.registered && player.skill < 1) {
             this.savedScore = player.score;
             giant_boss.registered = true;
         }
@@ -1761,7 +1764,25 @@ function bulletOnEnemies() {
                         sfx1.pause();
                         sfx1.currentTime = 0;
                         sfx1.play();
-                        player.score = player.score + enemy.score;
+                        switch (player.skill) {
+                            case -2:
+                                player.score = player.score + enemy.score / 4;
+                                break;
+                            case -1:
+                                player.score = player.score + enemy.score / 2;
+                                break;
+                            case 1:
+                                player.score = player.score + enemy.score * 2;
+                                break;
+                            case 2:
+                                player.score = player.score + enemy.score * 3;
+                                break;
+                            default:
+                                player.score = player.score + enemy.score;
+                        }
+
+
+
                     }
                     bullet.invalidate();
                     //window.alert("Shot the enemy.");
