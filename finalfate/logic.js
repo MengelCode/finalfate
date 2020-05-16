@@ -681,6 +681,8 @@ exchangeRenderLoop(renderFunction);
 initAllInput();
 //Changed window size.
 window.addEventListener("resize", sizeChanged);
+//Invalidate keyboard input when window focus is lost.
+window.addEventListener("blur",focusLost);
 
 
 
@@ -3336,6 +3338,28 @@ function sizeChanged() {
     oldHeight = newHeight;
 //window.alert("New canvas resolution: " + newWidth + "x" + newHeight + "<br> New inner window size: " + window.innerWidth + "x" + window.innerHeight);
 }
+
+/**
+ * Issue 69: Fix for buttons "held down" when window is onfocused during input.
+ * The state is not corrected.
+ * By nature, this bug cannot appear with gamepads. They always functions as they
+ * should, regardless if the window is still focused.
+ * @returns {undefined}
+ */
+function focusLost(){
+if(!keyboard) return;    
+shootReleased = true;
+pauseReleased = true;
+axisXReleased = true;
+axisYReleased = true;
+shoot = false;
+pause = false;
+up = false;
+down = false;
+left = false;
+right = false;
+}
+
 
 //Values and function for the released state of (once pressed) keys.
 
