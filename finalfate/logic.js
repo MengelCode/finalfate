@@ -2532,7 +2532,7 @@ function boss2fb_update() {
         enemyList.addElement(enemb, false);
     }
 //Forcing player back in when he leaves to the left.
-    if (player.middleX < this.middleX - 2) {
+    if (player.middleX < this.middleX) {
         player.health = player.health - 12;
         player.middleX = player.middleX + 4;
     }
@@ -2824,8 +2824,12 @@ function lifeBoost_render() {
 var blinkyTracer_render = blinky_render;
 //"Boss 2" rendering function.#
 function boss2_render() {
-    context.fillStyle = "gray";
-    context.fillRect(this.middleX * 10, this.middleY * 10, 10 * boss2_constants.prototype.abs_x_pos, 10 * boss2_constants.prototype.abs_y_pos);
+    simpleEnemy_render.call(this);
+    //Issue 66: Rendering the walls.
+    if(this.previous === null){
+    context.fillRect(0,250,330,350);
+    context.fillRect(560,250,240,350);
+    }
 }
 
 //Boss 3 hatch rendering function.
@@ -2882,7 +2886,7 @@ function boss2_factory(middleX, middleY) {
     var enemy_obj = null;
     //middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null
     //Not touchable. Middle point of over
-    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, simpleEnemy_render, damage = 8, true, 0, boss2_invalidate, 270);
+    enemy_obj = new Enemy(middleX, middleY, boss2_dimension, boss2fb_update, boss2_render, damage = 8, true, 0, boss2_invalidate, 270);
     giant_boss = enemy_obj;
     return enemy_obj;
 }
