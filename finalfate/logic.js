@@ -1482,7 +1482,12 @@ function titleScreen() {
                 if (storageStatus === false) {
                     simplyPlaySound(sfx4);
                     exchangeRenderLoop(skillPrompt);
-                } else {
+                }
+                else if (storageStatus === null){
+                    simplyPlaySound(sfx4);
+                    exchangeRenderLoop(loadFail);
+                }
+                else {
                     shootReleased = false;
                     simplyPlaySound(sfx4);
                     exchangeRenderLoop(loadPrompt);
@@ -1499,7 +1504,41 @@ function titleScreen() {
 
 var info_string = "Data Management";
 var data_corrupt = ["Saved game corrupted.", "Deletion required.", "Press SPACE on keyboard or any", "key on gamepad to continue."];
-var data_corrupt_ok = "Confirm";
+var data_load_fail = ["Cannot access local storage.","Either your browser is too old or you disabled","web storage / cookies for this website.","Progress cannot be saved."];
+var data_warning_ok = "Confirm";
+/**
+ * Confirmation prompt 
+ * @returns {undefined}
+ */
+function loadFail() {
+    title_and_copyright_render();
+    validateReleasedState();
+    context.fillStyle = "red";
+    context.fillRect(255, 190, 260, 200);
+    context.font = "27px Nonserif";
+    context.fillStyle = "white";
+    context.fillText(info_string, 255, 220);
+    context.font = "14px Nonserif";
+    context.fillText(data_load_fail[0], 255, 250);
+    context.fillText(data_load_fail[1], 255, 275);
+    context.fillText(data_load_fail[2], 255, 290);
+    context.fillText(data_load_fail[3], 255, 305);
+    if (aniCount === 3) {
+        initAllInput();
+    }
+    if (shoot && shootReleased) {
+        simplyPlaySound(sfx4);
+        exchangeRenderLoop(skillPrompt);
+        shootReleased = false;
+    }
+    if (aniCount % 5 === aniCount % 10) {
+        context.font = "27px Nonserif";
+        context.fillStyle = "yellow";
+        context.fillText(data_warning_ok, 340, 380);
+    }
+}
+
+
 /**
  * Should never be happening. But it can, especially if an explorer plays with the value on their own.
  * @returns {undefined}
@@ -1529,7 +1568,7 @@ function saveCorrupt() {
     if (aniCount % 5 === aniCount % 10) {
         context.font = "27px Nonserif";
         context.fillStyle = "yellow";
-        context.fillText(data_corrupt_ok, 360, 380);
+        context.fillText(data_warning_ok, 360, 380);
     }
 }
 
@@ -3018,7 +3057,13 @@ function star_factory() {
  * @returns {Storage|Window.localStorage}
  */
 function getLocalStorage() {
-    return window.localStorage;
+    try{
+        return window.localStorage;
+    }
+    catch(error){
+        console.log(error.message);
+        return null;
+    }
 }
 var gameStorageName = "TheFinalFate1ByME_Level";
 var savedLevel = 0;
@@ -3058,7 +3103,7 @@ function testStorageState() {
 //Desired outcome: object !== undefined
 //If not fulfilled: storageStatus = null
     var storageTest = getLocalStorage();
-    if (storageTest === undefined) {
+    if (storageTest === undefined || storageTest === null) {
         storageStatus = null;
         return;
     }
