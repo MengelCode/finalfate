@@ -1513,7 +1513,7 @@ var data_warning_ok = "Confirm";
 function loadFail() {
     title_and_copyright_render();
     validateReleasedState();
-    context.fillStyle = "red";
+    context.fillStyle = "blue";
     context.fillRect(255, 190, 260, 200);
     context.font = "27px Nonserif";
     context.fillStyle = "white";
