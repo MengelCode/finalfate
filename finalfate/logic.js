@@ -408,6 +408,15 @@ class SpaceShip extends GameObject {
         //Selected difficulty level.
         //-2 Lowest, 0 Middle, +2 Highest.
         this.skill = 0;
+        /**
+         * Bullet color.
+         * 0 = Normal.
+         * 1 = Red-white.
+         * 2 = Purple.
+         * 3 = Blueish.
+         * 4 = Plain yellow.
+         */
+        this.bulletColor = 0;
         //Checkpoint memory. Because levels start to count with zero, I set the default to -1 here.
         this.checkpoint = -1;
         super.updateState = function () {
@@ -2766,14 +2775,50 @@ function wingman_render() {
 
 //"Bullet" rendering function
 function bullet_render() {
-    context.fillStyle = "yellow";
-    context.fillRect(this.middleX * 10, this.middleY * 10, 10, 10);
-    context.fillStyle = "orange";
-    context.fillRect(this.middleX * 10, (this.middleY - 1) * 10, 10, 10);
-    context.fillStyle = "red";
-    context.fillRect(this.middleX * 10, (this.middleY - 2) * 10, 10, 10);
-    context.fillStyle = "#220000";
-    context.fillRect(this.middleX * 10, (this.middleY - 3) * 10, 10, 10);
+            /**
+         * Bullet color.
+         * 0 = Normal.
+         * 1 = Red-white.
+         * 2 = Purple.
+         * 3 = Blueish.
+         */
+     var colorToUse = new Array(4);   
+    switch (player.bulletColor) {
+        default:
+            colorToUse[0] = "yellow";
+            colorToUse[1] = "orange";
+            colorToUse[2] = "red";
+            colorToUse[3] = "#220000";
+            break;
+        case 1:
+            colorToUse[0] = "white";
+            colorToUse[1] = "red";
+            colorToUse[2] = colorToUse[0];
+            colorToUse[3] = colorToUse[1];
+            break;
+        case 2:
+            colorToUse[0] = "#FF1493";
+            colorToUse[1] = "#FF00FF";
+            colorToUse[2] = "";
+            colorToUse[3] = "#9400D3";
+            break;
+        case 3:
+             colorToUse[0] = "#0000DD";
+             colorToUse[1] = "#0000CC";
+             colorToUse[2] = "#0000BB"; 
+             colorToUse[3] = "#0000AA";
+             break;
+         case 4:
+             colorToUse[0] = "yellow";
+             colorToUse[1] = colorToUse[0];
+             colorToUse[2] = colorToUse[0];
+             colorToUse[3] = colorToUse[0];
+              
+    }
+    for(var i = 0; i<colorToUse.length; i++){
+        context.fillStyle = colorToUse[i];
+        context.fillRect(this.middleX * 10, (this.middleY - i) * 10, 10, 10);
+    }
 }
 
 
