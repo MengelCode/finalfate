@@ -1459,7 +1459,13 @@ function loadPrompt() {
         }
     }
 }
-
+/**
+ * Bullet color bonus game
+ * @returns {undefined}
+ */
+function bonusGame(){
+    
+}
 
 /*
  * Render the title screen.
@@ -1744,6 +1750,9 @@ function checkLeaveLevel() {
     }
     if (giant_boss !== null && giant_boss.invalid) {
         player.level++;
+        if(player.skill>-1 && player.noHit){
+        exchangeRenderLoop(bonusGame);    
+        }
         loadLevel();
     }
 }
