@@ -380,6 +380,21 @@ class Blinky extends Enemy {
 }
 
 
+class SilentBlinky extends Blinky{
+     /**
+     * Create a silent blinky enemy object.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {Blinky}
+     */
+    constructor(middleX, middleY, expand = false) {
+        super(middleX, middleY);
+        this.updateState = silentBlinky_update;
+    }
+    
+}
+
+
 class BlinkyTracer extends Enemy {
     /**
      * Create a blinky enemy object.
@@ -869,7 +884,9 @@ function blinkyHomeworldLoader(){
  enem = new ShipBuster(40,20);
  enem = new Spawn(160, enem);
  spawnList.addElement(enem);
- 
+ enem = new SilentBlinky(40,20);
+ enem = new Spawn(300,enem);
+ spawnList.addElement(enem);
  
  }   
  catch(error){
@@ -2557,6 +2574,10 @@ function blinky_update() {
         this.middleY = this.middleY + 1;
     }
 }
+
+//"Silent Blinky" update function
+var silentBlinky_update = func_noOp;
+
 //"Blinky Tracer" update function.
 function blinkyTracer_update() {
     this.frameCounter++;
