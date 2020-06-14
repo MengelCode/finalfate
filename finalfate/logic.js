@@ -408,6 +408,10 @@ class SpaceShip extends GameObject {
         //Selected difficulty level.
         //-2 Lowest, 0 Middle, +2 Highest.
         this.skill = 0;
+        //CHEAT ZONE!!
+        this.debugNoHit = false;
+        //Not being hit.
+        this.noHit = true;
         /**
          * Bullet color.
          * 0 = Normal.
@@ -417,6 +421,7 @@ class SpaceShip extends GameObject {
          * 4 = Plain yellow.
          */
         this.bulletColor = 0;
+        //POTENTIAL CHEAT ZONE.
         //Checkpoint memory. Because levels start to count with zero, I set the default to -1 here.
         this.checkpoint = -1;
         super.updateState = function () {
@@ -564,6 +569,42 @@ class Decoration {
 
 }
 
+
+class Box extends Decoration{
+
+  /**
+   * Draw a rectangle.
+   * @param {type} middleX
+   * @param {type} middleY
+   * @param {type} width
+   * @param {type} height
+   * @returns {Rectangle}
+   */
+  constructor(middleX, middleY, width, height,color){
+      super(middleX,middleY,box_render);
+      this.width = width;
+      this.height = height;
+      this.color = color;
+  }  
+      
+      
+ }
+
+class BGBox extends Box{
+    /**
+     * Create a box as used in the mini game.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {BGBox}
+     */
+    constructor(middleX,middleY){
+    super(middleX,middleY,150,240,"white");    
+    }
+    
+}
+
+
+
 class Star extends Decoration {
     /**
      * Creates a Star decoration object.
@@ -593,7 +634,7 @@ class Heat extends Decoration {
 //TODO INIT
 //try{
 //CHEAT ZONE - default 30.
-const FRAME_RATE = 30;
+var FRAME_RATE = 30;
 //"booleans" if certain keys are pressed.
 var shoot = 0;
 var up = 0;
@@ -789,6 +830,8 @@ function loadLevel() {
     bulletList = new LinkedList();
     enemyList = new LinkedList();
     spawnList = new LinkedList();
+    //Player always starts "unhit".
+    player.noHit = true;
     displayList.addElement(player);
 
     try {
@@ -1459,12 +1502,42 @@ function loadPrompt() {
         }
     }
 }
+
+
+var bonusgame_box = new Array(5);
+
 /**
  * Bullet color bonus game
  * @returns {undefined}
  */
 function bonusGame(){
-    
+context.fillStyle = "#000000";
+context.fillRect(0,0,800,600);
+context.fillStyle = "cyan";
+context.font = "50px Nonserif";
+context.fillText("BONUS GAME !!",190,80);
+if(aniCount < 130)
+return;
+var x_positions = [2, 18, 34, 50, 66];
+bonusgame_box[0] = new BGBox(10,160);
+bonusgame_box[1] = new BGBox(170,160);
+bonusgame_box[2] = new BGBox(330,160);
+bonusgame_box[3] = new BGBox(490,160);
+bonusgame_box[4] = new BGBox(650,160);
+
+//Args for bullets: color, X coord, Y coord, scalinh
+//Bullets in normal color (0)
+    for (var i = 0; i < 4; i++) {
+        for (var j = 0; j < 4; j++) {
+            bullet_render(0, x_positions[0] + i * 4, 20 + j * 6, 8.2);
+            bullet_render(1, x_positions[1] + i * 4, 20 + j * 6, 8.2);
+            bullet_render(2, x_positions[2] + i * 4, 20 + j * 6, 8.2);
+            bullet_render(3, x_positions[3] + i * 4, 20 + j * 6, 8.2);
+            bullet_render(4, x_positions[4] + i * 4, 20 + j * 6, 8.2);
+        }
+    }
+    for(var i = 0; i<bonusgame_box.length; i++)
+    bonusgame_box[i].renderRoutine();
 }
 
 /*
@@ -1751,9 +1824,11 @@ function checkLeaveLevel() {
     if (giant_boss !== null && giant_boss.invalid) {
         player.level++;
         if(player.skill>-1 && player.noHit){
-        exchangeRenderLoop(bonusGame);    
+        exchangeRenderLoop(bonusGame);
         }
+        else{
         loadLevel();
+    }
     }
 }
 
@@ -1796,6 +1871,9 @@ function checkForEnemyHit() {
     while (enemyList.peekNext() !== null) {
         var enemyImminent = enemyList.getNext();
         if (player.collides(enemyImminent)) {
+            if(!player.debugNoHit){
+            player.noHit = false;
+            }
             enemyImminent.invalidate();
             sfx1.pause();
             sfx1.currentTime = 0;
@@ -1857,9 +1935,6 @@ function bulletOnEnemies() {
     }
 }
 
-
-
-
 // 4 -  Render game objects.
 //String array with pause menu constants.
 var pauseText = ["Continue", "Save", "Retry Level", "Return To Title"];
@@ -1871,7 +1946,6 @@ var saveFailureTimer = 0;
 var saveComplete = "Saved.";
 var saveFailure = "Error. Save failed!";
 function renderInGame() {
-
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     if (background !== null && background instanceof GameObject) {
@@ -2757,6 +2831,18 @@ function background2_render() {
     }
 }
 
+//Box rendering function
+function box_render(){
+context.strokeStyle  = this.color;
+context.beginPath();
+context.moveTo(this.middleX,this.middleY);
+context.lineTo(this.middleX + this.width,this.middleY);
+context.lineTo(this.middleX + this.width,this.middleY + this.height);
+context.lineTo(this.middleX,this.middleY + this.height);
+context.lineTo(this.middleX,this.middleY);
+context.stroke();
+}
+
 //Star Rendering function
 function star_render() {
     for (var i = 0; i < 3; i++) {
@@ -2783,16 +2869,17 @@ function wingman_render() {
 
 
 //"Bullet" rendering function
-function bullet_render() {
+function bullet_render(wayToDecide = player.bulletColor, bulletX = this.middleX, bulletY = this.middleY) {
             /**
          * Bullet color.
          * 0 = Normal.
          * 1 = Red-white.
          * 2 = Purple.
          * 3 = Blueish.
+         * 4 = Yellow.
          */
      var colorToUse = new Array(4);   
-    switch (player.bulletColor) {
+    switch (wayToDecide) {
         default:
             colorToUse[0] = "yellow";
             colorToUse[1] = "orange";
@@ -2826,7 +2913,7 @@ function bullet_render() {
     }
     for(var i = 0; i<colorToUse.length; i++){
         context.fillStyle = colorToUse[i];
-        context.fillRect(this.middleX * 10, (this.middleY - i) * 10, 10, 10);
+        context.fillRect(bulletX * 10, (bulletY - i) * 10, 10, 10);
     }
 }
 
