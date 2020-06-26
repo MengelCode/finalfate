@@ -36,7 +36,7 @@ If you do not want any big setup, but simply a quick round of action, you should
 Clone the repository, or, if Git is not your tool of choice (How did you find me in this case? Let me know.), you can manually download the respective files. Mandatory downloads are index.html and logic.js in the finalfate directory, the sound files are optional. Please include a copy of the license file when making the game available to others. \
 \
 **3) Serving the game's files over a webserver** \
-Do what listed in 1) and either host the game on your computer or a web hosting provider you trust.
+Do what listed in 2) and either host the game on your computer or a web hosting provider you trust.
 This way needs a bit more technical knowledge, but the advantage is that your family at home or possibly the entire world can enjoy a cool space ship adventure!
 Please make sure the users are able to review the license, e.g. mentioning it on your homepage when you link to the game. \
 \
