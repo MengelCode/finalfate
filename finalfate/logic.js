@@ -550,6 +550,69 @@ class SpaceShip extends GameObject {
     }
 }
 
+
+class TimedTask {
+
+    /**
+     * Create a timed routine based on an initial start delay, a function
+     * to execute and an optional follow-up delay, if different from the start
+     * delay. Also, the data structure can contain an array (or any other object
+     * at your discretion) in order to make this available to the function
+     * to be called internally. Adjust this to what kind of param your function
+     * wants to accept. If none at all, simply ignore this.
+     * @param {type} startDelay
+     * @param {type} funct
+     * @param {type} repeatInterval
+     * @returns {TimedTask}
+     */
+    constructor(startDelay, funct, repeatInterval = startDelay, argsArray = []) {
+        this.startDelay = startDelay;
+        this.repeatInterval = repeatInterval;
+        this.funct = funct;
+        this.argsArray = argsArray;
+    }
+}
+/**
+ * Start the scheduled task. If already started, nothing will happen.
+ * @returns {undefined}
+ */
+TimedTask.prototype.start = function () {
+    if(this.state === "STARTED" && this.state === "PAUSED" && this.state === "DEAD")
+        return;
+    setInterval(this.funcInternal, this.startDelay);
+    this.state = "STARTED";
+    
+};
+/**
+ * Stop
+ * @returns {undefined}
+ */
+TimedTask.prototype.stop = function () {
+    clearInterval(this.funcInternal);
+    this.state = "STOPPED";
+    
+};
+TimedTask.prototype.pause = function () {
+    clearInterval(this.funcInternal);
+    this.state = "PAUSED";
+
+};
+//Continue a paused task. If the task runs, nothing will happen.
+TimedTask.prototype.continue = function () {
+    this.state = "STARTED";
+};
+//Outer function triggered everytime when the scheduled delay has elapsed.
+TimedTask.prototype.funcInternal = function () {
+    this.func();
+    this.lastTime = new Date().getTime();
+    setInterval(this.funcInternal, this.repeatInterval);
+};
+//Possible states of a timed task.
+TimedTask.prototype.possibleStates = ["NEW", "STARTED", "PAUSED", "STOPPED", "DEAD"];
+//State of the timed task.
+TimedTask.prototype.state = "NEW";
+//Time when the task was paused or last executed.
+TimedTask.prototype.lastTime = 0;
 //Decoration element.
 class Decoration {
     /**
@@ -580,14 +643,16 @@ class Box extends Decoration{
    * @param {type} height
    * @returns {Rectangle}
    */
-  constructor(middleX, middleY, width, height,color){
+  constructor(middleX, middleY, width, height,color,visible = false){
       super(middleX,middleY,box_render);
       this.width = width;
       this.height = height;
       this.color = color;
-  }  
-      
-      
+      this.visible = visible;
+      this.setVisible = function (visible){
+      this.visible = visible;    
+      };
+  }        
  }
 
 class BGBox extends Box{
@@ -2833,6 +2898,7 @@ function background2_render() {
 
 //Box rendering function
 function box_render(){
+if(!this.visible)return;
 context.strokeStyle  = this.color;
 context.beginPath();
 context.moveTo(this.middleX,this.middleY);
