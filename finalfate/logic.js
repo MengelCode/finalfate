@@ -588,27 +588,49 @@ TimedTask.prototype.start = function () {
  * @returns {undefined}
  */
 TimedTask.prototype.stop = function () {
+    if(this.state !== "PAUSED" && this.state !== "STARTED")
+        return;
     clearInterval(this.funcInternal);
     this.state = "STOPPED";
     
 };
 TimedTask.prototype.pause = function () {
+    if(this.state !== "STARTED")
+        return;
     clearInterval(this.funcInternal);
+    this.lastTime = new Date().getTime();
     this.state = "PAUSED";
 
 };
 //Continue a paused task. If the task runs, nothing will happen.
 TimedTask.prototype.continue = function () {
+    if(this.state !== "PAUSED")
+        return;
+    var elapsedTime = new Date().getTime() - this.lastTime;
+    var newDelay = this.repeatInterval - elapsedTime;
+    if(newDelay < 1){
+    setInterval(this.funcInternal,1);    
+    }
+    else{
+    setInterval(this.funcInternal,newDelay);     
+    }
     this.state = "STARTED";
 };
 //Outer function triggered everytime when the scheduled delay has elapsed.
 TimedTask.prototype.funcInternal = function () {
-    this.func();
+    try{
+    this.func(this.argsArray);
+    }
+    catch(error){
+        this.receivedError = error;
+        this.state = "DEAD";
+        return;
+    }
     this.lastTime = new Date().getTime();
     setInterval(this.funcInternal, this.repeatInterval);
 };
-//Possible states of a timed task.
-TimedTask.prototype.possibleStates = ["NEW", "STARTED", "PAUSED", "STOPPED", "DEAD"];
+//Catched error bei function executor.
+TimedTask.prototype.receivedError = null;
 //State of the timed task.
 TimedTask.prototype.state = "NEW";
 //Time when the task was paused or last executed.
