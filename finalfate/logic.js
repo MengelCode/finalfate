@@ -565,11 +565,14 @@ class TimedTask {
      * @param {type} repeatInterval
      * @returns {TimedTask}
      */
-    constructor(startDelay, funct, repeatInterval = startDelay, argsArray = []) {
+    constructor(startDelay, funct, repeatInterval = startDelay , argsObject = null ,showErrors = false, debugName = "Unnamed") {
         this.startDelay = startDelay;
         this.repeatInterval = repeatInterval;
         this.funct = funct;
-        this.argsArray = argsArray;
+        this.argsObject = argsObject;
+        this.showErrors = showErrors;
+        this.debugName = debugName;
+        this.state = "NEW";
     }
 }
 /**
@@ -577,9 +580,10 @@ class TimedTask {
  * @returns {undefined}
  */
 TimedTask.prototype.start = function () {
+    if(!this.boundFunction) this.boundFunction = this.functInternal.bind(this);
     if(this.state === "STARTED" && this.state === "PAUSED" && this.state === "DEAD")
         return;
-    setInterval(this.funcInternal, this.startDelay);
+    setInterval(this.boundFunction, this.startDelay);
     this.state = "STARTED";
     
 };
@@ -590,14 +594,14 @@ TimedTask.prototype.start = function () {
 TimedTask.prototype.stop = function () {
     if(this.state !== "PAUSED" && this.state !== "STARTED")
         return;
-    clearInterval(this.funcInternal);
+    clearInterval(this.boundFunction);
     this.state = "STOPPED";
     
 };
 TimedTask.prototype.pause = function () {
     if(this.state !== "STARTED")
         return;
-    clearInterval(this.funcInternal);
+    clearInterval(this.boundFunction);
     this.lastTime = new Date().getTime();
     this.state = "PAUSED";
 
@@ -609,25 +613,28 @@ TimedTask.prototype.continue = function () {
     var elapsedTime = new Date().getTime() - this.lastTime;
     var newDelay = this.repeatInterval - elapsedTime;
     if(newDelay < 1){
-    setInterval(this.funcInternal,1);    
+    setInterval(this.funcInternal.bind(this),1);    
     }
     else{
-    setInterval(this.funcInternal,newDelay);     
+    setInterval(this.funcInternal.bind(this),newDelay);     
     }
     this.state = "STARTED";
 };
 //Outer function triggered everytime when the scheduled delay has elapsed.
-TimedTask.prototype.funcInternal = function () {
+TimedTask.prototype.functInternal = function () {
+    if(this.state === "DEAD")return;
     try{
-    this.func(this.argsArray);
+    this.funct(this.argsObjects);
     }
     catch(error){
         this.receivedError = error;
         this.state = "DEAD";
+        if(this.showErrors)
+        window.alert("EXCEPTION OCCURED IN SCHEDTASK "+ this.debugName + " !! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);    
         return;
-    }
+        }
     this.lastTime = new Date().getTime();
-    setInterval(this.funcInternal, this.repeatInterval);
+    setInterval(this.boundFunction, this.repeatInterval);
 };
 //Catched error bei function executor.
 TimedTask.prototype.receivedError = null;
@@ -684,8 +691,8 @@ class BGBox extends Box{
      * @param {type} middleY
      * @returns {BGBox}
      */
-    constructor(middleX,middleY){
-    super(middleX,middleY,150,240,"white");    
+    constructor(middleX,middleY,visible = false){
+    super(middleX,middleY,150,240,"white",visible);    
     }
     
 }
@@ -889,11 +896,12 @@ function initAllInput() {
  * 
  * Define the beginning state of the game, then start with the first level.
  */
-function initGame(skillLevel, savedLevel = undefined) {
+function initGame(skillLevel, savedLevel = undefined, bulletColor = 0) {
     player = new SpaceShip(38, 52);
     //CHEAT ZONE!!!
     player.level = savedLevel === undefined ? 0 : savedLevel;
     player.skill = skillLevel;
+    player.bulletColor = parseInt(bulletColor);
     this.savedScore = 0;
     // renderReset = 9000;
     //CHEAT ZONE end.
@@ -1516,7 +1524,7 @@ function skillPrompt() {
         simplyPlaySound(sfx4);
         switch (loadSelected) {
             case 0:
-                initGame(skillSelected, Number(savedLevel));
+                initGame(skillSelected, Number(savedLevel % 10), Number(savedLevel / 10));
                 return;
             case undefined:
             case 1:
@@ -1590,27 +1598,36 @@ function loadPrompt() {
     }
 }
 
-
-var bonusgame_box = new Array(5);
-
+//Variables for bonus game.
+var bonusgame_box = null;
+//var bonusgame_schedTask = null;
+var bonusgame_selected = undefined;
+var bonusgame_framecounter = undefined;
 /**
  * Bullet color bonus game
  * @returns {undefined}
  */
-function bonusGame(){
-context.fillStyle = "#000000";
-context.fillRect(0,0,800,600);
-context.fillStyle = "cyan";
-context.font = "50px Nonserif";
-context.fillText("BONUS GAME !!",190,80);
-if(aniCount < 130)
-return;
-var x_positions = [2, 18, 34, 50, 66];
-bonusgame_box[0] = new BGBox(10,160);
-bonusgame_box[1] = new BGBox(170,160);
-bonusgame_box[2] = new BGBox(330,160);
-bonusgame_box[3] = new BGBox(490,160);
-bonusgame_box[4] = new BGBox(650,160);
+function bonusGame() {
+    validateReleasedState();
+    context.fillStyle = "#000000";
+    context.fillRect(0, 0, 800, 600);
+    context.fillStyle = "cyan";
+    context.font = "50px Nonserif";
+    context.fillText("BONUS GAME !!", 190, 80);
+    if (aniCount < 130)
+        return;
+    var x_positions = [2, 18, 34, 50, 66];
+    if (bonusgame_box === null) {
+        bonusgame_box = new Array(5);
+//Other arguments after this all become nonsense if I do not make this explicit!
+//bonusgame_schedTask = new TimedTask(0,bonusGame_increaseCount,500,null,true,"Box Toggle Task");
+        bonusgame_selected = 0;
+        bonusgame_framecounter = 0;
+//bonusgame_schedTask.start();
+    }
+    for (var i = 0; i < bonusgame_box.length; i++) {
+        bonusgame_box[i] = new BGBox(10 + 160 * i, 160, bonusgame_selected === i ? true : false);
+    }
 
 //Args for bullets: color, X coord, Y coord, scalinh
 //Bullets in normal color (0)
@@ -1623,8 +1640,17 @@ bonusgame_box[4] = new BGBox(650,160);
             bullet_render(4, x_positions[4] + i * 4, 20 + j * 6, 8.2);
         }
     }
-    for(var i = 0; i<bonusgame_box.length; i++)
-    bonusgame_box[i].renderRoutine();
+    for (var i = 0; i < bonusgame_box.length; i++)
+        bonusgame_box[i].renderRoutine();
+    bonusgame_framecounter = (bonusgame_framecounter + 1) % 18;
+    if (bonusgame_framecounter === 17)
+        bonusgame_selected = (bonusgame_selected
+                + 1) % 5;
+    if (shootReleased && shoot) {
+        player.bulletColor = bonusgame_selected;
+        loadLevel();
+    }
+
 }
 
 /*
@@ -1911,6 +1937,7 @@ function checkLeaveLevel() {
     if (giant_boss !== null && giant_boss.invalid) {
         player.level++;
         if(player.skill>-1 && player.noHit){
+        shootReleased = false;     
         exchangeRenderLoop(bonusGame);
         }
         else{
@@ -3303,9 +3330,9 @@ var saveError = false;
  */
 function saveGame() {
     try {
-        getLocalStorage().setItem(gameStorageName, player.level);
+        getLocalStorage().setItem(gameStorageName, (10 * player.bulletColor) + player.level);
         var referenceValue = Number(getLocalStorage().getItem(gameStorageName));
-        if (referenceValue !== player.level) {
+        if (referenceValue % 10 !== player.level) {
             saveError = true;
         } else {
             saveError = false;
@@ -3350,7 +3377,7 @@ function testStorageState() {
         return;
     }
     // Test 3B: Check if data is invalid in this version, but not necessarily always invalid.
-    if (!loaders[storageValue]) {
+    if (!loaders[storageValue % 10]) {
         storageStatus = "UPGRADE";
         return;
     }
@@ -3665,4 +3692,8 @@ function simplyPlaySound(object) {
     object.pause();
     object.currentTime = 0;
     object.play();
+}
+
+function bonusGame_increaseCount(){
+bonusgame_selected = (bonusgame_selected + 1) % 5;     
 }
