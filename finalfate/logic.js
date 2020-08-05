@@ -135,14 +135,18 @@ class LinkedList {
      * @param {unknown} value What is the first element in this list? Optional
      * @returns {LinkedList}
      */
-    constructor(value = null) {
+    constructor(value = null, copyFlag = false) {
         //The value of a specific node is saved there. The first node will always be a dummy node.    
         this.value = "HEAD";
         //Next element in list.
         this.next = null;
         //Cursor of which node is the next element to return with giveNext function. Changing the list will reset it.
         this.iterateState = null;
-        if (value !== null) {
+        if( value !== null && copyFlag){
+        this.next = value;
+        this.iterateState = this.next;
+        }
+        else if (value !== null) {
             this.next = new LinkedList();
             this.next.value = value;
             this.iterateState = this.next;
@@ -197,6 +201,13 @@ class LinkedList {
             this.next = null;
             this.iterateState = null;
         };
+        
+        //Create a SHALLOW copy of the list.
+        this.cloneList = function(){
+        var iterateStateLocal = this.next;
+        return new LinkedList(iterateStateLocal,true);
+        };
+        
         /**
          Delete the first entry of something based on type-strong comparisons of values.
          Does nothing if an entry did not even exist in the first place.
@@ -394,6 +405,21 @@ class SilentBlinky extends Blinky{
     
 }
 
+
+class MegaBlinky extends Enemy {
+    /**
+     * Create a mega blinky object.
+     * @param {type} middleX
+     * @param {type} middleY
+     * @returns {MegaBlinky}
+     */
+    constructor(middleX, middleY) {
+    super(middleX, middleY, func_noDim, megaBlinky_update, megaBlinky_render);
+    }    
+}
+
+MegaBlinky.prototype.width = 25;
+MegaBlinky.prototype.height = 10;
 
 class BlinkyTracer extends Enemy {
     /**
@@ -862,9 +888,6 @@ function loadLevel() {
     }
 }
 
-
-
-
 /**
  * Level 4 - Blinky Homeworld
  * 
@@ -887,7 +910,9 @@ function blinkyHomeworldLoader(){
  enem = new SilentBlinky(40,20);
  enem = new Spawn(300,enem);
  spawnList.addElement(enem);
- 
+ enem = new MegaBlinky(40,20);
+ enem = new Spawn(700,enem);
+ spawnList.addElement(enem);
  }   
  catch(error){
      loadingException  = error;
@@ -2679,6 +2704,28 @@ function fireBoost_update() {
 
 }
 
+/**
+ * Mega Blinky update routine.
+ * @returns {undefined}
+ */
+function megaBlinky_update(){
+//Be aware that this.middleY is the most far point from here.
+//context.fillRect(this.middleX * 10, (this.middleY - 3) * 10, 10, 10);
+// Getting a fresh list of bullets.
+var bulletListInternal = bulletList.cloneList();
+//Checking on "true" point.
+while(bulletListInternal.peekNext() !== null){
+var testBullet = bulletListInternal.getNext();  
+var realPointHit = newCollidesShapePoint(this.middleX,this.middleY,this.width,
+this.height,testBullet.middleX,testBullet.middleY);
+var virtualPointHit = newCollidesShapePoint(this.middleX,this.middleY,this.width,
+this.height,testBullet.middleX,testBullet.middleY-3);
+if(realPointHit | virtualPointHit) {
+this.invalidate();
+testBullet.invalidate();
+}
+}
+}
 //All rendering routines.
 
 /**
@@ -2686,7 +2733,7 @@ function fireBoost_update() {
  * @returns {undefined}
  */
 function title_and_copyright_render(){
- context.fillStyle = "black";
+    context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
     context.font = "60px Serif";
     context.fillStyle = "red";
@@ -2768,7 +2815,6 @@ function bullet_render() {
     context.fillStyle = "#220000";
     context.fillRect(this.middleX * 10, (this.middleY - 3) * 10, 10, 10);
 }
-
 
 //"Stupid Enemy" rendering function
 function simpleEnemy_render() {
@@ -2896,6 +2942,21 @@ function blinky_render() {
     simpleSquare_render.call(this);
 }
 
+//"Mega Blinky" rendering function
+function megaBlinky_render(){
+ if (aniCount % 25 < 5) {
+        context.fillStyle = "red";
+    } else if (aniCount % 25 < 10) {
+        context.fillStyle = "yellow";
+    } else if (aniCount % 25 < 15) {
+        context.fillStyle = "magenta";
+    } else if (aniCount % 25 < 20) {
+        context.fillStyle = "white";
+    } else
+        context.fillStyle = "green";
+   context.fillRect(this.middleX*10,this.middleY*10,this.width*10,this.height*10);
+
+}
 //"Heat" rendering function
 function heat_render() {
     context.fillStyle = "#550000";
@@ -3489,5 +3550,29 @@ function performFadeOut(startValue = 0,endValue = startValue + 10){
            var inverter = (this.frameCounter-startValue) * 0.1;
            context.globalAlpha = 1 - inverter; 
     }    
+    
+}
+/**
+ * Test if a shape does collide with a point.
+ * @param {type} shape_x
+ * @param {type} shape_y
+ * @param {type} width
+ * @param {type} height
+ * @param {type} point_x
+ * @param {type} point_y
+ * @returns {Boolean}
+ */
+function newCollidesShapePoint(shape_x,shape_y,width,height,point_x,point_y){
+var max_x = shape_x + width;
+var max_y = shape_y + height;
+const debugInput = false;
+if(debugInput)window.alert("--New collision debug--\n" +
+              "Pos X shape:" + shape_x + "\n" +
+              "Pos Y shape:" + shape_y + "\n" +
+              "Width shape:" + width + "\n" +
+              "Height shape:" + height + "\n" +
+              "Pos X point:" + point_x + "\n" +
+              "Pos Y point:" + point_y + "\n" );
+return ((shape_x <= point_x && point_x <= max_x) && (shape_y <= point_y && point_y <= max_y));
     
 }
