@@ -2709,6 +2709,7 @@ function fireBoost_update() {
  * @returns {undefined}
  */
 function megaBlinky_update(){
+this.frameCounter++;    
 //Be aware that this.middleY is the most far point from here.
 //context.fillRect(this.middleX * 10, (this.middleY - 3) * 10, 10, 10);
 // Getting a fresh list of bullets.
@@ -2724,6 +2725,10 @@ if(realPointHit | virtualPointHit) {
 this.invalidate();
 testBullet.invalidate();
 }
+}
+//Spawn enemies at a certain frequency.
+if(this.frameCounter % 30 === 29){
+var randomValue = 0;    
 }
 }
 //All rendering routines.
