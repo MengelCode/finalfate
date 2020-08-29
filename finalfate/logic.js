@@ -895,8 +895,11 @@ function loadLevel() {
 function blinkyHomeworldLoader(){
  try{
  var enem = null;
+ enem = new Meteor(38,3);
+ enem = new Spawn(0, enem);
+ spawnList.addElement(enem);
  enem = new FireBoost(38,3);
- enem = new Spawn(0, enem, false, true, false, false);
+ enem = new Spawn(1, enem, false, true, false, false);
  spawnList.addElement(enem);
  enem = new HealthBoost(38,3);
  enem = new Spawn(40, enem, false, true, false, false);
@@ -2054,7 +2057,7 @@ function meteor_damage() {
 
 
 //"Stupid Enemy" dimension function.
-function simpleEnemy_dimension(dummyX, dummyY) {
+function simpleEnemy_dimension() {
     var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
     var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
     return new Array(x, y);
@@ -2728,8 +2731,18 @@ testBullet.invalidate();
 }
 //Spawn enemies at a certain frequency.
 if(this.frameCounter % 30 === 29){
-var randomValue = 0;    
+var randomValue = getRandomY(); 
+var newEnemy = null;
+if(randomValue<20){
+newEnemy = new Meteor(this.middleX + this.width / 2, this.middleY + this.height);
+var newSpawn = new Spawn(aniCount+1,newEnemy);
+//spawnList.addElement(newSpawn);
+displayList.addElement(newEnemy, false);
+enemyList.addElement(newEnemy, false);
 }
+}
+if(newEnemy === null)return;
+
 }
 //All rendering routines.
 
@@ -3557,6 +3570,12 @@ function performFadeOut(startValue = 0,endValue = startValue + 10){
     }    
     
 }
+
+function createEnemyWithNewCollision(objectPrototype,posX,posY){
+var newEnemy = Object.create(objectPrototype,posX,posY);
+newEnemy.getOccupiedSpace = func_noDim;
+}
+
 /**
  * Test if a shape does collide with a point.
  * @param {type} shape_x
