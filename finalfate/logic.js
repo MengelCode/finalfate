@@ -3570,10 +3570,49 @@ function performFadeOut(startValue = 0,endValue = startValue + 10){
     }    
     
 }
+/**
+ * Prepares an object to be ready for the new collision detection.
+ * 
+ * @param {type} object
+ * @param {type} isShape
+ * @param {type} hasPointsArray
+ * @param {type} removeOldCD
+ * @returns {undefined}
+ */
+function applyNewCollisionToObject(object,isShape,hasPointsArray){
+if(isShape && (!object.width || !object.height || !object.posX || object.posY)){
+    throw new Error("This object is no shape.");
+}
+if(hasPointsArray && (!object.points instanceof Array || object.points.length < 1  
+                   || !object.points[0] instanceof Array || object.points[0].length < 2)){
+    throw new Error("This object has no collision points.");
+}
+object.isShape = isShape;
+object.hasPointsArray = hasPointsArray;
+object.oldCollides = object.collides;
+object.collides = newCollides;
+}
 
-function createEnemyWithNewCollision(objectPrototype,posX,posY){
-var newEnemy = Object.create(objectPrototype,posX,posY);
-newEnemy.getOccupiedSpace = func_noDim;
+
+function newCollides(object){
+var shapeObject = null;
+var pointsObject = null;
+if(this.isShape && object.hasPointsArray){
+shapeObject = this;
+pointsObject = object;
+}
+else if(object.isShape && this.hasPointsArray){
+shapeObject = object;
+pointsObject = this;    
+}
+if(shapeObject === null){
+return this.oldCollides(object);    
+}
+for(var i = 0; pointsObject.points.length; i++){
+if(newCollidesShapePoint(shapeObject.posX,shapeObject.posY,shapeObject.width,
+   shapeObject.height,pointsObject[i][0],pointsObject[i][1]))return true;   
+}
+return false;
 }
 
 /**
