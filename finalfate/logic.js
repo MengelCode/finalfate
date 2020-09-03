@@ -358,11 +358,23 @@ class Meteor extends Enemy {
      * @param {type} middleY
      * @returns {Meteor}
      */
-    constructor(middleX, middleY) {
+    constructor(middleX, middleY,enableNewCollision = false) {
         super(middleX, middleY, meteor_dimension, meteor_update, meteor_render, meteor_damage());
-    }
+        this.enableNewCollision = enableNewCollision;
+        this.updateShape = function(){
+        window.alert("I am getting called.");
+        this.posX = this.middleX - 1 ;
+        this.posY = this.middleY - 1 ;
+        };
+    if(enableNewCollision)
+    applyNewCollisionToObject(this,true,false);
+    } 
+    
 
 }
+
+Meteor.prototype.width = 3;
+Meteor.prototype.height = 3;
 
 class SimpleEnemy extends Enemy {
 
@@ -414,10 +426,9 @@ class MegaBlinky extends Enemy {
      * @returns {MegaBlinky}
      */
     constructor(middleX, middleY) {
-    super(middleX, middleY, func_noDim, megaBlinky_update, megaBlinky_render);
-    }    
+    super(middleX, middleY, func_noDim, megaBlinky_update, megaBlinky_render);   
 }
-
+}
 MegaBlinky.prototype.width = 25;
 MegaBlinky.prototype.height = 10;
 
@@ -439,10 +450,23 @@ class Bullet extends GameObject {
         super();
         this.middleX = middleX;
         this.middleY = middleY;
+        this.points = new Array(3);
+        this.points[0] = {};
+        this.points[1] = {};
+        this.points[2] = {};
+        this.updatePoints = function(){
+        this.points[0][0] = this.middleX;
+        this.points[0][1] = this.middleY - 3;
+        this.points[1][0] = this.middleX;
+        this.points[1][1] = this.middleY - 2;
+        this.points[2][0] = this.middleX;
+        this.points[2][1] = this.middleY - 1;
+        };
         super.getOccupiedSpace = bullet_dimension;
         super.updateSpecial = bullet_update;
         super.updateState = function () {};
         super.renderState = bullet_render;
+        applyNewCollisionToObject(this,false,true);
     }
 }
 class Spawn {
@@ -2121,6 +2145,7 @@ function wingman_update() {
 //"Bullet" update function.
 function bullet_update() {
     this.middleY = this.middleY - 1;
+    this.updatePoints();
     if (this.middleY < 3)
         this.invalid = true;
 }
@@ -2618,6 +2643,7 @@ function blinkyTracer_update() {
 
 //"Meteor" update function.
 function meteor_update() {
+    this.updateShape();
     slowMove_update.call(this);
 }
 
