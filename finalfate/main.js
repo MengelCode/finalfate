@@ -6,75 +6,6 @@
 //CLASSES
 
 
-class GameObject {
-    /**
-     * This is the root class in the small class hierarchy of the game.
-     * 
-     */
-    constructor() {
-        this.frameCounter = 0;
-        /**
-         * Is this object still required? Set this value to true (via the invalidate function) to mark it for
-         * deletion before the next frame.
-         */
-        this.invalid = false;
-        /**Returns an array of 2 arrays.
-         //X positions occupied = array 0.
-         Y positions occupied = array 1.
-         **/
-    }
-
-}
-
-/**
- * Update routine for an object. Every game object should have one.
- */
-GameObject.prototype.updateState = func_noOp;
-
-/**
- * Rendering routine for an object. Required to make a game object visible.
- */
-GameObject.prototype.renderState = func_noOp;
-
-
-/**
- * 
- * Mark the object as no longer required.
- * 
- */
-GameObject.prototype.invalidate = function () {
-    this.invalid = true;
-};
-
-
-/**
- * Get the collision matrix of a specific object. Empty unless it is overriden.
- * @returns {Array}
- */
-GameObject.prototype.getOccupiedSpace = function () {
-    return new Array({}, {});
-};
-
-
-
-/**
- * 
- * @param {GameObject} otherObj
- * @returns {boolean} If this object collides with the given object.
- */
-GameObject.prototype.collides = function (otherObj) {
-    var ownSpace = this.getOccupiedSpace();
-    var otherSpace = otherObj.getOccupiedSpace();
-    for (var i = 0; i < ownSpace[0].length; i++) {
-        for (var j = 0; j < otherSpace.length; j++) {
-            if (ownSpace[0][i] === otherSpace[0][j] && ownSpace[1][i] === otherSpace[1][j]) {
-                return true;
-            }
-        }
-    }
-    return false;
-};
-
 
 class HealthBoost extends GameObject {
     /**
@@ -216,73 +147,7 @@ class LinkedList {
     }
 
 }
-class Enemy extends GameObject {
-    /**
-     * Creates an enemy object.
-     * @param {integer} middleX
-     * @param {integer} middleY
-     * @param {function} dimensionMatrix
-     * @param {function} updateRoutine
-     * @param {function} renderRoutine
-     * @param {boolean} killable
-     * @param {integer} damage
-     * @param {integer} hp
-     * @returns {Enemy}
-     */
-    constructor(middleX, middleY, dimensionMatrix, updateRoutine, renderRoutine, damage = 10, killable = true, score = default_score(), invalidFunc = null, hp = 100) {
-        super();
-        this.middleX = middleX;
-        this.middleY = middleY;
-        super.getOccupiedSpace = dimensionMatrix;
-        super.updateState = updateRoutine;
-        super.renderState = renderRoutine;
-        this.killable = killable;
-        if (player.skill === 2) {
-            this.damage = Math.round(damage * 2);
-        } else if (player.skill === -1) {
-            this.damage = Math.round(damage / 2);
-        } else if (player.skill === -2) {
-            this.damage = Math.round(damage / 3);
-        } else {
-            this.damage = damage;
-        }
-        this.score = score;
-        //HP value. Can be respected by invalidate() function, but it needs not.
-        this.hp = hp;
-        //Previous enemy object in a chain.
-        this.previous = null;
-        //Next enemy object in a chain.
-        this.next = null;
-        this.linkTogether = function (nextEnemy) {
-            this.next = nextEnemy;
-            nextEnemy.previous = this;
-        };
-        if (invalidFunc !== null) {
-            super.invalidate = invalidFunc;
-        } else {
-            super.invalidate = function () {
-                this.invalid = true;
-                if (this.previous !== null && !this.previous.invalid)
-                    this.previous.invalidate();
-                if (this.next !== null && !this.next.invalid)
-                    this.next.invalidate();
-            };
-    }
-    }
-}
 
-class Meteor extends Enemy {
-    /**
-     * Create a meteor object.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {Meteor}
-     */
-    constructor(middleX, middleY) {
-        super(middleX, middleY, meteor_dimension, meteor_update, meteor_render, meteor_damage());
-    }
-
-}
 
 class SimpleEnemy extends Enemy {
 
@@ -358,195 +223,6 @@ class Spawn {
 
 }
 
-//Instances of GameObject.
-class SpaceShip extends GameObject {
-    /**
-     * Creates our space ship.
-     * @param {integer} middleX
-     * @param {integer} middleY
-     * @returns {SpaceShip}
-     */
-    constructor(middleX, middleY) {
-        super();
-        this.middleX = middleX;
-        this.middleY = middleY;
-        super.getOccupiedSpace = function () {
-            var x = [this.middleX, this.middleX, this.middleX, this.middleX - 1, this.middleX - 2, this.middleX + 1, this.middleX + 2, this.middleX - 2, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
-            var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY, this.middleY, this.middleY, this.middleY, this.middleY - 1, this.middleY - 1, this.middleY + 1, this.middleY + 1, this.middleY + 1];
-            for (var i = 0; i < y.length; i++) {
-                y[i] -= 5;
-            }
-            var x_org_length = x.length;
-
-            for (var i = 0; i < x_org_length; i++) {
-                x.push(x[i] - 1);
-                y.push(y[i]);
-            }
-            if (left) {
-                for (var i = 0; i < x.length; i++) {
-                    x[i] -= 2;
-                }
-            }
-            if (right) {
-                for (var i = 0; i < x.length; i++) {
-                    x[i] += 2;
-                }
-            }
-
-            return new Array(x, y);
-        };
-        //Keyboard thingie released?
-        this.keyReleased = true;
-        //Quad-fire upgrade collected?
-        this.quadfire = false;
-        //Auto-fire upgrade collected?
-        this.massfire = false;
-        //Auto-fire cooldown.
-        this.cooldown = 0;
-        //Selected difficulty level.
-        //-2 Lowest, 0 Middle, +2 Highest.
-        this.skill = 0;
-        //CHEAT ZONE!!
-        this.debugNoHit = false;
-        //Not being hit.
-        this.noHit = true;
-        /**
-         * Bullet color.
-         * 0 = Normal.
-         * 1 = Red-white.
-         * 2 = Purple.
-         * 3 = Blueish.
-         * 4 = Plain yellow.
-         */
-        this.bulletColor = 0;
-        //POTENTIAL CHEAT ZONE.
-        //Checkpoint memory. Because levels start to count with zero, I set the default to -1 here.
-        this.checkpoint = -1;
-        super.updateState = function () {
-            //If memorized button here, then poll that from controller.
-            //Disabled for now.
-
-            if (false) {
-                pollAxisX();
-                pollAxisY();
-                pollDatButton();
-            }
-            if (this.score >= this.score_newlife) {
-                sfx2.pause();
-                sfx2.currentTime = 0;
-                sfx2.play();
-                this.lifes++;
-                if(player.skill === 2){
-                this.score_newlife = this.score_newlife + 140000;    
-                }
-                else if(player.skill === 1){
-                this.score_newlife = this.score_newlife + 97000;    
-                }
-                this.score_newlife = this.score_newlife + 30000;
-            }
-
-            if (left && this.middleX > 2) {
-                //left = 0;
-                this.middleX = this.middleX - 1;
-            }
-            if (right && this.middleX < 77) {
-                //right = 0;
-                this.middleX = this.middleX + 1;
-            }
-            if (up && this.middleY > 28) {
-                this.middleY = this.middleY - 1;
-            }
-            if (down && this.middleY < 53) {
-                this.middleY = this.middleY + 1;
-            }
-            if (!shoot) {
-                this.keyReleased = true;
-            }
-            if ((shoot && this.keyReleased && this.massfire === false) || (shoot && this.massfire === true && this.cooldown === 0) || (this.skill < -1 && this.cooldown === 0)) {
-                this.keyReleased = false;
-                if (this.skill < -1) {
-                    this.massfire = true;
-                }
-                if (this.massfire === true)
-                    this.cooldown = 5;
-                sfx0.pause();
-                sfx0.currentTime = 0;
-                sfx0.play();
-                var bullet = new Bullet(this.middleX - 2, this.middleY);
-                displayList.addElement(bullet, false);
-                bulletList.addElement(bullet, false);
-                if (this.skill < 1) {
-                    bullet = new Bullet(this.middleX, this.middleY - 2);
-                    displayList.addElement(bullet, false);
-                    bulletList.addElement(bullet, false);
-                }
-                bullet = new Bullet(this.middleX + 2, this.middleY);
-                displayList.addElement(bullet, false);
-                bulletList.addElement(bullet, false);
-                if (this.quadfire) {
-                    bullet = new Bullet(this.middleX - 1, this.middleY);
-                    displayList.addElement(bullet, false);
-                    bulletList.addElement(bullet, false);
-                    bullet = new Bullet(this.middleX + 1, this.middleY);
-                    displayList.addElement(bullet, false);
-                    bulletList.addElement(bullet, false);
-                }
-
-
-            }
-
-            //gamepad_mem.buttons[button_mem_index]
-            if (!pause) {
-                pauseReleased = true;
-            }
-            if (pause && pauseReleased) {
-                bgm.pause();
-                pauseReleased = false;
-                selectedOption = 0;
-                exchangeRenderLoop(gamePause, true);
-            }
-
-            if (this.cooldown > 0)
-                this.cooldown--;
-        };
-        super.renderState = function () {
-            context.fillStyle = "lightgray";
-            context.fillRect((this.middleX - 2) * 10, this.middleY * 10, 50, 10);
-            context.fillStyle = "yellow";
-            context.fillRect(this.middleX * 10, (this.middleY - 2) * 10, 10, 20);
-            context.fillStyle = "orange";
-            context.fillRect((this.middleX - 2) * 10, (this.middleY - 1) * 10, 10, 10);
-            context.fillRect((this.middleX + 2) * 10, (this.middleY - 1) * 10, 10, 10);
-            if (this.quadfire) {
-                context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
-                context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
-            }
-        };
-        /**
-         * CHEAT ZONE. Default: 100
-         * Health Points of the player. If this value goes down to 0(or theoretically less, it costs you a life.
-         */
-        this.health = 100;
-        /**
-         * Lives of the player. If this value is zero and you die, it is over with you.
-         */
-        this.lifes = 3;
-        /**
-         * Score of the player.
-         */
-        this.score = 0;
-        /**
-         * Score required to get a new life.
-         */
-        this.score_newlife = 20000;
-
-        /**
-         * Level the player is in.
-         * 
-         */
-        this.level = 0;
-    }
-}
 
 
 class TimedTask {
@@ -723,24 +399,6 @@ class Heat extends Decoration {
 
 }
 
-//TODO INIT
-//try{
-//"booleans" if certain keys are pressed.
-var shoot = 0;
-var up = 0;
-var down = 0;
-var left = 0;
-var right = 0;
-var pause = 0;
-//"Boolean" for specific input source.
-//"Keyboard" boolean.
-var keyboard = false;
-//"Gamepad" boolean.
-var gamepad = false;
-//Gamepad index. ( false = no button assigned)
-var gamepad_button = false;
-//Gamepad event handle.
-var gamepad_handle = null;
 //HTML Canvas
 var canvas = document.getElementById("myScreen");
 const oldestWidth = 800;
@@ -868,26 +526,7 @@ for (var i = 0; i < boss3_arm_values.prototype.hpValues.length; i++) {
 
 //Auxillary functions for level transitions.
 
-/**
- * Resets all knowledge about used devices
- * and makes sure every input device is checked.
- * @returns {undefined}
- */
-function initAllInput() {
-    if (!keyboard) {
-        //Keyboard input catching.
-        window.addEventListener("keydown", getKeyPress);
-        window.addEventListener("keyup", getKeyRelease);
-    }
-    if (gamepad_handle !== null) {
-        //Terminate polling of specific (?) gamepad.
-        clearInterval(gamepad_handle);
-    }//Gamepad input catching.
-    gamepad_handle = setInterval(gamepadAskAnyButton, FRAME_RATE);
-    //Reset used state.
-    keyboard = false;
-    gamepad = false;
-}
+
 /**
  * 
  * Define the beginning state of the game, then start with the first level.
@@ -1100,10 +739,6 @@ function blinkyTracer_damage() {
     return 36;
 }
 
-//"Meteor" damage function.
-function meteor_damage() {
-    return 17;
-}
 
 //All dimension matrix functions.
 
@@ -1671,11 +1306,6 @@ function blinkyTracer_update() {
         this.middleX--;
 }
 
-//"Meteor" update function.
-function meteor_update() {
-    slowMove_update.call(this);
-}
-
 //"Meteor 2" update function.
 function meteor2_update() {
 
@@ -1884,13 +1514,6 @@ function bullet_render(wayToDecide = player.bulletColor, bulletX = this.middleX,
 function simpleEnemy_render() {
 //Num pad on mobile.
     context.fillStyle = "white";
-    simpleSquare_render.call(this);
-}
-
-//"Meteor" rendering function
-function meteor_render() {
-//Num pad on mobile.
-    context.fillStyle = "brown";
     simpleSquare_render.call(this);
 }
 
@@ -2165,139 +1788,7 @@ function increaseCount() {
 }
 
 
-//Makes sure keys are not pressed for eternity.
-function keyInvalidator() {
-    if (shoot) {
-        shoot--;
-    }
-    if (up) {
-        up--;
-    }
-    if (down) {
-        down--;
-    }
-    if (left) {
-        left--;
-    }
-    if (right) {
-        right--;
-    }
-    if (pause) {
-        pause--;
-    }
 
-}
-
-
-
-//Event receiver for key presses.
-function getKeyPress(event) {
-//Keyboard press detected!
-    keyboard = 1;
-    //window.alert("It works....");
-    //window.alert(event.keyCode);
-    //Key Codes supported?
-    if (event.keyCode !== undefined) {
-// window.alert(event.which);
-        if (event.keyCode === 32) {
-            shoot = 5;
-        } else if (event.keyCode === 37) {
-            left = 5;
-        } else if (event.keyCode === 39) {
-            right = 5;
-        } else if (event.keyCode === 38) {
-            up = 5;
-        } else if (event.keyCode === 40) {
-            down = 5;
-        } else if (event.keyCode === 80) {
-            pause = 5;
-        }
-    }
-
-
-}
-//Event receiver for key release.
-function getKeyRelease(event) {
-
-// window.alert("It works....");
-
-//Firefox based?
-    if (event.keyCode !== undefined) {
-//  window.alert(event.which);
-        if (event.keyCode === 32) {
-            shoot = 0;
-        } else if (event.keyCode === 37) {
-            left = 0;
-        } else if (event.keyCode === 39) {
-            right = 0;
-        } else if (event.keyCode === 38) {
-            up = 0;
-        } else if (event.keyCode === 40) {
-            down = 0;
-        } else if (event.keyCode === 80) {
-            pause = 0;
-        }
-    }
-
-}
-
-/**
- * Poll every button on every gamepad.
- * @returns {Boolean}
- */
-function gamepadAskAnyButton() {
-    var controllers = navigator.getGamepads();
-    for (var i = 0; i < controllers.length && i < 10; i++) {
-        var testController = controllers[i];
-        if (!testController)
-            continue;
-        if (!testController.buttons)
-            continue;
-        for (var j = 0; testController.buttons.length && j < testController.buttons.length; j++) {
-//Prevent "Start button" from ever becoming the fire button.
-            if (j === 9)
-                continue;
-            if (testController.connected && testController.buttons[j] && testController.buttons[j].pressed) {
-                gamepad = i;
-                gamepad_button = j;
-            }
-
-        }
-    }
-
-}
-
-
-
-//Poll gamepad.
-function gamepadPoll() {
-    var controller = navigator.getGamepads()[gamepad];
-    //Error condition: Controller is no object or even null or undefined.
-    if (!controller) {
-        return;
-    }
-//Error condition: Controller.buttons is no array or even null or undefined.
-    if (!controller.buttons || !controller.buttons.length) {
-        return;
-    }
-//Error condition: Gamepad is disconnected.
-    if (!controller.connected) {
-        return;
-    }
-//Error condition: Fire button did magically disappear.
-    if (controller.buttons[gamepad_button] === undefined || controller.buttons[gamepad_button] === null) {
-        return;
-    }
-//Is button pressed?
-    shoot = controller.buttons[gamepad_button].pressed;
-    //Validate axis states.
-    left = controller.axes[0] < -0.4;
-    right = controller.axes[0] > 0.4;
-    up = controller.axes[1] < -0.4;
-    down = controller.axes[1] > 0.4;
-    //Is pause pressed?
-    pause = controller.buttons[9].pressed;
-}
 
 /**
  }
@@ -2359,67 +1850,3 @@ function func_noDim() {
 }
 
 
-/**
- * Event handler triggered when windows size changes.
- * @returns {undefined}
- */
-function sizeChanged() {
-    newWidth = window.innerWidth - (window.innerWidth / 100 * 3);
-    newHeight = window.innerHeight - (window.innerHeight / 100 * 3);
-    canvas.setAttribute("width", newWidth);
-    canvas.setAttribute("height", newHeight);
-    //context.scale(newWidth / oldWidth, newHeight / oldHeight);
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.scale(newWidth / oldestWidth, newHeight / oldestHeight);
-    oldWidth = newWidth;
-    oldHeight = newHeight;
-//window.alert("New canvas resolution: " + newWidth + "x" + newHeight + "<br> New inner window size: " + window.innerWidth + "x" + window.innerHeight);
-}
-
-/**
- * Issue 69: Fix for buttons "held down" when window is onfocused during input.
- * The state is not corrected.
- * By nature, this bug cannot appear with gamepads. They always functions as they
- * should, regardless if the window is still focused.
- * @returns {undefined}
- */
-function focusLost(){
-if(!keyboard) return;    
-shootReleased = true;
-pauseReleased = true;
-axisXReleased = true;
-axisYReleased = true;
-shoot = false;
-pause = false;
-up = false;
-down = false;
-left = false;
-right = false;
-}
-
-
-//Values and function for the released state of (once pressed) keys.
-
-var shootReleased = true;
-var pauseReleased = true;
-var axisXReleased = true;
-var axisYReleased = true;
-//Validates if the statements above are still true.
-function validateReleasedState() {
-    if (!shoot) {
-        shootReleased = true;
-    }
-    if (!pause) {
-        pauseReleased = true;
-    }
-    if (!up && !down) {
-        axisYReleased = true;
-    }
-    if (!left && !right) {
-        axisXReleased = true;
-    }
-}
-/**
-function bonusGame_increaseCount(){
-bonusgame_selected = (bonusgame_selected + 1) % 5;     
-}**/

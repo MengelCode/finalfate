@@ -15,6 +15,23 @@ function simplyPlaySound(soundObject) {
 }
 
 /**
+ * Event handler triggered when windows size changes.
+ * @returns {undefined}
+ */
+function sizeChanged() {
+    newWidth = window.innerWidth - (window.innerWidth / 100 * 3);
+    newHeight = window.innerHeight - (window.innerHeight / 100 * 3);
+    canvas.setAttribute("width", newWidth);
+    canvas.setAttribute("height", newHeight);
+    //context.scale(newWidth / oldWidth, newHeight / oldHeight);
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.scale(newWidth / oldestWidth, newHeight / oldestHeight);
+    oldWidth = newWidth;
+    oldHeight = newHeight;
+//window.alert("New canvas resolution: " + newWidth + "x" + newHeight + "<br> New inner window size: " + window.innerWidth + "x" + window.innerHeight);
+}
+
+/**
  * Function which does nothing. Sometimes useful.
  * @returns {undefined}
  */
