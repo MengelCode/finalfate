@@ -148,46 +148,6 @@ class LinkedList {
 
 }
 
-
-class SimpleEnemy extends Enemy {
-
-    /**
-     * Create a simple enemy object.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {Meteor}
-     */
-    constructor(middleX, middleY) {
-        super(middleX, middleY, simpleEnemy_dimension, simpleEnemy_update, simpleEnemy_render);
-    }
-}
-
-
-class Blinky extends Enemy {
-    /**
-     * Create a blinky enemy object.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {Blinky}
-     */
-    constructor(middleX, middleY) {
-        super(middleX, middleY, blinky_dimension, blinky_update, blinky_render, blinky_damage());
-    }
-}
-
-
-class BlinkyTracer extends Enemy {
-    /**
-     * Create a blinky enemy object.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {Blinky}
-     */
-    constructor(middleX, middleY) {
-        super(middleX, middleY, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
-    }
-}
-
 class Bullet extends GameObject {
 
     constructor(middleX, middleY) {
@@ -729,26 +689,12 @@ function default_score() {
 
 //All "damage" functions. Not always required.
 
-//"Blinky" damage function.
-function blinky_damage() {
-    return 22;
-}
 
-//"Blinky Tracer" damage function.
-function blinkyTracer_damage() {
-    return 36;
-}
 
 
 //All dimension matrix functions.
 
 
-//"Stupid Enemy" dimension function.
-function simpleEnemy_dimension(dummyX, dummyY) {
-    var x = [this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1, this.middleX - 1, this.middleX, this.middleX + 1];
-    var y = [this.middleY - 3, this.middleY - 3, this.middleY - 3, this.middleY - 2, this.middleY - 2, this.middleY - 2, this.middleY - 1, this.middleY - 1, this.middleY - 1, this.middleY, this.middleY, this.middleY, this.middleY + 1, this.middleY + 1, this.middleY + 1];
-    return new Array(x, y);
-}
 
 //"Background" dimension function.
 function background_dimension() {
@@ -779,9 +725,6 @@ function bullet_dimension() {
     return new Array(x, y);
 }
 
-
-//"Meteor" dimension function.
-var meteor_dimension = simpleEnemy_dimension;
 //"Boss 3 hatch" dimension function.
 var boss3_hatch_dimension = meteor_dimension;
 //"Boss 3 heating unit" dimension function.
@@ -790,10 +733,6 @@ var boss3_heating_dimension = meteor_dimension;
 var boss3_middle_dimension = meteor_dimension;
 //"Boss 2" dimension function.
 var boss2_dimension = meteor_dimension;
-//"Blinky" dimension function.
-var blinky_dimension = meteor_dimension;
-//"Blinky Tracer" dimension function.
-var blinkyTracer_dimension = blinky_dimension;
 //All update routines.
 
 //"Wingman" update function.
@@ -1279,32 +1218,6 @@ function boss2_update() {
 
 }
 
-//"Stupid Enemy" update function.
-function simpleEnemy_update() {
-    this.frameCounter++;
-    this.frameCounter = this.frameCounter % 2;
-    if (this.frameCounter === 1) {
-        this.middleY = this.middleY + 1;
-    }
-}
-
-//"Blinky" update function.
-function blinky_update() {
-    this.frameCounter++;
-    this.frameCounter = this.frameCounter % 1;
-    if (this.frameCounter === 0) {
-        this.middleY = this.middleY + 1;
-    }
-}
-//"Blinky Tracer" update function.
-function blinkyTracer_update() {
-    this.frameCounter++;
-    this.middleY++;
-    if (player.middleX > this.middleX)
-        this.middleX++;
-    else if (player.middleX < this.middleX)
-        this.middleX--;
-}
 
 //"Meteor 2" update function.
 function meteor2_update() {
@@ -1510,12 +1423,6 @@ function bullet_render(wayToDecide = player.bulletColor, bulletX = this.middleX,
 }
 
 
-//"Stupid Enemy" rendering function
-function simpleEnemy_render() {
-//Num pad on mobile.
-    context.fillStyle = "white";
-    simpleSquare_render.call(this);
-}
 
 //"Boss 3 arm" rendering function
 function boss3_arm_render() {
@@ -1586,9 +1493,6 @@ function lifeBoost_render() {
     context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) + 11, 24, 7);
 }
 
-
-//"Blinky Tracer" rendering function.
-var blinkyTracer_render = blinky_render;
 //"Boss 2" rendering function.#
 function boss2_render() {
     simpleEnemy_render.call(this);
@@ -1613,21 +1517,6 @@ function boss3_heating_render() {
     simpleSquare_render.call(this);
 }
 
-//"Blinky" rendering function
-function blinky_render() {
-//Num pad on mobile.
-    if (aniCount % 5 === 0) {
-        context.fillStyle = "red";
-    } else if (aniCount % 4 === 0) {
-        context.fillStyle = "yellow";
-    } else if (aniCount % 3 === 0) {
-        context.fillStyle = "magenta";
-    } else if (aniCount % 2 === 0) {
-        context.fillStyle = "white";
-    } else
-        context.fillStyle = "green";
-    simpleSquare_render.call(this);
-}
 
 //"Heat" rendering function
 function heat_render() {
