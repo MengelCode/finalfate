@@ -11,7 +11,7 @@
 class GameObject {
     /**
      * This is the root class in the small class hierarchy of the game.
-     * 
+     *
      */
     constructor() {
         this.frameCounter = 0;
@@ -40,9 +40,9 @@ GameObject.prototype.renderState = func_noOp;
 
 
 /**
- * 
+ *
  * Mark the object as no longer required.
- * 
+ *
  */
 GameObject.prototype.invalidate = function () {
     this.invalid = true;
@@ -60,7 +60,7 @@ GameObject.prototype.getOccupiedSpace = function () {
 
 
 /**
- * 
+ *
  * @param {GameObject} otherObj
  * @returns {boolean} If this object collides with the given object.
  */
@@ -439,10 +439,10 @@ class SpaceShip extends GameObject {
                 sfx2.play();
                 this.lifes++;
                 if(player.skill === 2){
-                this.score_newlife = this.score_newlife + 140000;    
+                this.score_newlife = this.score_newlife + 140000;
                 }
                 else if(player.skill === 1){
-                this.score_newlife = this.score_newlife + 97000;    
+                this.score_newlife = this.score_newlife + 97000;
                 }
                 this.score_newlife = this.score_newlife + 30000;
             }
@@ -451,14 +451,17 @@ class SpaceShip extends GameObject {
                 //left = 0;
                 this.middleX = this.middleX - 1;
             }
-            if (right && this.middleX < 77) {
+            //TODO JUMP HERE
+            if (right) {
                 //right = 0;
                 this.middleX = this.middleX + 1;
             }
-            if (up && this.middleY > 28) {
+            if (up && this.middleY > 2) {
                 this.middleY = this.middleY - 1;
             }
-            if (down && this.middleY < 53) {
+            if (down) {
+                console.log(this.middleY);
+                console.log(screenWidth);
                 this.middleY = this.middleY + 1;
             }
             if (!shoot) {
@@ -544,7 +547,7 @@ class SpaceShip extends GameObject {
 
         /**
          * Level the player is in.
-         * 
+         *
          */
         this.level = 0;
     }
@@ -585,7 +588,7 @@ TimedTask.prototype.start = function () {
         return;
     setInterval(this.boundFunction, this.startDelay);
     this.state = "STARTED";
-    
+
 };
 /**
  * Stop
@@ -596,7 +599,7 @@ TimedTask.prototype.stop = function () {
         return;
     clearInterval(this.boundFunction);
     this.state = "STOPPED";
-    
+
 };
 TimedTask.prototype.pause = function () {
     if(this.state !== "STARTED")
@@ -613,10 +616,10 @@ TimedTask.prototype.continue = function () {
     var elapsedTime = new Date().getTime() - this.lastTime;
     var newDelay = this.repeatInterval - elapsedTime;
     if(newDelay < 1){
-    setInterval(this.funcInternal.bind(this),1);    
+    setInterval(this.funcInternal.bind(this),1);
     }
     else{
-    setInterval(this.funcInternal.bind(this),newDelay);     
+    setInterval(this.funcInternal.bind(this),newDelay);
     }
     this.state = "STARTED";
 };
@@ -630,7 +633,7 @@ TimedTask.prototype.functInternal = function () {
         this.receivedError = error;
         this.state = "DEAD";
         if(this.showErrors)
-        window.alert("EXCEPTION OCCURED IN SCHEDTASK "+ this.debugName + " !! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);    
+        window.alert("EXCEPTION OCCURED IN SCHEDTASK "+ this.debugName + " !! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
         return;
         }
     this.lastTime = new Date().getTime();
@@ -679,9 +682,9 @@ class Box extends Decoration{
       this.color = color;
       this.visible = visible;
       this.setVisible = function (visible){
-      this.visible = visible;    
+      this.visible = visible;
       };
-  }        
+  }
  }
 
 class BGBox extends Box{
@@ -692,9 +695,9 @@ class BGBox extends Box{
      * @returns {BGBox}
      */
     constructor(middleX,middleY,visible = false){
-    super(middleX,middleY,150,240,"white",visible);    
+    super(middleX,middleY,150,240,"white",visible);
     }
-    
+
 }
 
 
@@ -747,12 +750,8 @@ var gamepad_button = false;
 var gamepad_handle = null;
 //HTML Canvas
 var canvas = document.getElementById("myScreen");
-const oldestWidth = 800;
-const oldestHeight = 600;
-var oldWidth = oldestWidth;
-var oldHeight = oldestHeight;
-var newWidth = null;
-var newHeight = null;
+let screenWidth = screen.width;
+let screenHeight = screen.height;
 //Context
 var context = canvas.getContext("2d");
 //Fit canvas and context to actual screen size.
@@ -791,7 +790,7 @@ var aniCountRelative = 0;
 //Animation counter for pause.
 var pauseCount = 0;
 //Black background.
-context.fillRect(0, 0, 800, 600);
+context.fillRect(0, 0, screenWidth, screenHeight);
 //Render function assigning.
 renderFunction = boot;
 //Make keys unpressed over time.
@@ -893,7 +892,7 @@ function initAllInput() {
     gamepad = false;
 }
 /**
- * 
+ *
  * Define the beginning state of the game, then start with the first level.
  */
 function initGame(skillLevel, savedLevel = undefined, bulletColor = 0) {
@@ -909,7 +908,7 @@ function initGame(skillLevel, savedLevel = undefined, bulletColor = 0) {
 
 }
 /**
- * 
+ *
  * Load a level. General Method.
  */
 function loadLevel() {
@@ -918,8 +917,8 @@ function loadLevel() {
     }
     musicAlreadyPlayed = false;
     savedScore = player.score;
-    player.middleX = 38;
-    player.middleY = 52;
+    player.middleX = 50;
+    player.middleY = 50;
     giant_boss = null;
     displayList = new LinkedList();
     bulletList = new LinkedList();
@@ -949,7 +948,7 @@ function loadLevel() {
     }
 }
 /**
- * 
+ *
  * Level 3 - The Universe
  */
 function universeLoader() {
@@ -1019,7 +1018,7 @@ function universeLoader() {
 }
 
 /**
- * 
+ *
  * Level 2 - The Solar System
  */
 function solarSystemLoader() {
@@ -1066,7 +1065,7 @@ function solarSystemLoader() {
                     enem = new Spawn(150 + i * 20, enem);
                     spawnList.addElement(enem);
                     break;
-                    //Series 2, blinkyTracer with bias to the right. 
+                    //Series 2, blinkyTracer with bias to the right.
                 case 8:
                 case 14:
                 case 28:
@@ -1194,7 +1193,7 @@ function solarSystemLoader() {
 }
 
 /**
- * 
+ *
  * Level 1 - The Sky
  * Length: 2770 frames.
  */
@@ -1441,7 +1440,7 @@ function spawnListArrayAdd(enemy_array, spawn_time, relative = false) {
 
 }
 /**
- * 
+ *
  * @returns {undefined}
  */
 
@@ -1467,8 +1466,8 @@ function loseLife() {
 }
 
 /**
- * 
- * @returns 
+ *
+ * @returns
  */
 
 
@@ -1493,7 +1492,7 @@ function skillPrompt() {
     validateReleasedState();
     context.font = "27px Nonserif";
     context.fillStyle = "white";
-    context.fillText(selectSkill, 220, 450);
+    context.fillText(selectSkill, centerWidth(), 450);
     if (aniCount < 4) {
         skillSelected = undefined;
     } else if (aniCount === 5) {
@@ -1508,7 +1507,7 @@ function skillPrompt() {
         } else {
             context.fillStyle = "white";
         }
-        context.fillText(skillSelections[i + 2], 200 + skillScreenDelta[i + 2], 500);
+        context.fillText(skillSelections[i + 2], (centerWidth() + skillScreenDelta[i + 2]) - 150, 500);
     }
     //Selecting around.
     if (right && axisXReleased && skillSelected < 2) {
@@ -1544,7 +1543,7 @@ var savedGameFound = ["A saved game was detected.", "Resume at level ", "Start a
 var loadSelected = undefined;
 /**
  * Opened when it is detected that there is
- * a saved game. 
+ * a saved game.
  * @returns {undefined}
  */
 function loadPrompt() {
@@ -1610,7 +1609,7 @@ var bonusgame_framecounter = undefined;
 function bonusGame() {
     validateReleasedState();
     context.fillStyle = "#000000";
-    context.fillRect(0, 0, 800, 600);
+    context.fillRect(0, 0, screenWidth, screenHeight);
     context.fillStyle = "cyan";
     context.font = "50px Nonserif";
     context.fillText("BONUS GAME !!", 190, 80);
@@ -1664,7 +1663,7 @@ function titleScreen() {
         if (aniCount % 5 === aniCount % 10) {
             context.font = "23px Nonserif";
             context.fillStyle = "gold";
-            context.fillText("PRESS SPACE TO START", 230, 520);
+            context.fillText("PRESS SPACE TO START", centerWidth(), 520);
             //Let the show begin!
             //Disabled game pad functionality.
             //if (shoot === 5 || pollButtonMemory()) {
@@ -1708,7 +1707,7 @@ var data_corrupt = ["Saved game corrupted.", "Deletion required.", "Press SPACE 
 var data_load_fail = ["Cannot access local storage.","Either your browser is too old or you disabled","web storage / cookies for this website.","Progress cannot be saved."];
 var data_warning_ok = "Confirm";
 /**
- * Confirmation prompt 
+ * Confirmation prompt
  * @returns {undefined}
  */
 function loadFail() {
@@ -1746,7 +1745,7 @@ function loadFail() {
  */
 function saveCorrupt() {
     context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
+    context.fillRect(0, 0, screenWidth, screenHeight);
     context.fillStyle = "red";
     context.fillRect(290, 190, 260, 200);
     context.font = "27px Nonserif";
@@ -1779,7 +1778,7 @@ function saveCorrupt() {
  */
 function gameOver() {
     context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
+    context.fillRect(0, 0, screenWidth, screenHeight);
     if (aniCount < 30)
         return;
     if (aniCount === 44) {
@@ -1892,7 +1891,7 @@ function gamePause() {
 
 var musicAlreadyPlayed = false;
 /**
- * 
+ *
  * Actual game loop.
  */
 function gamePlay() {
@@ -1937,7 +1936,7 @@ function checkLeaveLevel() {
     if (giant_boss !== null && giant_boss.invalid) {
         player.level++;
         if(player.skill>-1 && player.noHit){
-        shootReleased = false;     
+        shootReleased = false;
         exchangeRenderLoop(bonusGame);
         }
         else{
@@ -2059,9 +2058,11 @@ var saveCompleteTimer = 0;
 var saveFailureTimer = 0;
 var saveComplete = "Saved.";
 var saveFailure = "Error. Save failed!";
+
 function renderInGame() {
     context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
+    context.fillRect(0, 0, screenWidth, screenHeight);
+
     if (background !== null && background instanceof GameObject) {
         if (renderFunction !== gamePause)
             background.updateState();
@@ -2151,7 +2152,7 @@ function deleteDeceased() {
         lists[i].resetIterator();
         while (lists[i].peekNext() !== null) {
             var objInQuestion = lists[i].getNext();
-            if (objInQuestion.invalid === true || objInQuestion.middleY > 70) {
+            if (objInQuestion.invalid === true || objInQuestion.middleY > 500) {
                 lists[i].deleteElement(objInQuestion);
             }
         }
@@ -2165,19 +2166,20 @@ function renderHUD() {
     if (bulletList.peekNext() !== null) {
         //  context.fillStyle = "#333333";
     }
+
     context.fillStyle = "#222222";
-    context.fillRect(0, 550, 800, 50);
+    context.fillRect(0, screenHeight - 50, screenWidth, 50);
     context.fillStyle = "white";
     context.font = "27px Nonserif";
-    context.fillText(player.score, 0, 581);
-    context.fillText(player.health, 245, 581);
-    context.fillText(player.lifes, 350, 581);
-    context.fillText(player.level + 1, 700, 581);
+    context.fillText(player.score, centerWidth() - 250, screenHeight - 20);
+    context.fillText(player.health, centerWidth() + 200, screenHeight - 20);
+    context.fillText(player.lifes, screenWidth - 200, screenHeight - 20);
+    context.fillText(player.level + 1, 200, screenHeight - 20);
     context.font = "13px Nonserif";
-    context.fillText("SCORE", 0, 595);
-    context.fillText("HEALTH", 245, 595);
-    context.fillText("LIVE", 350, 595);
-    context.fillText("LEVEL", 700, 595);
+    context.fillText("SCORE", centerWidth() - 250, screenHeight - 5);
+    context.fillText("HEALTH", centerWidth() + 200, screenHeight - 5);
+    context.fillText("LIVE", screenWidth - 200, screenHeight - 5);
+    context.fillText("LEVEL", 200, screenHeight - 5);
 }
 
 
@@ -2220,7 +2222,7 @@ function boss3_middle_invalidate() {
 }
 
 /**
- * Shooting the arms when they are not triggered will be bad for you. 
+ * Shooting the arms when they are not triggered will be bad for you.
  * @returns {undefined}
  */
 function boss3_arm_not_active_invalidate() {
@@ -2228,7 +2230,7 @@ function boss3_arm_not_active_invalidate() {
 }
 
 /**
- * 
+ *
  * @returns {undefined}
  */
 function boss3_arm_active_invalidate() {
@@ -2905,6 +2907,10 @@ function fireBoost_update() {
 
 }
 
+function centerWidth() {
+    return (screenWidth / 2);
+}
+
 //All rendering routines.
 
 /**
@@ -2912,24 +2918,25 @@ function fireBoost_update() {
  * @returns {undefined}
  */
 function title_and_copyright_render() {
+    context.textAlign = "center";
     context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
+    context.fillRect(0, 0, screenWidth, screenHeight);
     context.font = "60px Serif";
     context.fillStyle = "red";
-    context.fillText("THE FINAL FATE", 120, 150);
+    context.fillText("THE FINAL FATE", centerWidth(), 150);
     context.font = "17px Nonserif";
     context.fillStyle = "white";
-    context.fillText("GAME (C) 2019-2020 Manuel Engel", 220, 580);
+    context.fillText("GAME (C) 2019-2020 Manuel Engel", centerWidth(), 580);
 }
 
 //Level 1 - The Earth rendering function
 function background1_render() {
     context.fillStyle = "#0000BB";
-    context.fillRect(this.middleX, this.middleY - 350, 800, 280);
+    context.fillRect(this.middleX, this.middleY - 350, screenWidth, 280);
     context.fillStyle = "#0000DD";
-    context.fillRect(this.middleX, this.middleY - 150, 800, 180);
+    context.fillRect(this.middleX, this.middleY - 150, screenWidth, screenHeight);
     context.fillStyle = "#0000FF";
-    context.fillRect(this.middleX, this.middleY, 800, 600);
+    context.fillRect(this.middleX, this.middleY, screenWidth, screenHeight);
 }
 
 //Level 2 - The Solar System rendering function
@@ -2993,7 +3000,7 @@ function bullet_render(wayToDecide = player.bulletColor, bulletX = this.middleX,
          * 3 = Blueish.
          * 4 = Yellow.
          */
-     var colorToUse = new Array(4);   
+     var colorToUse = new Array(4);
     switch (wayToDecide) {
         default:
             colorToUse[0] = "yellow";
@@ -3016,7 +3023,7 @@ function bullet_render(wayToDecide = player.bulletColor, bulletX = this.middleX,
         case 3:
              colorToUse[0] = "#0000DD";
              colorToUse[1] = "#0000CC";
-             colorToUse[2] = "#0000BB"; 
+             colorToUse[2] = "#0000BB";
              colorToUse[3] = "#0000AA";
              break;
          case 4:
@@ -3024,7 +3031,7 @@ function bullet_render(wayToDecide = player.bulletColor, bulletX = this.middleX,
              colorToUse[1] = colorToUse[0];
              colorToUse[2] = colorToUse[0];
              colorToUse[3] = colorToUse[0];
-              
+
     }
     for(var i = 0; i<colorToUse.length; i++){
         context.fillStyle = colorToUse[i];
@@ -3162,7 +3169,7 @@ function blinky_render() {
 //"Heat" rendering function
 function heat_render() {
     context.fillStyle = "#550000";
-    context.fillRect(0, 0, 800, 600);
+    context.fillRect(0, 0, screenWidth, screenHeight);
 }
 //Factory Functions.
 
@@ -3309,7 +3316,7 @@ function star_factory() {
 
 /**
  * Gets the HTML 5 local storage object.
- * 
+ *
  * @returns {Storage|Window.localStorage}
  */
 function getLocalStorage() {
@@ -3533,7 +3540,7 @@ function gamepadPoll() {
 
 /**
  }
- * 
+ *
  * @param {type} enemy_array Enemies to link together.
  * @returns {undefined}
  */
@@ -3562,7 +3569,7 @@ function invalidate_Badjacent() {
 }
 
 /**
- * 
+ *
  * @returns random X coordinate.
  */
 function getRandomX() {
@@ -3571,7 +3578,7 @@ function getRandomX() {
 }
 
 /**
- * 
+ *
  * @returns random Y coordinate.
  */
 function getRandomY() {
@@ -3628,16 +3635,12 @@ function func_noDim() {
  * @returns {undefined}
  */
 function sizeChanged() {
-    newWidth = window.innerWidth - (window.innerWidth / 100 * 3);
-    newHeight = window.innerHeight - (window.innerHeight / 100 * 3);
-    canvas.setAttribute("width", newWidth);
-    canvas.setAttribute("height", newHeight);
-    //context.scale(newWidth / oldWidth, newHeight / oldHeight);
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.scale(newWidth / oldestWidth, newHeight / oldestHeight);
-    oldWidth = newWidth;
-    oldHeight = newHeight;
-//window.alert("New canvas resolution: " + newWidth + "x" + newHeight + "<br> New inner window size: " + window.innerWidth + "x" + window.innerHeight);
+    screenWidth = window.innerWidth;
+    screenHeight = window.innerHeight;
+    canvas.width = screenWidth;
+    canvas.height = screenHeight;
+
+    document.body.scrollTop = 0;
 }
 
 /**
@@ -3648,7 +3651,7 @@ function sizeChanged() {
  * @returns {undefined}
  */
 function focusLost(){
-if(!keyboard) return;    
+if(!keyboard) return;
 shootReleased = true;
 pauseReleased = true;
 axisXReleased = true;
@@ -3695,5 +3698,5 @@ function simplyPlaySound(object) {
 }
 
 function bonusGame_increaseCount(){
-bonusgame_selected = (bonusgame_selected + 1) % 5;     
+bonusgame_selected = (bonusgame_selected + 1) % 5;
 }
