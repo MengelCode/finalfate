@@ -6,58 +6,6 @@
 //CLASSES
 
 
-
-class HealthBoost extends GameObject {
-    /**
-     * Health boost item.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {HealthBoost}
-     */
-    constructor(middleX, middleY) {
-        super();
-        this.middleX = middleX;
-        this.middleY = middleY;
-        super.getOccupiedSpace = healthBoost_dimension;
-        super.updateState = healthBoost_update;
-        super.renderState = healthBoost_render;
-    }
-}
-
-class FireBoost extends GameObject {
-    /**
-     * Fire boost item.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {FireBoost}
-     */
-    constructor(middleX, middleY) {
-        super();
-        this.middleX = middleX;
-        this.middleY = middleY;
-        super.getOccupiedSpace = fireBoost_dimension;
-        super.updateState = fireBoost_update;
-        super.renderState = fireBoost_render;
-    }
-}
-
-class LifeBoost extends GameObject {
-    /**
-     * Life boost item.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {FireBoost}
-     */
-    constructor(middleX, middleY) {
-        super();
-        this.middleX = middleX;
-        this.middleY = middleY;
-        super.getOccupiedSpace = lifeBoost_dimension;
-        super.updateState = lifeBoost_update;
-        super.renderState = lifeBoost_render;
-    }
-}
-
 class LinkedList {
     /**
      * This is a linked list which can contain all kind of stuff you desire
@@ -701,13 +649,6 @@ function background_dimension() {
     return null;
 }
 
-
-//"Health Boost" dimension function.
-var healthBoost_dimension = simpleEnemy_dimension;
-//"Fire Boost" dimension function.
-var fireBoost_dimension = healthBoost_dimension;
-//"Life Boost" dimension function.
-var lifeBoost_dimension = healthBoost_dimension;
 //"Boss 2 " dimension function.
 function boss2_dimension() {
     var x = [];
@@ -1226,74 +1167,8 @@ function meteor2_update() {
 }
 
 
-//"Health Boost" update function.
-function healthBoost_update() {
-    if (player.collides(this)) {
-        this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
-        player.health = player.health + 30;
-        return;
-    }
-    this.middleY = this.middleY + 1;
-    if (player.collides(this)) {
-        this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
-        player.health = player.health + 30;
-    }
 
-}
 
-//"Life Boost" update function.
-function lifeBoost_update() {
-    if (player.collides(this)) {
-        this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
-        player.lifes = player.lifes + 1;
-        return;
-    }
-    this.middleY = this.middleY + 1;
-    if (player.collides(this)) {
-        this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
-        player.lifes = player.lifes + 1;
-    }
-
-}
-
-//"Fire Boost" update function
-function fireBoost_update() {
-    if (player.collides(this)) {
-        this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
-        if (player.massfire) {
-            player.health = player.health + 120;
-        }
-        player.massfire = true;
-        return;
-    }
-    this.middleY = this.middleY + 1;
-    if (player.collides(this)) {
-        this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
-        if (player.massfire) {
-            player.health = player.health + 120;
-        }
-        player.massfire = true;
-    }
-
-}
 
 //All rendering routines.
 
@@ -1434,21 +1309,6 @@ function boss3_arm_render() {
     simpleSquare_render.call(this);
 }
 
-//"Health Boost" rendering function
-function healthBoost_render() {
-//Num pad on mobile.
-    context.fillStyle = "green";
-    simpleSquare_render.call(this);
-    context.fillStyle = "white";
-    //H
-    //Left line
-    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) - 6, 7, 24);
-    //Middle line
-    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) + 5, 24, 7);
-    //Right line
-    context.fillRect((this.middleX * 10) + 8, (this.middleY * 10) - 6, 7, 24);
-}
-
 
 //"Simple Square" rendering function. To be called by every 3x3 object!!!
 function simpleSquare_render(usingMiddleX = this.middleX, usingMiddleY = this.middleY) {
@@ -1465,33 +1325,6 @@ function simpleSquare_render(usingMiddleX = this.middleX, usingMiddleY = this.mi
     context.fillRect((usingMiddleX + 1) * 10, (usingMiddleY + 1) * 10, 10, 10);
 }
 
-//"Fire Boost" rendering function
-function fireBoost_render() {
-//Num pad on mobile.
-    context.fillStyle = "red";
-    simpleSquare_render.call(this);
-    context.fillStyle = "white";
-    //F
-    //Upper line
-    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) - 6, 24, 7);
-    //Left line
-    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) - 6, 7, 24);
-    //Middle line
-    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) + 5, 24, 7);
-}
-
-//"Life Boost" rendering function
-function lifeBoost_render() {
-//Num pad on mobile.
-    context.fillStyle = "blue";
-    simpleSquare_render.call(this);
-    context.fillStyle = "white";
-    //F
-    //Left line
-    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) - 6, 7, 24);
-    //Lower line
-    context.fillRect((this.middleX * 10) - 10, (this.middleY * 10) + 11, 24, 7);
-}
 
 //"Boss 2" rendering function.#
 function boss2_render() {
