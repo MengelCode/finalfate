@@ -3,320 +3,6 @@
  * This is the entry point of the game.
  */
 
-//CLASSES
-
-
-class LinkedList {
-    /**
-     * This is a linked list which can contain all kind of stuff you desire
-     * @param {unknown} value What is the first element in this list? Optional
-     * @returns {LinkedList}
-     */
-    constructor(value = null) {
-        //The value of a specific node is saved there. The first node will always be a dummy node.    
-        this.value = "HEAD";
-        //Next element in list.
-        this.next = null;
-        //Cursor of which node is the next element to return with giveNext function. Changing the list will reset it.
-        this.iterateState = null;
-        if (value !== null) {
-            this.next = new LinkedList();
-            this.next.value = value;
-            this.iterateState = this.next;
-
-        }
-        //Return the next element in this list. Returns null if there is no next element.
-        this.getNext = function () {
-            if (this.iterateState === null) {
-                return null;
-            }
-            var returnWhat = this.iterateState.value;
-            this.iterateState = this.iterateState.next;
-            return returnWhat;
-        };
-        //Return the next element in this list, but without forwarding the iteration. Returns null if there is no next element.
-        this.peekNext = function () {
-            if (this.iterateState === null) {
-                return null;
-            }
-            return this.iterateState.value;
-        };
-        //Reset the iterator.
-        this.resetIterator = function () {
-
-            this.iterateState = this.next;
-        };
-        //Adds an element to the list at its end. The reset value is optional and should be set
-        //to false when the iterator being reset causes problems.
-        this.addElement = function (value, reset = true) {
-            if (this.next !== null) {
-                this.next.addElement(value);
-            } else {
-                this.next = new LinkedList();
-                this.next.value = value;
-            }
-            if (reset === true) {
-                this.iterateState = this.next;
-        }
-        };
-        //Add an element at the front of the list.
-        this.addElementFront = function (value) {
-            var nextesNext = this.next;
-            this.next = new LinkedList();
-            this.next.next = nextesNext;
-            this.next.value = value;
-            this.iterateState = this.next;
-
-
-        };
-        //Deletes the entire list.
-        this.deleteAll = function () {
-            this.next = null;
-            this.iterateState = null;
-        };
-        /**
-         Delete the first entry of something based on type-strong comparisons of values.
-         Does nothing if an entry did not even exist in the first place.
-         Returns a boolean indicating if a deletion took place.
-         */
-        this.deleteElement = function (value) {
-            this.iterateState = this;
-            while (this.iterateState.next !== null) {
-                if (this.iterateState.next.value === value) {
-                    this.iterateState.next = this.iterateState.next.next;
-                    this.iterateState = this.next;
-                    return true;
-                }
-                this.iterateState = this.iterateState.next;
-            }
-            this.iterateState = this.next;
-            return false;
-        };
-    }
-
-}
-
-class Bullet extends GameObject {
-
-    constructor(middleX, middleY) {
-        super();
-        this.middleX = middleX;
-        this.middleY = middleY;
-        super.getOccupiedSpace = bullet_dimension;
-        super.updateSpecial = bullet_update;
-        super.updateState = function () {};
-        super.renderState = bullet_render;
-    }
-}
-class Spawn {
-    /**
-     * A data structure containing a game object.
-     * @param {type} frameDelta After how many frames should it spawn?
-     * @param {type} gameObject The game object in question.
-     * @param {}     isRelative Is the frame delta relative to the last spawn
-     * @param {type} isForDisplay Add game object to display list?
-     * @param {type} isEnemy Add game object to enemy list?
-     * @param {type} isBullet Add game object to bullet list?
-     * @returns {Spawn}
-     */
-    constructor(frameDelta, gameObject, isRelative = false, isForDisplay = true, isEnemy = true, isBullet = false) {
-        this.frameDelta = frameDelta;
-        this.gameObject = gameObject;
-        this.isRelative = isRelative;
-        this.isForDisplay = isForDisplay;
-        this.isEnemy = isEnemy;
-        this.isBullet = isBullet;
-
-    }
-
-}
-
-
-
-class TimedTask {
-
-    /**
-     * Create a timed routine based on an initial start delay, a function
-     * to execute and an optional follow-up delay, if different from the start
-     * delay. Also, the data structure can contain an array (or any other object
-     * at your discretion) in order to make this available to the function
-     * to be called internally. Adjust this to what kind of param your function
-     * wants to accept. If none at all, simply ignore this.
-     * @param {type} startDelay
-     * @param {type} funct
-     * @param {type} repeatInterval
-     * @returns {TimedTask}
-     */
-    constructor(startDelay, funct, repeatInterval = startDelay , argsObject = null ,showErrors = false, debugName = "Unnamed") {
-        this.startDelay = startDelay;
-        this.repeatInterval = repeatInterval;
-        this.funct = funct;
-        this.argsObject = argsObject;
-        this.showErrors = showErrors;
-        this.debugName = debugName;
-        this.state = "NEW";
-    }
-}
-/**
- * Start the scheduled task. If already started, nothing will happen.
- * @returns {undefined}
- */
-TimedTask.prototype.start = function () {
-    if(!this.boundFunction) this.boundFunction = this.functInternal.bind(this);
-    if(this.state === "STARTED" && this.state === "PAUSED" && this.state === "DEAD")
-        return;
-    setInterval(this.boundFunction, this.startDelay);
-    this.state = "STARTED";
-    
-};
-/**
- * Stop
- * @returns {undefined}
- */
-TimedTask.prototype.stop = function () {
-    if(this.state !== "PAUSED" && this.state !== "STARTED")
-        return;
-    clearInterval(this.boundFunction);
-    this.state = "STOPPED";
-    
-};
-TimedTask.prototype.pause = function () {
-    if(this.state !== "STARTED")
-        return;
-    clearInterval(this.boundFunction);
-    this.lastTime = new Date().getTime();
-    this.state = "PAUSED";
-
-};
-//Continue a paused task. If the task runs, nothing will happen.
-TimedTask.prototype.continue = function () {
-    if(this.state !== "PAUSED")
-        return;
-    var elapsedTime = new Date().getTime() - this.lastTime;
-    var newDelay = this.repeatInterval - elapsedTime;
-    if(newDelay < 1){
-    setInterval(this.funcInternal.bind(this),1);    
-    }
-    else{
-    setInterval(this.funcInternal.bind(this),newDelay);     
-    }
-    this.state = "STARTED";
-};
-//Outer function triggered everytime when the scheduled delay has elapsed.
-TimedTask.prototype.functInternal = function () {
-    if(this.state === "DEAD")return;
-    try{
-    this.funct(this.argsObjects);
-    }
-    catch(error){
-        this.receivedError = error;
-        this.state = "DEAD";
-        if(this.showErrors)
-        window.alert("EXCEPTION OCCURED IN SCHEDTASK "+ this.debugName + " !! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);    
-        return;
-        }
-    this.lastTime = new Date().getTime();
-    setInterval(this.boundFunction, this.repeatInterval);
-};
-//Catched error bei function executor.
-TimedTask.prototype.receivedError = null;
-//State of the timed task.
-TimedTask.prototype.state = "NEW";
-//Time when the task was paused or last executed.
-TimedTask.prototype.lastTime = 0;
-//Decoration element.
-class Decoration {
-    /**
-     * Creates a decoration object without look and function, located at the given coordinates.
-     * @param {Integer} middleX
-     * @param {Integer} middleY
-     * @param {function()} renderRoutine
-     * @param {function()} updateRoutine
-     * @returns {Decoration}
-     */
-    constructor(middleX, middleY, renderRoutine = function() {}, updateRoutine = function() {}){
-        this.middleX = middleX;
-        this.middleY = middleY;
-        this.renderRoutine = renderRoutine;
-        this.updateRoutine = updateRoutine;
-    }
-
-}
-
-
-class Box extends Decoration{
-
-  /**
-   * Draw a rectangle.
-   * @param {type} middleX
-   * @param {type} middleY
-   * @param {type} width
-   * @param {type} height
-   * @returns {Rectangle}
-   */
-  constructor(middleX, middleY, width, height,color,visible = false){
-      super(middleX,middleY,box_render);
-      this.width = width;
-      this.height = height;
-      this.color = color;
-      this.visible = visible;
-      this.setVisible = function (visible){
-      this.visible = visible;    
-      };
-  }        
- }
-
-class BGBox extends Box{
-    /**
-     * Create a box as used in the mini game.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {BGBox}
-     */
-    constructor(middleX,middleY,visible = false){
-    super(middleX,middleY,150,240,"white",visible);    
-    }
-    
-}
-
-
-
-class Star extends Decoration {
-    /**
-     * Creates a Star decoration object.
-     * @param {type} middleX
-     * @param {type} middleY
-     * @returns {Star}
-     */
-    constructor(middleX, middleY) {
-        super(middleX, middleY, star_render);
-
-    }
-
-}
-
-class Heat extends Decoration {
-    /**
-     * Creates a Heat decoration object.
-     * @returns {Heat}
-     */
-    constructor() {
-        super(0, 0, heat_render, func_noOp);
-
-    }
-
-}
-
-//HTML Canvas
-var canvas = document.getElementById("myScreen");
-const oldestWidth = 800;
-const oldestHeight = 600;
-var oldWidth = oldestWidth;
-var oldHeight = oldestHeight;
-var newWidth = null;
-var newHeight = null;
-//Context
-var context = canvas.getContext("2d");
 //Fit canvas and context to actual screen size.
 sizeChanged();
 //Function Pointer to what should happen in the next rendering cycle.
@@ -344,14 +30,6 @@ var loaders = new Array(7);
 loaders[0] = earthLoader;
 loaders[1] = solarSystemLoader;
 loaders[2] = universeLoader;
-//Level background rendering functions.
-//var backgroundRenderers = new Array(6);
-//Animation counter. Absolute
-var aniCount = 0;
-//Animation counter. Relative
-var aniCountRelative = 0;
-//Animation counter for pause.
-var pauseCount = 0;
 //Black background.
 context.fillRect(0, 0, 800, 600);
 //Render function assigning.
@@ -360,18 +38,6 @@ renderFunction = boot;
 //setInterval(keyInvalidator, FRAME_RATE);
 //Count all the frames.
 setInterval(increaseCount, FRAME_RATE);
-//Linked List to use for all kinds of things to display.
-var displayList = null;
-//Linked List to contain enemies, for collision stuff.
-var enemyList = null;
-//Linked List to contain bullets, for collision stuff.
-var bulletList = null;
-//Linked List for spawners.
-var spawnList = null;
-//Player instance.
-var player = null;
-//Major boss. Death of it indicates that the next level should come.
-var giant_boss = null;
 //Level background
 var background = null;
 //Last score after boss defeat.
@@ -659,13 +325,6 @@ function boss2_dimension() {
     return new Array(x, y);
 }
 
-//"Bullet" dimension function.
-function bullet_dimension() {
-    var x = [this.middleX, this.middleX, this.middleX, this.middleX, this.middleX - 1, this.middleX - 1, this.middleX - 1, this.middleX - 1];
-    var y = [this.middleY, this.middleY - 1, this.middleY - 2, this.middleY - 3, this.middleY, this.middleY - 1, this.middleY - 2, this.middleY - 3];
-    return new Array(x, y);
-}
-
 //"Boss 3 hatch" dimension function.
 var boss3_hatch_dimension = meteor_dimension;
 //"Boss 3 heating unit" dimension function.
@@ -681,12 +340,6 @@ function wingman_update() {
     this.middleY = this.middleY + 1;
 }
 
-//"Bullet" update function.
-function bullet_update() {
-    this.middleY = this.middleY - 1;
-    if (this.middleY < 3)
-        this.invalid = true;
-}
 //"Background 1" update function.
 function background1_update() {
     this.middleY = this.middleY + 0.1;
@@ -1172,20 +825,6 @@ function meteor2_update() {
 
 //All rendering routines.
 
-/**
- * Renders "THE FINAL FATE" and the copyright info.
- * @returns {undefined}
- */
-function title_and_copyright_render() {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
-    context.font = "60px Serif";
-    context.fillStyle = "red";
-    context.fillText("THE FINAL FATE", 120, 150);
-    context.font = "17px Nonserif";
-    context.fillStyle = "white";
-    context.fillText("GAME (C) 2019-2020 Manuel Engel", 220, 580);
-}
 
 //Level 1 - The Earth rendering function
 function background1_render() {
@@ -1210,33 +849,7 @@ function background2_render() {
     }
 }
 
-//Box rendering function
-function box_render(){
-if(!this.visible)return;
-context.strokeStyle  = this.color;
-context.beginPath();
-context.moveTo(this.middleX,this.middleY);
-context.lineTo(this.middleX + this.width,this.middleY);
-context.lineTo(this.middleX + this.width,this.middleY + this.height);
-context.lineTo(this.middleX,this.middleY + this.height);
-context.lineTo(this.middleX,this.middleY);
-context.stroke();
-}
 
-//Star Rendering function
-function star_render() {
-    for (var i = 0; i < 3; i++) {
-        for (var j = 0; j < 3; j++) {
-            if (i === 1 && j === 1)
-                context.fillStyle = "#CCCCCC";
-            else
-                context.fillStyle = "#666666";
-            context.fillRect((this.middleX * 10 - 2 + (i * 2)), (this.middleY * 10 - 2 + (j * 2)), 2, 2);
-        }
-    }
-
-
-}
 
 //"Wingman" rendering function
 function wingman_render() {
@@ -1246,57 +859,6 @@ function wingman_render() {
         context.fillRect(arrayS[0][i] * 10, arrayS[1][i] * 10, 10, 10);
     }
 }
-
-
-//"Bullet" rendering function
-function bullet_render(wayToDecide = player.bulletColor, bulletX = this.middleX, bulletY = this.middleY) {
-            /**
-         * Bullet color.
-         * 0 = Normal.
-         * 1 = Red-white.
-         * 2 = Purple.
-         * 3 = Blueish.
-         * 4 = Yellow.
-         */
-     var colorToUse = new Array(4);   
-    switch (wayToDecide) {
-        default:
-            colorToUse[0] = "yellow";
-            colorToUse[1] = "orange";
-            colorToUse[2] = "red";
-            colorToUse[3] = "#220000";
-            break;
-        case 1:
-            colorToUse[0] = "white";
-            colorToUse[1] = "red";
-            colorToUse[2] = colorToUse[0];
-            colorToUse[3] = colorToUse[1];
-            break;
-        case 2:
-            colorToUse[0] = "#FF1493";
-            colorToUse[1] = "#FF00FF";
-            colorToUse[2] = "";
-            colorToUse[3] = "#9400D3";
-            break;
-        case 3:
-             colorToUse[0] = "#0000DD";
-             colorToUse[1] = "#0000CC";
-             colorToUse[2] = "#0000BB"; 
-             colorToUse[3] = "#0000AA";
-             break;
-         case 4:
-             colorToUse[0] = "yellow";
-             colorToUse[1] = colorToUse[0];
-             colorToUse[2] = colorToUse[0];
-             colorToUse[3] = colorToUse[0];
-              
-    }
-    for(var i = 0; i<colorToUse.length; i++){
-        context.fillStyle = colorToUse[i];
-        context.fillRect(bulletX * 10, (bulletY - i) * 10, 10, 10);
-    }
-}
-
 
 
 //"Boss 3 arm" rendering function
@@ -1350,12 +912,6 @@ function boss3_heating_render() {
     simpleSquare_render.call(this);
 }
 
-
-//"Heat" rendering function
-function heat_render() {
-    context.fillStyle = "#550000";
-    context.fillRect(0, 0, 800, 600);
-}
 //Factory Functions.
 
 
@@ -1540,35 +1096,6 @@ function invalidate_Badjacent() {
         this.next.hp = 0;
         this.next.invalidate();
     }
-}
-
-/**
- * 
- * @returns random X coordinate.
- */
-function getRandomX() {
-    var rand = Math.random();
-    return Math.floor(rand * 80);
-}
-
-/**
- * 
- * @returns random Y coordinate.
- */
-function getRandomY() {
-    var rand = Math.random();
-    return Math.floor(rand * 60);
-}
-
-
-
-/**
- * Function which does return an empty collision matrix.
- * Useful to make something not touchable.
- * @returns {Array}
- */
-function func_noDim() {
-    return [[], []];
 }
 
 

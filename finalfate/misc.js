@@ -61,6 +61,24 @@ function exchangeRenderLoop(func, preserveCounters = false) {
     renderTimer = setInterval(renderFunction, FRAME_RATE);
 }
 
+/**
+ * 
+ * @returns random X coordinate.
+ */
+function getRandomX() {
+    var rand = Math.random();
+    return Math.floor(rand * 80);
+}
+
+/**
+ * 
+ * @returns random Y coordinate.
+ */
+function getRandomY() {
+    var rand = Math.random();
+    return Math.floor(rand * 60);
+}
+
 //General-purpose dialogue options and text.
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];
@@ -68,3 +86,36 @@ var youSureQuestion = ["Are you sure?"];
 // General variables for the game.
 //CHEAT ZONE - default 30. Frame rate of game.
 var FRAME_RATE = 30;
+
+//Linked List to use for all kinds of things to display.
+var displayList = null;
+//Linked List to contain enemies, for collision stuff.
+var enemyList = null;
+//Linked List to contain bullets, for collision stuff.
+var bulletList = null;
+//Linked List for spawners.
+var spawnList = null;
+//Player instance.
+var player = null;
+//Major boss. Death of it indicates that the next level should come.
+var giant_boss = null;
+
+//Level background rendering functions.
+//var backgroundRenderers = new Array(6);
+//Animation counter. Absolute
+var aniCount = 0;
+//Animation counter. Relative
+var aniCountRelative = 0;
+//Animation counter for pause.
+var pauseCount = 0;
+
+//HTML Canvas
+var canvas = document.getElementById("screen");
+const oldestWidth = 800;
+const oldestHeight = 600;
+var oldWidth = oldestWidth;
+var oldHeight = oldestHeight;
+var newWidth = null;
+var newHeight = null;
+//Context
+var context = canvas.getContext("2d");

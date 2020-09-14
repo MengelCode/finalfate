@@ -72,3 +72,12 @@ GameObject.prototype.collides = function (otherObj) {
     }
     return false;
 };
+
+/**
+ * Function which does return an empty collision matrix.
+ * Useful to make something not touchable.
+ * @returns {Array}
+ */
+function func_noDim() {
+    return [[], []];
+}
