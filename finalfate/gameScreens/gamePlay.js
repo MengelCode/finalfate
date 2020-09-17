@@ -283,3 +283,80 @@ function renderHUD() {
     context.fillText("LIVE", 350, 595);
     context.fillText("LEVEL", 700, 595);
 }
+
+/**
+ * 
+ * Define the beginning state of the game, then start with the first level.
+ */
+function initGame(skillLevel, savedLevel = undefined, bulletColor = 0) {
+    player = new SpaceShip(38, 52);
+    //CHEAT ZONE!!!
+    player.level = savedLevel === undefined ? 0 : savedLevel;
+    player.skill = skillLevel;
+    player.bulletColor = parseInt(bulletColor);
+    this.savedScore = 0;
+    // renderReset = 9000;
+    //CHEAT ZONE end.
+    loadLevel();
+
+}
+
+/**
+ * 
+ * Load a level. General Method.
+ */
+function loadLevel() {
+    if (player.health < 100) {
+        player.health = 100;
+    }
+    musicAlreadyPlayed = false;
+    savedScore = player.score;
+    player.middleX = 38;
+    player.middleY = 52;
+    giant_boss = null;
+    displayList = new LinkedList();
+    bulletList = new LinkedList();
+    enemyList = new LinkedList();
+    spawnList = new LinkedList();
+    //Player always starts "unhit".
+    player.noHit = true;
+    displayList.addElement(player);
+
+    try {
+        //throw new Error("Test");
+        if (loaders[player.level] === undefined) {
+            window.alert("D.J. Mengel is evil.");
+            //Make everything stop.
+            exchangeRenderLoop(null);
+        } else {
+            background = null;
+            loaders[player.level]();
+            if (loadingException === null) {
+                exchangeRenderLoop(gamePlay);
+            } else
+                throw loadingException;
+        }
+    } catch (error) {
+        window.alert("EXCEPTION OCCURED! Failed to begin level transition. \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
+        exchangeRenderLoop(null);
+    }
+}
+
+/**
+ * Lose a life.
+ *
+ */
+function loseLife() {
+    player.massfire = false;
+    player.quadfire = false;
+    player.score = this.savedScore;
+    sfx3.pause();
+    sfx3.currentTime = 0;
+    sfx3.play();
+    if (player.lifes > 0) {
+        player.lifes--;
+        loadLevel();
+    } else {
+            exchangeRenderLoop(gameOver);
+    }
+}

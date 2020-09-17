@@ -101,62 +101,6 @@ for (var i = 0; i < boss3_arm_values.prototype.hpValues.length; i++) {
 //Auxillary functions for level transitions.
 
 
-/**
- * 
- * Define the beginning state of the game, then start with the first level.
- */
-function initGame(skillLevel, savedLevel = undefined, bulletColor = 0) {
-    player = new SpaceShip(38, 52);
-    //CHEAT ZONE!!!
-    player.level = savedLevel === undefined ? 0 : savedLevel;
-    player.skill = skillLevel;
-    player.bulletColor = parseInt(bulletColor);
-    this.savedScore = 0;
-    // renderReset = 9000;
-    //CHEAT ZONE end.
-    loadLevel();
-
-}
-/**
- * 
- * Load a level. General Method.
- */
-function loadLevel() {
-    if (player.health < 100) {
-        player.health = 100;
-    }
-    musicAlreadyPlayed = false;
-    savedScore = player.score;
-    player.middleX = 38;
-    player.middleY = 52;
-    giant_boss = null;
-    displayList = new LinkedList();
-    bulletList = new LinkedList();
-    enemyList = new LinkedList();
-    spawnList = new LinkedList();
-    //Player always starts "unhit".
-    player.noHit = true;
-    displayList.addElement(player);
-
-    try {
-        //throw new Error("Test");
-        if (loaders[player.level] === undefined) {
-            window.alert("D.J. Mengel is evil.");
-            //Make everything stop.
-            exchangeRenderLoop(null);
-        } else {
-            background = null;
-            loaders[player.level]();
-            if (loadingException === null) {
-                exchangeRenderLoop(gamePlay);
-            } else
-                throw loadingException;
-        }
-    } catch (error) {
-        window.alert("EXCEPTION OCCURED! Failed to begin level transition. \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
-        exchangeRenderLoop(null);
-    }
-}
 
 /**
  * Adds an array of either linked or unlinked enemy objects to the spawn list.
@@ -176,31 +120,6 @@ function spawnListArrayAdd(enemy_array, spawn_time, relative = false) {
         spawnList.addElement(sp);
 }
 
-}
-/**
- * 
- * @returns {undefined}
- */
-
-
-/**
- * Lose a life.
- *
- */
-function loseLife() {
-    player.massfire = false;
-    player.quadfire = false;
-    player.score = this.savedScore;
-    sfx3.pause();
-    sfx3.currentTime = 0;
-    sfx3.play();
-    if (player.lifes > 0) {
-        player.lifes--;
-        loadLevel();
-    } else {
-        //window.alert("You are pretty dead now. ~~Game Over");
-        exchangeRenderLoop(gameOver);
-    }
 }
 
 /**
@@ -233,12 +152,6 @@ function boot() {
 function finalFate() {
 
 }
-
-
-
-
-
-
 
 
 //Enemy functions, per enemy.
@@ -1034,36 +947,10 @@ function airCraft3_factory(middleX, middleY) {
     return enemy_array;
 }
 
-//Star factory function.
-function star_factory() {
-    var starList = new LinkedList();
-//Decide where to place stars.
-    for (var i = 0; i < 80; i++) {
-        for (var j = 0; j < 60; j++) {
-            var randomNumber = Math.random();
-            //Chance of star appearance 1/n.
-            var chance = 230;
-            randomNumber = Math.floor(randomNumber * chance);
-            if (randomNumber % chance === 0) {
-                starList.addElement(new Star(i, j));
-            }
-        }
-    }
-    return starList;
-}
 
 
 //All other functions.
 
-//Make sure that frame counter always continues.
-function increaseCount() {
-    if (renderFunction === gamePause) {
-        pauseCount++;
-        return;
-    }
-    aniCount++;
-    aniCountRelative++;
-}
 
 
 

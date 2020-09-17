@@ -32,3 +32,21 @@ function star_render() {
 
 
 }
+
+//Star factory function.
+function star_factory() {
+    var starList = new LinkedList();
+//Decide where to place stars.
+    for (var i = 0; i < 80; i++) {
+        for (var j = 0; j < 60; j++) {
+            var randomNumber = Math.random();
+            //Chance of star appearance 1/n.
+            var chance = 230;
+            randomNumber = Math.floor(randomNumber * chance);
+            if (randomNumber % chance === 0) {
+                starList.addElement(new Star(i, j));
+            }
+        }
+    }
+    return starList;
+}

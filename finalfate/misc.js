@@ -79,6 +79,17 @@ function getRandomY() {
     return Math.floor(rand * 60);
 }
 
+//Make sure that frame counter always continues.
+function increaseCount() {
+    if (renderFunction === gamePause) {
+        pauseCount++;
+        return;
+    }
+    aniCount++;
+    aniCountRelative++;
+}
+
+
 //General-purpose dialogue options and text.
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];
