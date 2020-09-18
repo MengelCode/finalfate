@@ -25,7 +25,7 @@ function loadPrompt() {
     context.fillText(savedGameFound[0], 290, 250);
     context.fillStyle = "gold";
     var savedLevelUserFriendly = Number(savedLevel) + 1;
-    context.fillText(savedGameFound[1] + savedLevelUserFriendly + "?", 290, 275);
+    context.fillText(savedGameFound[1] + (savedLevelUserFriendly%10) + "?", 290, 275);
     context.fillText(savedGameFound[2], 290, 290);
     if (aniCount < 4) {
         loadSelected = undefined;
