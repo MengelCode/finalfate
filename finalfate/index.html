@@ -11,7 +11,7 @@ and open the template in the editor.
     </head>
     <body>
         
-            <canvas id="myScreen" width="800" height="600" >
+            <canvas id="screen" width="800" height="600" >
             <h1 style="color: red">This web browser is not suitable for consuming HTML 5 applications. Please consider an upgrade.</h1>   
             </canvas>
         
@@ -29,6 +29,53 @@ and open the template in the editor.
         </audio>
         <audio id="sfx-channel-4" src="select.wav" preload="auto" hidden>
         </audio>
-        <script src="logic.js"></script>   
+        <!-- MISC / MAIN SYSTEMS -->
+        <script src="misc.js"></script>
+        <script src="gameStorage.js"></script>
+        <script src="gameInput.js"></script>
+        <script src="LinkedList.js"></script>
+        <!-- LEVEL GENERATOR FILES -->
+        <script src="levelLoaders/earthLoader.js"></script>
+        <script src="levelLoaders/solarSystemLoader.js"></script>
+        <script src="levelLoaders/universeLoader.js"></script>
+        <script src="levelLoaders/blinkyHomeworldLoader.js"></script>
+        <!-- GAME SCREENS -->
+        <script src="gameScreens/gameOver.js"></script>
+        <script src="gameScreens/gamePause.js"></script>
+        <script src="gameScreens/gamePlay.js"></script>
+        <script src="gameScreens/skillPrompt.js"></script>
+        <script src="gameScreens/loadPrompt.js"></script>
+        <script src="gameScreens/titleScreen.js"></script>
+        <script src="gameScreens/bonusGame.js"></script>
+        <script src="gameScreens/saveLoadError.js"></script>
+        <!-- ENTITIES -->
+        <!-- General -->
+        <script src="entities/GameObject.js"></script>
+        <script src="entities/Spawn.js"></script>
+        <script src="entities/Enemy.js"></script>
+        <script src="entities/Bullet.js"></script>
+        <script src="entities/SpaceShip.js"></script>
+        <script src="entities/decorative/Decoration.js"></script>
+        <!-- Enemies -->
+        <script src="entities/SimpleEnemy.js"></script>
+        <script src="entities/Meteor.js"></script>
+        <script src="entities/Blinky.js"></script>
+        <script src="entities/BlinkyTracer.js"></script>
+        <script src="entities/SilentBlinky.js"></script>
+        <script src="entities/Bomb.js"></script>
+        <script src="entities/FogBomb.js"></script>
+        <script src="entities/ShipBuster.js"></script>
+        <!-- Types of explosion -->
+        <script src="entities/decorative/Fog.js"></script> 
+        <!-- Decorative objects -->
+        <script src="entities/decorative/Star.js"></script>
+        <script src="entities/decorative/Heat.js"></script>
+        <script src="entities/decorative/Box.js"></script>
+        <!-- Boosts -->
+        <script src="entities/HealthBoost.js"></script>
+        <script src="entities/FireBoost.js"></script>
+        <script src="entities/LifeBoost.js"></script>
+        <!-- ACTUAL BEGIN OF EXECUTION -->
+        <script src="main.js"></script>   
     </body>
 </html>

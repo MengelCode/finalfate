@@ -29,15 +29,18 @@ their first time. If you are known for this type of epilepsy or notice that some
 ## Ways to prepare the game
 
 There are severals for you to play the game. Decide which one you like to use. \
-**1) Locally storing the files and directly opening the html file** \
+**1) Give it a quick look on my server** \
+If you do not want any big setup, but simply a quick round of action, you should definitely look [here](https://manuel-engel.de/finalfate/finalfate). \
+\
+**2) Locally storing the files and directly opening the html file** \
 Clone the repository, or, if Git is not your tool of choice (How did you find me in this case? Let me know.), you can manually download the respective files. Mandatory downloads are index.html and logic.js in the finalfate directory, the sound files are optional. Please include a copy of the license file when making the game available to others. \
 \
-**2) Serving the game's files over a webserver** \
-Do what listed in 1) and either host the game on your computer or a web hosting provider you trust.
+**3) Serving the game's files over a webserver** \
+Do what listed in 2) and either host the game on your computer or a web hosting provider you trust.
 This way needs a bit more technical knowledge, but the advantage is that your family at home or possibly the entire world can enjoy a cool space ship adventure!
 Please make sure the users are able to review the license, e.g. mentioning it on your homepage when you link to the game. \
 \
-**3) Setting up a docker container as server** \
+**4) Setting up a docker container as server** \
 Thanks to the [work](https://github.com/ichbestimmtnicht/docker-autobuild-release) of [Ludwig Werner Döhnert](https://github.com/ichbestimmtnicht/), docker images for amd64, arm32v7 and arm64v8 are available. \
 You can review the DockerHub repository of the game at [Dockerhub](https://hub.docker.com/repository/docker/mengel38/finalfate). In order to pull the latest image (Regardless of your underlying architecture), you can use
 
