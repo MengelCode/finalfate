@@ -15,7 +15,7 @@ I decided to train JavaScript in my spare-time. I am in the creation of a HTML 5
 
 ## The Goal
 
-The goal is to be fully compatible with modern Firefox and Chromium/Chrome browsers, while featuring a playable and fun space game with six levels.
+The goal is to be fully compatible with modern Firefox and Chromium/Chrome browsers, while featuring a playable and fun space game with five levels.
 
 ## Play the current version
 
