@@ -7,31 +7,22 @@
  * Level 4 - Blinky Homeworld
  * 
  */
-function blinkyHomeworldLoader(){
- try{
- var enem = null;
- enem = new Meteor(38,3);
- enem = new Spawn(0, enem);
- spawnList.addElement(enem);
- enem = new FireBoost(38,3);
- enem = new Spawn(1, enem, false, true, false, false);
- spawnList.addElement(enem);
- enem = new HealthBoost(38,3);
- enem = new Spawn(40, enem, false, true, false, false);
- spawnList.addElement(enem);
- enem = new FogBomb(40,20);
- enem = new Spawn(90, enem);
- spawnList.addElement(enem);
- enem = new ShipBuster(40,20);
- enem = new Spawn(160, enem);
- spawnList.addElement(enem);
- enem = new SilentBlinky(40,20);
- enem = new Spawn(300,enem);
- spawnList.addElement(enem);
- }   
- catch(error){
-     loadingException  = error;
- }   
+function blinkyHomeworldLoader() {
+    try {
+        var enem = null;
+        for (var i = 0; i < 7; i++) {
+            enem = new FogBomb(20 + i * 8, 20 + i * 5);
+            Spawn.createAndAddSpawn(90 + 10 * i, enem);
+            if (i === 5) {
+                enem = new ShipBuster(70, 20);
+                Spawn.createAndAddSpawn(145, enem);
+            }
+        }
+        enem = new ShipBuster(25, 20);
+        Spawn.createAndAddSpawn(164, enem);
+    } catch (error) {
+        loadingException = error;
+    }
 }
 
 

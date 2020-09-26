@@ -23,6 +23,13 @@ class Spawn {
         this.isBullet = isBullet;
 
     }
-
 }
-
+/**
+ * Create and add spawn event for enemy object.
+ * @returns {undefined}
+ */
+Spawn.createAndAddSpawn = function(frameDelta,gameObject,isRelative = false
+, isForDisplay = true, isEnemy = true, isBullet = false){
+var newSpawn = new Spawn(frameDelta,gameObject,isRelative,isForDisplay,isEnemy,isBullet);
+spawnList.addElement(newSpawn);
+};
