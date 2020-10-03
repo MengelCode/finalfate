@@ -104,26 +104,6 @@ for (var i = 0; i < boss3_arm_values.prototype.hpValues.length; i++) {
 
 
 /**
- * Adds an array of either linked or unlinked enemy objects to the spawn list.
- * @param enemy_array Array with enemies.
- * @param spawn_time Frame when all enemies should spawn.
- */
-function spawnListArrayAdd(enemy_array, spawn_time, relative = false) {
-    var sp = null;
-    for (var i = 0; i < enemy_array.length; i++) {
-        if (!relative) {
-            sp = new Spawn(spawn_time, enemy_array[i], false);
-        } else if (i === 0) {
-            sp = new Spawn(spawn_time, enemy_array[i], true);
-        } else {
-            sp = new Spawn(0, enemy_array[i], false);
-        }
-        spawnList.addElement(sp);
-}
-
-}
-
-/**
  * 
  * @returns 
  */
@@ -948,42 +928,5 @@ function airCraft3_factory(middleX, middleY) {
     return enemy_array;
 }
 
-
-
-//All other functions.
-
-
-
-
-
-/**
- }
- * 
- * @param {type} enemy_array Enemies to link together.
- * @returns {undefined}
- */
-function combineEnemyBricks(enemy_array) {
-    for (var i = 0; i < enemy_array.length - 1; i++) {
-        enemy_array[i].linkTogether(enemy_array[i + 1]);
-    }
-}
-
-/**
- * For use by bosses in order to ease their complete destruction.
- * Do not call directly, but via invalidate_Badjacent.call(enemyObject)
- * @returns {undefined}
- */
-function invalidate_Badjacent() {
-    if (this.previous !== null && this.hp <= 0 && this.previous.hp > this.hp) {
-        this.previous.hp = 0;
-        this.previous.invalidate();
-        background = null;
-    }
-
-    if (this.next !== null && this.hp <= 0 && this.next.hp > this.hp) {
-        this.next.hp = 0;
-        this.next.invalidate();
-    }
-}
 
 

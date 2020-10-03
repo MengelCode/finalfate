@@ -33,3 +33,13 @@ Spawn.createAndAddSpawn = function(frameDelta,gameObject,isRelative = false
 var newSpawn = new Spawn(frameDelta,gameObject,isRelative,isForDisplay,isEnemy,isBullet);
 spawnList.addElement(newSpawn);
 };
+
+
+/**
+ * Spawns boosts correctly.
+ * @returns {undefined}
+ */
+Spawn.createAndAddBoostSpawn = function(frameDelta,gameObject, isRelative = false){
+    Spawn.createAndAddSpawn(frameDelta, gameObject, isRelative, true, false, false);
+          
+}

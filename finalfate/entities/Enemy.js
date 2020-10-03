@@ -41,10 +41,6 @@ class Enemy extends GameObject {
         this.previous = null;
         //Next enemy object in a chain.
         this.next = null;
-        this.linkTogether = function (nextEnemy) {
-            this.next = nextEnemy;
-            nextEnemy.previous = this;
-        };
         if (invalidFunc !== null) {
             super.invalidate = invalidFunc;
         } else {
@@ -57,4 +53,61 @@ class Enemy extends GameObject {
             };
     }
     }
+}
+
+Enemy.prototype.linkTogether =  function (nextEnemy) {
+            this.next = nextEnemy;
+            nextEnemy.previous = this;
+        };
+
+/**
+ * Adds an array of either linked or unlinked enemy objects to the spawn list.
+ * @param enemy_array Array with enemies.
+ * @param spawn_time Frame when all enemies should spawn.
+ */
+function spawnListArrayAdd(enemy_array, spawn_time, relative = false) {
+    var sp = null;
+    for (var i = 0; i < enemy_array.length; i++) {
+        if (!relative) {
+            sp = new Spawn(spawn_time, enemy_array[i], false);
+        } else if (i === 0) {
+            sp = new Spawn(spawn_time, enemy_array[i], true);
+        } else {
+            sp = new Spawn(0, enemy_array[i], false);
+        }
+        spawnList.addElement(sp);
+}
+
+}
+
+
+/**
+ }
+ * 
+ * @param {type} enemy_array Enemies to link together.
+ * @returns {undefined}
+ */
+function combineEnemyBricks(enemy_array) {
+    for (var i = 0; i < enemy_array.length - 1; i++) {
+        enemy_array[i].linkTogether(enemy_array[i + 1]);
+    }
+}
+/**
+ * Add the concept of HP to an enemy type. All the other enemies
+ * will still be instantly dead. (Exception: Bosses)
+ * @param {type} hp
+ * @returns {undefined}
+ */
+Enemy.prototype.addMultiHealth = function (hp){
+   this.hp = hp * 3;
+   this.invalidate = invalidateMultiHP; 
+};
+
+/**
+ * New gameObject.invalidate() implementation used if "MultiHealth" was applied.
+ * @returns {undefined}
+ */
+function invalidateMultiHP(){
+    if(this.hp > 0)this.hp--;
+    else this.invalid = true;
 }

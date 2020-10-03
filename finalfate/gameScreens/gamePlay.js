@@ -430,3 +430,22 @@ if(debugInput)window.alert("--New collision debug--\n" +
 return ((shape_x <= point_x && point_x <= max_x) && (shape_y <= point_y && point_y <= max_y));
     
 }
+
+
+/**
+ * For use by bosses in order to ease their complete destruction.
+ * Do not call directly, but via invalidate_Badjacent.call(enemyObject)
+ * @returns {undefined}
+ */
+function invalidate_Badjacent() {
+    if (this.previous !== null && this.hp <= 0 && this.previous.hp > this.hp) {
+        this.previous.hp = 0;
+        this.previous.invalidate();
+        background = null;
+    }
+
+    if (this.next !== null && this.hp <= 0 && this.next.hp > this.hp) {
+        this.next.hp = 0;
+        this.next.invalidate();
+    }
+}
