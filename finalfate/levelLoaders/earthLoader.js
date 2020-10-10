@@ -12,6 +12,7 @@
 function earthLoader() {
     try {
         if (player.checkpoint === 0) {
+            player.noHit = false;
             var enem = null;
             enem = new FireBoost(45, 0);
             enem = new Spawn(20, enem, false, true, false, false);
