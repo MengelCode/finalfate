@@ -66,8 +66,7 @@ function exchangeRenderLoop(func, preserveCounters = false) {
  * @returns random X coordinate.
  */
 function getRandomX() {
-    var rand = Math.random();
-    return Math.floor(rand * 80);
+    return getCustomRandom(80,0);
 }
 
 /**
@@ -75,8 +74,20 @@ function getRandomX() {
  * @returns random Y coordinate.
  */
 function getRandomY() {
+    return getCustomRandom(60,0);
+}
+/**
+ * Returns any random integer between min and max inclusive.
+ * @param {integer} maxValue Biggest integer which is in range.
+ * @param {integer} minValue Optional, smallest integer which is in range.
+ * @returns {integer} 
+ */
+function getCustomRandom(maxValue,minValue = 0){
     var rand = Math.random();
-    return Math.floor(rand * 60);
+    maxValue = maxValue - minValue;
+    var generated = Math.floor(rand * maxValue) + minValue;
+    return generated;
+    
 }
 
 //Make sure that frame counter always continues.
