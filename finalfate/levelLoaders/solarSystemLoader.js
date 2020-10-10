@@ -20,6 +20,7 @@ function solarSystemLoader() {
             return;
         }
         if (player.checkpoint === 1) {
+            player.noHit = false;
             var enem = null;
             enem = new FireBoost(45, 0);
             enem = new Spawn(20, enem, false, true, false, false);
