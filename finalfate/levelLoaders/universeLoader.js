@@ -16,6 +16,7 @@ function universeLoader() {
         enem = new Spawn(0, enem, true, true, false, false);
         spawnList.addElement(enem);
         if (player.checkpoint === 2) {
+            player.noHit = false;
             var enem = null;
             enem = new HealthBoost(45, 0);
             enem = new Spawn(20, enem, false, true, false, false);
