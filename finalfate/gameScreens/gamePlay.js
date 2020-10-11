@@ -19,9 +19,8 @@ function gamePlay() {
     try {
         //  throw new Error("Test exception.");
         if(gamepad_removed){
-            window.alert("Test");
-            initAllInput();
-            exchangeRenderLoop(gamePauseNoController);
+            renderingCycle = gamePlay;
+            exchangeRenderLoop(gameNoController,true);
             return;
         }
         updateBullets();

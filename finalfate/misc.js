@@ -81,7 +81,8 @@ function getRandomY() {
 
 //Make sure that frame counter always continues.
 function increaseCount() {
-    if (renderFunction === gamePause) {
+    if (renderFunction === gamePause || renderFunction === gameNoController 
+            || renderFunction === _gameNoController) {
         pauseCount++;
         return;
     }
