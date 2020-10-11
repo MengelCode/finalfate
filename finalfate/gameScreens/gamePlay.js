@@ -18,6 +18,12 @@ function gamePlay() {
     }
     try {
         //  throw new Error("Test exception.");
+        if(gamepad_removed){
+            window.alert("Test");
+            initAllInput();
+            exchangeRenderLoop(gamePauseNoController);
+            return;
+        }
         updateBullets();
         checkForColli();
         deleteDeceased();

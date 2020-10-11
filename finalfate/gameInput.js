@@ -15,6 +15,8 @@ var pause = 0;
 var keyboard = false;
 //"Gamepad" boolean.
 var gamepad = false;
+//"Gamepad removed" boolean
+var gamepad_removed = false;
 //Gamepad index. ( false = no button assigned)
 var gamepad_button = false;
 //Gamepad event handle.
@@ -41,6 +43,7 @@ function initAllInput() {
     //Reset used state.
     keyboard = false;
     gamepad = false;
+    gamepad_removed = false;
 }
 
 //Event receiver for key presses.
@@ -99,18 +102,22 @@ function gamepadPoll() {
     var controller = navigator.getGamepads()[gamepad];
     //Error condition: Controller is no object or even null or undefined.
     if (!controller) {
+        gamepad_removed = true;
         return;
     }
 //Error condition: Controller.buttons is no array or even null or undefined.
     if (!controller.buttons || !controller.buttons.length) {
+        gamepad_removed = true;
         return;
     }
 //Error condition: Gamepad is disconnected.
     if (!controller.connected) {
+        gamepad_removed = true;
         return;
     }
 //Error condition: Fire button did magically disappear.
     if (controller.buttons[gamepad_button] === undefined || controller.buttons[gamepad_button] === null) {
+        gamepad_removed = true;
         return;
     }
 //Is button pressed?
