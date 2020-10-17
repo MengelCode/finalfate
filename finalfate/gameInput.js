@@ -96,6 +96,19 @@ function gamepadAskAnyButton() {
     }
 
 }
+/**
+ * Check for gamepad removal and interrupt current game activity if applicable.
+ * @param {type} previousScreen
+ * @returns {undefined}
+ */
+function checkGamepadRemoved(previousScreen){
+    if(gamepad_removed){
+            renderingCycle = previousScreen;
+            exchangeRenderLoop(gameNoController,true);
+            return;
+        }
+}
+
 
 //Poll gamepad.
 function gamepadPoll() {

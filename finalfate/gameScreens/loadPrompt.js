@@ -16,6 +16,7 @@ var loadSelected = undefined;
 function loadPrompt() {
     title_and_copyright_render();
     validateReleasedState();
+    checkGamepadRemoved(loadPrompt);
     context.fillStyle = "blue";
     context.fillRect(290, 190, 260, 200);
     context.font = "27px Nonserif";

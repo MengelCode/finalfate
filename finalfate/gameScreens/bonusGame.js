@@ -15,6 +15,7 @@ var bonusgame_framecounter = undefined;
  */
 function bonusGame() {
     validateReleasedState();
+    checkGamepadRemoved(bonusGame);
     context.fillStyle = "#000000";
     context.fillRect(0, 0, 800, 600);
     context.fillStyle = "cyan";

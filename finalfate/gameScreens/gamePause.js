@@ -20,6 +20,7 @@ var saveFailure = "Error. Save failed!";
  */
 function gamePause() {
     validateReleasedState();
+    checkGamepadRemoved(gamePause);
     //Check for an unpausing condition.
     if ((pause && pauseReleased) || (!selectedOption && shoot && shootReleased)) {
         saveCompleteTimer = 0;
