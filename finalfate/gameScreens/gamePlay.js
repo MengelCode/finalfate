@@ -4,16 +4,13 @@
  * Contains the rendering cycle for the gameplay and its helper functions.
  */
 
-var musicAlreadyPlayed = false;
 /**
  * 
  * Actual game loop.
  */
 function gamePlay() {
     if (aniCount === 5 && !musicAlreadyPlayed) {
-        bgm.currentTime = 0;
-        bgm.pause();
-        bgm.play();
+        simplyPlaySound(bgm);
         musicAlreadyPlayed = true;
     }
     try {
@@ -107,9 +104,7 @@ function checkForEnemyHit() {
             player.noHit = false;
             }
             enemyImminent.invalidate();
-            sfx1.pause();
-            sfx1.currentTime = 0;
-            sfx1.play();
+            simplyPlaySound(sfx1);
             //window.alert("Enemy collided with player using the new function.");
             player.health = player.health - enemyImminent.damage;
             if (player.health < 0)
@@ -135,9 +130,7 @@ function bulletOnEnemies() {
                 if (bullet.collides(enemy) && !enemy.invalid && enemy.killable) {
                     enemy.invalidate();
                     if (enemy.invalid) {
-                        sfx1.pause();
-                        sfx1.currentTime = 0;
-                        sfx1.play();
+                        simplyPlaySound(sfx1);
                         switch (player.skill) {
                             case -2:
                                 player.score = player.score + enemy.score / 4;
@@ -187,8 +180,10 @@ function renderInGame() {
         if (!v.invalid)
             v.renderState();
     }
-    renderHUD();
+    if(renderFunction === gamePlay) renderHUD();
     if (renderFunction === gamePause) {
+         renderHUD();
+        volume_prompt_render();
         context.font = "27px Nonserif";
         //Shared Y,X coordinates
         let y = 245;
@@ -205,7 +200,6 @@ function renderInGame() {
                 context.fillText(pauseText[i], x, y + i * 30);
             }
         }
-        renderHUD();
         //"Are you sure?" options.
         if (selectedOption >= pauseText.length) {
             context.fillStyle = "gray";
@@ -355,9 +349,7 @@ function loseLife() {
     player.massfire = false;
     player.quadfire = false;
     player.score = this.savedScore;
-    sfx3.pause();
-    sfx3.currentTime = 0;
-    sfx3.play();
+    simplyPlaySound(sfx3);
     if (player.lifes > 0) {
         player.lifes--;
         loadLevel();

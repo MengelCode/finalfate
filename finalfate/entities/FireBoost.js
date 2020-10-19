@@ -26,9 +26,7 @@ var fireBoost_dimension = healthBoost_dimension;
 function fireBoost_update() {
     if (player.collides(this)) {
         this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
+        simplyPlaySound(sfx2);
         if (player.massfire) {
             player.health = player.health + 120;
         }
@@ -38,9 +36,7 @@ function fireBoost_update() {
     this.middleY = this.middleY + 1;
     if (player.collides(this)) {
         this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
+        simplyPlaySound(sfx2);
         if (player.massfire) {
             player.health = player.health + 120;
         }

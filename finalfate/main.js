@@ -262,9 +262,7 @@ function background1_update() {
 //Boss 3 middle.
 function boss3_middle_update() {
     if (boss3_middle_constants.prototype.hp <= 0 && this.getOccupiedSpace !== func_noDim) {
-        sfx1.pause();
-        sfx1.currentTime = 0;
-        sfx1.play();
+        simplyPlaySound(sfx1);
         this.getOccupiedSpace = func_noDim;
         this.renderState = func_noOp;
     } else if (boss3_middle_constants.prototype.hp > 0 && this.getOccupiedSpace === func_noDim) {

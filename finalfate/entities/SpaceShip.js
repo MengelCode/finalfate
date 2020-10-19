@@ -78,9 +78,7 @@ class SpaceShip extends GameObject {
                 pollDatButton();
             }
             if (this.score >= this.score_newlife) {
-                sfx2.pause();
-                sfx2.currentTime = 0;
-                sfx2.play();
+                simplyPlaySound(sfx2);
                 this.lifes++;
                 if(player.skill === 2){
                 this.score_newlife = this.score_newlife + 140000;    
@@ -115,9 +113,7 @@ class SpaceShip extends GameObject {
                 }
                 if (this.massfire === true)
                     this.cooldown = 5;
-                sfx0.pause();
-                sfx0.currentTime = 0;
-                sfx0.play();
+                simplyPlaySound(sfx0);
                 var bullet = new Bullet(this.middleX - 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);

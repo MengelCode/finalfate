@@ -27,18 +27,14 @@ var healthBoost_dimension = simpleEnemy_dimension;
 function healthBoost_update() {
     if (player.collides(this)) {
         this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
+        simplyPlaySound(sfx2);
         player.health = player.health + 30;
         return;
     }
     this.middleY = this.middleY + 1;
     if (player.collides(this)) {
         this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
+        simplyPlaySound(sfx2);
         player.health = player.health + 30;
     }
 

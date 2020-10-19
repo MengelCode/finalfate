@@ -14,9 +14,7 @@ function gameOver() {
         return;
     if (aniCount === 44) {
         bgm.pause();
-        game_over.currentTime = 0;
-        game_over.pause();
-        game_over.play();
+        simplyPlaySound(game_over);
     }
     context.font = "60px Nonerif";
     context.fillStyle = "yellow";

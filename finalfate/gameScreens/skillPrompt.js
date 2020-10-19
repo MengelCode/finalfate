@@ -13,6 +13,7 @@ function skillPrompt() {
     title_and_copyright_render();
     validateReleasedState();
     checkGamepadRemoved(skillPrompt);
+    volume_prompt_render();
     context.font = "27px Nonserif";
     context.fillStyle = "white";
     context.fillText(selectSkill, 220, 450);
