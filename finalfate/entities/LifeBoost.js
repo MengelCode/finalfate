@@ -27,18 +27,14 @@ var lifeBoost_dimension = healthBoost_dimension;
 function lifeBoost_update() {
     if (player.collides(this)) {
         this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
+        simplyPlaySound(sfx2);
         player.lifes = player.lifes + 1;
         return;
     }
     this.middleY = this.middleY + 1;
     if (player.collides(this)) {
         this.invalid = true;
-        sfx2.pause();
-        sfx2.currentTime = 0;
-        sfx2.play();
+        simplyPlaySound(sfx2);
         player.lifes = player.lifes + 1;
     }
 
