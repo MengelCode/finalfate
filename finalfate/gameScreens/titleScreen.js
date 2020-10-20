@@ -55,6 +55,38 @@ function titleScreen() {
 }
 
 /**
+ * Volume text.
+ * @type String
+ */
+var volumeText = "VOLUME";
+var volumeTitle = "(change with up / down)";
+var volumePause = "(change with left / right)";
+/**
+ * Volume display render.
+ * @returns {undefined}
+ */
+function volume_prompt_render(){
+    context.fillStyle = "white";
+    var volumeControls = renderFunction === skillPrompt ||
+            renderFunction === loadPrompt;
+    if (volumeControls) {
+        context.fillText(volumeText + " " + volumeTitle + ": " + masterVolume + " %", 195, 530);
+        if (up && masterVolume < 100)
+            masterVolume = masterVolume + 1;
+        else if (down && masterVolume > 0)
+            masterVolume = masterVolume - 1;
+    } else {
+        context.fillText(volumeText + " " + volumePause + ": " + masterVolume + " %", 390, 580);
+        if (left && masterVolume < 100)
+            masterVolume = masterVolume + 1;
+        else if (right && masterVolume > 0)
+            masterVolume = masterVolume - 1;
+    }
+    bgm.volume = masterVolume / 100;
+}
+
+
+/**
  * Renders "THE FINAL FATE" and the copyright info.
  * @returns {undefined}
  */

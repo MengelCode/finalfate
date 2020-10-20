@@ -3,6 +3,19 @@
  * Contains game-relevant functions which do not belong to another place 
  * in the code or data / code which is multi-purpose.
  */
+
+/**
+ * Volume value for the SFX / music.
+ * @type Number
+ */
+var masterVolume = 100;
+
+/**
+ * Flag if bgm already played.
+ * @type Boolean
+ */
+var musicAlreadyPlayed = false;
+
 /**
  * (Re-)Play sound with just one call instead of three.
  * @param {type} object
@@ -10,6 +23,7 @@
  */
 function simplyPlaySound(soundObject) {
     soundObject.pause();
+    soundObject.volume = masterVolume / 100;
     soundObject.currentTime = 0;
     soundObject.play();
 }
@@ -92,7 +106,8 @@ function getCustomRandom(maxValue,minValue = 0){
 
 //Make sure that frame counter always continues.
 function increaseCount() {
-    if (renderFunction === gamePause) {
+    if (renderFunction === gamePause || renderFunction === gameNoController 
+            || renderFunction === _gameNoController) {
         pauseCount++;
         return;
     }
