@@ -3,7 +3,10 @@
 
 MIT License
 
-Copyright (c) 2019-2020 Manuel Engel 
+Copyright (c) 2019-2020 Manuel Engel & Code Contributors
+
+Code Contributors: 
+* [gitvitox](https://github.com/gitvitox) - UI / CSS code, in context of [#73](https://github.com/Mengel38/finalfate/issues/73)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
