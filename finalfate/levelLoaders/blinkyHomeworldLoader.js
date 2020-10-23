@@ -136,13 +136,19 @@ function blinkyHomeworldLoader() {
             Spawn.createAndAddBoostSpawn(lastValue, enem);
             enem = new HealthBoost(40, -17);
             Spawn.createAndAddBoostSpawn(lastValue, enem);
+            if (player.health < 160) {
+                player.health = 160;
+            }
         } else if (player.checkpoint === 3) {
             enem = new FireBoost(40, -5);
             Spawn.createAndAddBoostSpawn(lastValue, enem);
             enem = new HealthBoost(40, -17);
             Spawn.createAndAddBoostSpawn(lastValue, enem);
         }
-            lastValue+=50;
+            lastValue+=20;
+            enem = new Checkpoint(3);
+            Spawn.createAndAddSpawn(lastValue, enem);
+            lastValue+=30;
             for(var i = 0; i<70; i++){
             if(i % 10 === 0){
             enem = new ShipBuster(i,20);
@@ -153,13 +159,31 @@ function blinkyHomeworldLoader() {
             Spawn.createAndAddSpawn(lastValue, enem);
             enem = airCraft2_factory(getCustomRandom(78, 24), -10);
             spawnListArrayAdd(enem, lastValue);
-            lastValue+=40;
-                if(i % 7 === 0){
-                enem = new BlinkyTracer(getRandomX(),-5);
-                Spawn.createAndAddSpawn(lastValue,enem);
-                }
+            lastValue += 40;
+            if (i % 7 === 0) {
+                enem = new BlinkyTracer(getRandomX(), -5);
+                Spawn.createAndAddSpawn(lastValue, enem);
             }
-            
+        }
+
+        lastValue += 25;
+
+        for (var i = 0; i < 50; i++) {
+            var rand = getCustomRandom(3, 0);
+            switch (rand) {
+                case 0:
+                   enem = airCraft1_factory(getRandomX(), -10);
+                break;
+                case 1:
+                   enem = airCraft2_factory(getRandomX(), -10);
+                break;
+                case 2:
+                   enem = airCraft3_factory(getRandomX(), -10);
+                break;
+            }
+            spawnListArrayAdd(enem, lastValue);
+            lastValue+=22;
+        }
 
     } catch (error) {
         loadingException = error;
