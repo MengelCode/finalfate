@@ -1,8 +1,8 @@
 # The Final Fate
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub issues](https://img.shields.io/github/issues/mengel38/finalfate.svg?label=%22Githubissues%22)](https://github.com/mengel38/finalfate/issues)
-[![GitHub stars](https://img.shields.io/github/stars/mengel38/finalfate.svg?style=social&label=Star)](https://github.com/mengel38/finalfate/)
+[![GitHub issues](https://img.shields.io/github/issues/mengelcode/finalfate.svg?label=%22Githubissues%22)](https://github.com/mengelcode/finalfate/issues)
+[![GitHub stars](https://img.shields.io/github/stars/mengelcode/finalfate.svg?style=social&label=Star)](https://github.com/mengelcode/finalfate/)
 
 [![Docker Build Type](https://img.shields.io/docker/cloud/automated/mengel38/finalfate.svg)](https://hub.docker.com/r/mengel38/finalfate/)
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/mengel38/finalfate.svg)](https://hub.docker.com/r/mengel38/finalfate/)
