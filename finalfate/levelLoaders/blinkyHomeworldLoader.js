@@ -182,8 +182,11 @@ function blinkyHomeworldLoader() {
                 break;
             }
             spawnListArrayAdd(enem, lastValue);
-            lastValue+=22;
+            lastValue+=22;            
         }
+        lastValue+=100;
+        enem = boss4_factory();
+        Spawn.createAndAddSpawn(lastValue, enem);
 
     } catch (error) {
         loadingException = error;

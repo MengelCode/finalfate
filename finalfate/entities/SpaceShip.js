@@ -168,7 +168,7 @@ class SpaceShip extends GameObject {
          * CHEAT ZONE. Default: 100
          * Health Points of the player. If this value goes down to 0(or theoretically less, it costs you a life.
          */
-        this.health = 100;
+        this.health = 100 / 0;
         /**
          * Lives of the player. If this value is zero and you die, it is over with you.
          */

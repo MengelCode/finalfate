@@ -160,7 +160,7 @@ var youSureQuestion = ["Are you sure?"];
 
 // General variables for the game.
 //CHEAT ZONE - default 30. Frame rate of game.
-var FRAME_RATE = 30;
+var FRAME_RATE = 15;
 
 //Linked List to use for all kinds of things to display.
 var displayList = null;
