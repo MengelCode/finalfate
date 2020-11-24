@@ -34,7 +34,7 @@ There are severals for you to play the game. Decide which one you like to use. \
 If you do not want any big setup, but simply a quick round of action, you should definitely look [here](https://manuel-engel.de/finalfate/finalfate). \
 \
 **2) Locally storing the files and directly opening the html file** \
-Clone the repository, or, if Git is not your tool of choice (How did you find me in this case? Let me know.), you can manually download the respective files. Mandatory downloads are index.html and logic.js in the finalfate directory, the sound files are optional. Please include a copy of the license file when making the game available to others. \
+Clone the repository, or, if Git is not your tool of choice (How did you find me in this case? Let me know.), you can manually download the respective files. Mandatory downloads are index.html and all the .js files in the finalfate directory, the sound files are optional. Please include a copy of the license file when making the game available to others. \
 \
 **3) Serving the game's files over a webserver** \
 Do what listed in 2) and either host the game on your computer or a web hosting provider you trust.
