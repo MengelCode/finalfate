@@ -19,6 +19,12 @@ function blinkyHomeworldLoader() {
     try {
         var enem = null;
         var lastValue = 0;
+        if (player.checkpoint === 4) {
+            lastValue += 100;
+            enem = boss4_factory();
+            Spawn.createAndAddSpawn(lastValue, enem);
+            return;
+        }
         if (player.checkpoint < 3) {
             for (var i = 0; i < 6; i++) {
                 enem = new FogBomb(20 + i * 8, 20 + i * 5);
