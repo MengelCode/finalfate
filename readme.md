@@ -11,13 +11,13 @@
 
 ## The Project
 
-This HTML 5 space game's first commit has been made the Jul 4, 2019 by MengelCode willing to train in JavaScript during the spare-time.
+This HTML 5 space game's first commit has been made the Jul 4, 2019 by Manuel Engel willing to train in JavaScript during the spare-time.
 
 ## The Game
 This is a low poly 2D space game with differently colored enemies you will find on your way. You need to survive avoiding spaceships and missiles. The game has five levels and you can play it as a beginner, as a good player, a hard player or as a master. Your goal is to successfully win all levels by shooting the bad guys down and challenging the level bosses.
 
 ## User Interface
-When playing the game you can see the value of the score, health, live and level written at the bottom of the screen in a black horizontal bar. 
+When playing the game you can see the value of the score, health, lifes and level written at the bottom of the screen in a black horizontal bar. 
 
 ## The player and the ship's missiles
 Your player is a low poly gray spaceship with a yellow head and orange sides.
@@ -27,7 +27,7 @@ Your player is a low poly gray spaceship with a yellow head and orange sides.
 You can pause the game using the "P" button if you use a keyboard or key 09 (mostly known as "The start button") if you use a gamepad. Keep in mind that the gamepad feature is experimental.
 
 ## Game music and sounds effects
-The game has music and sounds effects. When you lower the music then the sounds effects are also lowered. 
+The game has music and sounds effects. When you lower the volume of music then the sounds effects are also lowered. 
 
 ## Web browser compatibility
 
@@ -35,7 +35,7 @@ This game has to to be fully compatible with modern Firefox and Chromium/Chrome 
 
 ## Play the current version
 
-This game needs players ! Please give the game a feedback via the Issues function. Available content : approx. 60 % out of the informally planned scope.
+This game needs players! Please give the game a feedback via the Issues function. Available content : approx. 60 % out of the informally planned scope.
 
 ### Epilepsy warning
 
