@@ -1,6 +1,6 @@
 /* 
  * boss4.js
- * Important file for the fourth level boss, "The Bombing Boom".
+ * Important file for the fourth level boss, "The Blinky Boom".
  */
 
 //Boss 4 update - This entity itself will never be visible on-screen.
@@ -12,12 +12,13 @@ function boss4_update() {
         this.bombs_placed = [];
         this.current_blinky_outside = undefined;
         this.second_pattern = undefined;
+        this.laser_cannon = undefined;
         for (var j = 0; j < 3; j++)
             for (var i = 0; i < 18; i++) {
                 var enemy_body_part = undefined;
                 var x_param = i * 5;
                 var y_param = 3 + j * 5;
-                if (j % 2 == 0) {
+                if (j % 2 === 0) {
                     enemy_body_part = new SimplestEnemy(x_param, y_param);
                     enemy_body_part.invalidate = func_noOp;
                     this.tiles_array.push(enemy_body_part);
@@ -30,7 +31,7 @@ function boss4_update() {
 
             }
     }       
-    //Check if blinky is destroyed.
+    //Boss phase 1: Check if blinky is destroyed.
     else if (this.current_blinky_outside && this.current_blinky_outside.invalid) {
         this.current_blinky_outside = undefined;
         for (var i = 0; i < this.bombs_placed.length; i++) {
@@ -38,7 +39,7 @@ function boss4_update() {
         bomb.invalidate();
         }
     }
-    //Check if bombs are destroyed.
+    //Boss phase 1: Check if bombs are destroyed.
     else if (this.current_blinky_outside) {
         var allInvalid = true;
         for (var i = 0; i< this.bombs_placed.length; i++) {
@@ -54,7 +55,7 @@ function boss4_update() {
          this.current_blinky_outside = undefined;
         }
     }
-    //Spawn new batch if the old one is gone.
+    //Boss phase 1: Spawn new batch if the old one is gone.
     else if (this.enemies_puffer_array.length>0 && !this.current_blinky_outside 
             && this.frameCounter % 10 === 0) {
         var blinkyToRemove = this.enemies_puffer_array.pop();
@@ -78,11 +79,21 @@ function boss4_update() {
             }
             Spawn.createAndAddSpawn(aniCount + 35, enemy_body_part);
         }
-    } else if (this.enemies_puffer_array.length>0 && !this.second_pattern){
-        this.frameCounter = -1;
+    }
+    //Intermission from Boss phase 1 to phase 2
+    else if (this.enemies_puffer_array.length === 0 &&
+            this.second_pattern === undefined) {
+        this.frameCounter = 1;
         this.second_pattern = 0;
     }
-
+    //Boss phase 2 - Single beam, Pattern 0
+    else if(this.second_pattern === 0){
+    if(!this.laser_cannon){
+        this.laser_cannon = new SingleLaserBeam(35,16);
+         displayList.addElement(this.laser_cannon, false);
+         enemyList.addElement(this.laser_cannon, false);
+    }    
+    }
     this.frameCounter++;
 }
 

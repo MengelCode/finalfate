@@ -8,6 +8,7 @@ const DEBUG_COMPLETE_RANDOM = false;
 
 /**
  * Level 4 - Blinky Homeworld
+ * Length: 7299 Frames.
  * 
  */
 function blinkyHomeworldLoader() {
