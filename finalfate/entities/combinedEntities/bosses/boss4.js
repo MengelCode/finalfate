@@ -7,6 +7,7 @@
 function boss4_update() {
     //Initialization.
     if (this.frameCounter === 0) {
+        player.checkpoint = 4;
         this.tiles_array = [];
         this.enemies_puffer_array = [];
         this.bombs_placed = [];
@@ -105,7 +106,6 @@ function boss4_update() {
 function boss4_factory() {
     var first_element = new Enemy(0, 0, func_noDim, boss4_update, func_noOp);
     giant_boss = first_element;
-    player.checkpoint = 4;
     return first_element;
 }
 
