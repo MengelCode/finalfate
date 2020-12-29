@@ -30,16 +30,7 @@ this.frameCounter++;
 function singleLaserBeam_render() {
     context.fillStyle = "white";
     if (!DEBUG_ELLI) {
-        context.strokeStyle = "white";
-        context.beginPath();
-        for (var i = 0; i < 12; i++) {
-            var size_rand = getCustomRandom(7,0);
-            var size_modulo = this.frameCounter % 7;
-            var size_progressive = this.frameCounter / 14;
-            context.arc((this.middleX+i) * 10, this.middleY * 10, 
-            8 + size_rand + size_modulo + size_progressive * 4, 0, Math.PI * 2);
-        }
-        context.fill();
+        context.fillRect(this.middleX * 10,this.middleY * 10,30,800);
     } else {
         context.fillText("TEST! - THIS FUNCTION IS CALLED...",400,300);
     }

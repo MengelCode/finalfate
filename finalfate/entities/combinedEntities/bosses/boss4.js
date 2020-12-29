@@ -24,7 +24,8 @@ function boss4_update() {
                     enemy_body_part.invalidate = func_noOp;
                     this.tiles_array.push(enemy_body_part);
                 } else {
-                    enemy_body_part = new SilentBlinky(x_param, y_param);
+                    enemy_body_part = new SilentBlinky(x_param,y_param,false,
+                    true);
                     this.enemies_puffer_array.push(enemy_body_part);
                 }
                 displayList.addElement(enemy_body_part, false);
@@ -60,7 +61,7 @@ function boss4_update() {
     else if (this.enemies_puffer_array.length>0 && !this.current_blinky_outside 
             && this.frameCounter % 10 === 0) {
         var blinkyToRemove = this.enemies_puffer_array.pop();
-        blinkyToRemove.invalidate();
+        blinkyToRemove.invalid = true;
         var blinkyPosition = getCustomRandom(5, 0);
         var positions = new Array(6);
         for (var i = 0; i < positions.length; i++) {
@@ -90,7 +91,7 @@ function boss4_update() {
     //Boss phase 2 - Single beam, Pattern 0
     else if(this.second_pattern === 0){
     if(!this.laser_cannon){
-        this.laser_cannon = new SingleLaserBeam(35,16);
+        this.laser_cannon = new SingleLaserBeam(29,16);
          displayList.addElement(this.laser_cannon, false);
          enemyList.addElement(this.laser_cannon, false);
     }    

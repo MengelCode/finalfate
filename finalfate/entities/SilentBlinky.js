@@ -11,9 +11,10 @@ class SilentBlinky extends Blinky {
      * @param {type} middleY
      * @returns {Blinky}
      */
-    constructor(middleX, middleY, expand = false) {
+    constructor(middleX, middleY, expand = false, invincible = false) {
         super(middleX, middleY);
         this.updateState = silentBlinky_update;
+        if(invincible)this.invalidate = func_noOp;
     }
     
 }
