@@ -6,8 +6,8 @@
 
 var crashLocation = new Array(10);
 
-crashLocation[0] = "IN SCHEDTASK";
-crashLocation[1] = "IN-GAME (rendering cycle - game logic)";
+crashLocation[0] = "IN-GAME (main loop - rendering)";
+crashLocation[1] = "IN-GAME (main loop - game logic)";
 crashLocation[2] = "IN LEVEL TRANSITION";
 crashLocation[3] = "AT TITLE SCREEN";
 crashLocation[4] = "....NOT";
