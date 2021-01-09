@@ -29,7 +29,10 @@ function gamePlay() {
         checkLeaveLevel();
         window.requestAnimationFrame(renderInGame);
     } catch (error) {
-        window.alert("EXCEPTION OCCURED IN-GAME!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
+      //Code for title screen.
+        crashCauseSet = 1;
+        errorObject = error;
+       exchangeRenderLoop(crashHandler);  
     }
 }
 
@@ -162,87 +165,95 @@ function bulletOnEnemies() {
 
 // 4 -  Render game objects.
 function renderInGame() {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
-    if (background !== null && background instanceof GameObject) {
-        if (renderFunction !== gamePause)
-            background.updateState();
-        background.renderState();
-    } else if (background !== null && background instanceof Decoration) {
-        if (renderFunction !== gamePause)
-            background.updateRoutine();
-        background.renderRoutine();
-    }
+    try {
+        context.fillStyle = "black";
+        context.fillRect(0, 0, 800, 600);
+        if (background !== null && background instanceof GameObject) {
+            if (renderFunction !== gamePause)
+                background.updateState();
+            background.renderState();
+        } else if (background !== null && background instanceof Decoration) {
+            if (renderFunction !== gamePause)
+                background.updateRoutine();
+            background.renderRoutine();
+        }
 
-    displayList.resetIterator();
-    while (displayList.peekNext() !== null) {
-        var v = displayList.getNext();
-        if (!v.invalid)
-            v.renderState();
-    }
-    if(renderFunction === gamePlay) renderHUD();
-    if (renderFunction === gamePause) {
-         renderHUD();
-        volume_prompt_render();
-        context.font = "27px Nonserif";
-        //Shared Y,X coordinates
-        let y = 245;
-        let x = 330;
-        //Display the pause menu options. (treat the case selected / not selected)
-        for (var i = 0; i < pauseText.length; i++) {
-            if (selectedOption === i) {
-                context.fillStyle = "yellow";
-                if (pauseCount % 5 === pauseCount % 10) {
+        displayList.resetIterator();
+        while (displayList.peekNext() !== null) {
+            var v = displayList.getNext();
+            if (!v.invalid)
+                v.renderState();
+        }
+        if (renderFunction === gamePlay)
+            renderHUD();
+        if (renderFunction === gamePause) {
+            renderHUD();
+            volume_prompt_render();
+            context.font = "27px Nonserif";
+            //Shared Y,X coordinates
+            let y = 245;
+            let x = 330;
+            //Display the pause menu options. (treat the case selected / not selected)
+            for (var i = 0; i < pauseText.length; i++) {
+                if (selectedOption === i) {
+                    context.fillStyle = "yellow";
+                    if (pauseCount % 5 === pauseCount % 10) {
+                        context.fillText(pauseText[i], x, y + i * 30);
+                    }
+                } else {
+                    context.fillStyle = "white";
                     context.fillText(pauseText[i], x, y + i * 30);
                 }
-            } else {
-                context.fillStyle = "white";
-                context.fillText(pauseText[i], x, y + i * 30);
             }
-        }
-        //"Are you sure?" options.
-        if (selectedOption >= pauseText.length) {
-            context.fillStyle = "gray";
-            context.fillRect(290, 190, 260, 200);
-            context.fillStyle = "black";
-            context.fillRect(290, 190, 260, 35);
-            context.font = "27px Nonserif";
-            context.fillStyle = "white";
-            context.fillText(pauseText[selectedOption - 3], 290, 220);
-            context.fillText(youSureQuestion, 290, 250);
-            if (!selectedSureOption) {
-                if (pauseCount % 5 === pauseCount % 10) {
-                    context.fillStyle = "yellow";
+            //"Are you sure?" options.
+            if (selectedOption >= pauseText.length) {
+                context.fillStyle = "gray";
+                context.fillRect(290, 190, 260, 200);
+                context.fillStyle = "black";
+                context.fillRect(290, 190, 260, 35);
+                context.font = "27px Nonserif";
+                context.fillStyle = "white";
+                context.fillText(pauseText[selectedOption - 3], 290, 220);
+                context.fillText(youSureQuestion, 290, 250);
+                if (!selectedSureOption) {
+                    if (pauseCount % 5 === pauseCount % 10) {
+                        context.fillStyle = "yellow";
+                        context.fillText(youSure[0], 290, 385);
+                    }
+                    context.fillStyle = "white";
+                    context.fillText(youSure[1], 420, 385);
+                } else {
+                    if (pauseCount % 5 === pauseCount % 10) {
+                        context.fillStyle = "yellow";
+                        context.fillText(youSure[1], 420, 385);
+                    }
+                    context.fillStyle = "white";
                     context.fillText(youSure[0], 290, 385);
                 }
-                context.fillStyle = "white";
-                context.fillText(youSure[1], 420, 385);
-            } else {
-                if (pauseCount % 5 === pauseCount % 10) {
-                    context.fillStyle = "yellow";
-                    context.fillText(youSure[1], 420, 385);
-                }
-                context.fillStyle = "white";
-                context.fillText(youSure[0], 290, 385);
-            }
 
+            }
+            //Save success notification.
+            if (saveCompleteTimer) {
+                context.fillStyle = "black";
+                context.fillRect(290, 190, 260, 35);
+                context.fillStyle = "white";
+                context.font = "27px Nonserif";
+                context.fillText(saveComplete, 290, 220);
+                saveCompleteTimer--;
+            } else if (saveFailureTimer) {
+                context.fillStyle = "black";
+                context.fillRect(290, 190, 260, 35);
+                context.fillStyle = "white";
+                context.font = "27px Nonserif";
+                context.fillText(saveFailure, 290, 220);
+                saveFailureTimer--;
+            }
         }
-        //Save success notification.
-        if (saveCompleteTimer) {
-            context.fillStyle = "black";
-            context.fillRect(290, 190, 260, 35);
-            context.fillStyle = "white";
-            context.font = "27px Nonserif";
-            context.fillText(saveComplete, 290, 220);
-            saveCompleteTimer--;
-        } else if (saveFailureTimer) {
-            context.fillStyle = "black";
-            context.fillRect(290, 190, 260, 35);
-            context.fillStyle = "white";
-            context.font = "27px Nonserif";
-            context.fillText(saveFailure, 290, 220);
-            saveFailureTimer--;
-        }
+    } catch (error) {
+//Code for title screen.
+        crashCauseSet = 0;
+        errorObject = error;
+        exchangeRenderLoop(crashHandler);
     }
 }
 
@@ -336,8 +347,10 @@ function loadLevel() {
                 throw loadingException;
         }
     } catch (error) {
-        window.alert("EXCEPTION OCCURED! Failed to begin level transition. \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
-        exchangeRenderLoop(null);
+//Code for level transition.
+        crashCauseSet = 2;
+        errorObject = error;
+        exchangeRenderLoop(crashHandler);
     }
 }
 
