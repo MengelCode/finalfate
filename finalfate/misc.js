@@ -103,7 +103,22 @@ function increaseCount() {
     aniCount++;
     aniCountRelative++;
 }
-
+/**
+ * The Canvas 2D fillText implementation does not allow multi-line drawing.
+ * This function is capable of this.
+ * @param {type} string String to draw on screen.
+ * @param {type} x X coordinate of all lines.
+ * @param {type} y Y coordinate of first line.
+ * @param {type} offset Offset between the lines of text.
+ * @param {type} delimiter Custom delimiter if "\n" is not applicable.
+ * @returns {undefined}
+ */
+function fillTextMultiLine(string,x,y,offset, delimiter = "\n") {
+    var stringArray = string.split(delimiter);
+    for (var i = 0; i < stringArray.length; i++) {
+    context.fillText(stringArray[i],x,y + (i*offset));
+    }
+}
 
 //General-purpose dialogue options and text.
 var youSure = ["No", "Yes"];

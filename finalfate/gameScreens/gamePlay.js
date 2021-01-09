@@ -29,7 +29,10 @@ function gamePlay() {
         checkLeaveLevel();
         window.requestAnimationFrame(renderInGame);
     } catch (error) {
-        window.alert("EXCEPTION OCCURED IN-GAME!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
+      //Code for title screen.
+        crashCauseSet = 1;
+        errorObject = error;
+       exchangeRenderLoop(crashHandler);  
     }
 }
 

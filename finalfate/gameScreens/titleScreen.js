@@ -48,8 +48,10 @@ function titleScreen() {
             }
         }
     } catch (error) {
-        window.alert("EXCEPTION OCCURED IN TITLE SCREEN!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
-
+        //Code for title screen.
+        crashCauseSet = 3;
+        errorObject = error;
+       exchangeRenderLoop(crashHandler);
     }
 
 }
