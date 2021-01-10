@@ -34,6 +34,8 @@ function initAllInput() {
         //Keyboard input catching.
         window.addEventListener("keydown", getKeyPress);
         window.addEventListener("keyup", getKeyRelease);
+        //Mouse movement catching.
+        window.addEventListener("mousemove", getMouseMovement);
     }
     if (gamepad_handle !== null) {
         //Terminate polling of specific (?) gamepad.
@@ -44,6 +46,59 @@ function initAllInput() {
     keyboard = false;
     gamepad = false;
     gamepad_removed = false;
+}
+
+var speed = 0.5;
+//animating without floor/ceil will cause the ship coord, to be float values and introducing a bug where the ship is invulnerable
+//but floor/ceil will cause data loss on the movement the lower the speed of the animation is set to.
+//without animation or speed==1 the movement is very snappy and quick - maybe its even too good makes the game easy.
+function animateShip(mouseX,mouseY){
+    let distX = mouseX - player.middleX;
+    let distY = mouseY - player.middleY;
+    let dist = Math.sqrt(distX*distX + distY*distY);
+
+    let boundX = Math.ceil(player.middleX + (distX * speed));
+    let boundY = Math.ceil(player.middleY + (distY * speed));
+
+    if(dist > 1){
+        if(boundX > 2 && boundX < 77)
+            player.middleX = boundX;
+        if(boundY > 28 && boundY < 53)
+            player.middleY = boundY;
+    }
+}
+//here you can view the version that makes the ship invulnerable
+function animateShipSmooth(mouseX,mouseY){
+    let distX = mouseX - player.middleX;
+    let distY = mouseY - player.middleY;
+    let dist = Math.sqrt(distX*distX + distY*distY);
+
+    let boundX = player.middleX + (distX * 0.12);
+    let boundY = player.middleY + (distY * 0.12); //hardcoded speed for this example
+
+    if(dist > 1){
+        if(boundX > 2 && boundX < 77)
+            player.middleX = boundX;
+        if(boundY > 28 && boundY < 53)
+            player.middleY = boundY;
+    }
+}
+
+function getMouseMovement(event){
+    //keyboard = 1; //also keyboard = 1 causes the title screen to skip instantly? thinks its gamepad?
+    if(!(background==null || renderFunction === gamePause)){ //during pause the game can be cheated with snap movements, smooth animation would prob solve that
+        var newMouseX = event.pageX;
+        var newMouseY = event.pageY;
+        var w = canvas.getAttribute("width");
+        var h = canvas.getAttribute("height");
+        var scaleW = 800/w;
+        var scaleH = 600/h;
+        newMouseX = Math.floor(newMouseX*scaleW/10);
+        newMouseY = Math.floor(newMouseY*scaleH/10); // /10 Because in spaceship render function the middlex and middley is getting multiplied by 10.
+
+        animateShip(newMouseX,newMouseY);
+        //animateShipSmooth(newMouseX,newMouseY);
+    }
 }
 
 //Event receiver for key presses.
