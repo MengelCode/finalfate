@@ -3,7 +3,6 @@
  * Laser beam used by boss 4.
  * 
  */
-const DEBUG_ELLI = false;
 class SingleLaserBeam extends Enemy {
      /**
      * Create a silent blinky enemy object.
@@ -28,11 +27,13 @@ this.frameCounter++;
 }
 
 function singleLaserBeam_render() {
-    context.fillStyle = "white";
-    if (!DEBUG_ELLI) {
+    if (this.frameCounter % 3 === 0 && this.frameCounter < 60) {
+        context.fillStyle = "white";
         context.fillRect(this.middleX * 10,this.middleY * 10,30,800);
-    } else {
-        context.fillText("TEST! - THIS FUNCTION IS CALLED...",400,300);
+    }
+    else if(this.frameCounter > 86){
+        context.fillStyle = "red";
+        context.fillRect(this.middleX * 10,this.middleY * 10,30,800);   
     }
 }
 

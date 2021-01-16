@@ -10,10 +10,10 @@ function boss4_update() {
         player.checkpoint = 4;
         this.tiles_array = [];
         this.enemies_puffer_array = [];
+        this.second_pattern = false;
+        this.reference_counter = undefined;
         this.bombs_placed = [];
         this.current_blinky_outside = undefined;
-        this.second_pattern = undefined;
-        this.laser_cannon = undefined;
         for (var j = 0; j < 3; j++)
             for (var i = 0; i < 18; i++) {
                 var enemy_body_part = undefined;
@@ -84,17 +84,20 @@ function boss4_update() {
     }
     //Intermission from Boss phase 1 to phase 2
     else if (this.enemies_puffer_array.length === 0 &&
-            this.second_pattern === undefined) {
-        this.frameCounter = 1;
-        this.second_pattern = 0;
+            this.second_pattern === false) {
+        for (var i = 0; i < this.tiles_array.length; i++) {
+        var oldEntity = this.tiles_array[i];    
+        oldEntity.invalid = true;
+        var newEntity = new BlinkyTracer(oldEntity.middleX, oldEntity.middleY);
+        this.tiles_array[i] = newEntity;
+        displayList.addElement(newEntity, false);
+        enemyList.addElement(newEntity, false);
+        this.second_pattern = true;
+        this.referenceCounter = this.frameCounter;
+        }
     }
-    //Boss phase 2 - Single beam, Pattern 0
-    else if(this.second_pattern === 0){
-    if(!this.laser_cannon){
-        this.laser_cannon = new SingleLaserBeam(29,16);
-         displayList.addElement(this.laser_cannon, false);
-         enemyList.addElement(this.laser_cannon, false);
-    }    
+    else if(this.frameCounter > (this.referenceCounter + 2900)){
+        this.invalid = true;
     }
     this.frameCounter++;
 }
