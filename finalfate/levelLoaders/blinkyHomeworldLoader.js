@@ -4,7 +4,6 @@
  * and most likely last regular in-game level.
  */
 
-const DEBUG_COMPLETE_RANDOM = false;
 
 /**
  * Level 4 - Blinky Homeworld
@@ -12,12 +11,8 @@ const DEBUG_COMPLETE_RANDOM = false;
  * 
  */
 function blinkyHomeworldLoader() {
-    while (DEBUG_COMPLETE_RANDOM) {
-        window.alert("Random X normal:" + getRandomX());
-        window.alert("Random X custom:" + getCustomRandom(80, 0));
-        window.alert("Random custom 20 to 40:" + getCustomRandom(40, 20));
-    }
     try {
+        background = new Enemy(0,0,background_dimension,func_noOp,background4_render);
         var enem = null;
         var lastValue = 0;
         if (player.checkpoint === 4) {
