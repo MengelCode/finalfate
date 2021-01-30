@@ -23,7 +23,7 @@ function blinkyHomeworldLoader() {
         }
         if (player.checkpoint < 3) {
             for (var i = 0; i < 6; i++) {
-                enem = new FogBomb(20 + i * 8, 20 + i * 5);
+                enem = new FogBomb(20 + i * 8, 20);
                 Spawn.createAndAddSpawn(90 + 10 * i, enem);
                 if (i === 5) {
                     enem = new ShipBuster(70, 20);
@@ -76,7 +76,7 @@ function blinkyHomeworldLoader() {
                 }
                 spawnListArrayAdd(enem, lastValue);
                 if (i === 7) {
-                    enem = new ShipBuster(6, 40);
+                    enem = new ShipBuster(6, 11);
                     Spawn.createAndAddSpawn(lastValue + 10, enem);
                 } else if (i === 11) {
                     enem = new BlinkyTracer(45, 29);
@@ -125,7 +125,7 @@ function blinkyHomeworldLoader() {
                             spawnListArrayAdd(enem, lastValue);
                             break;
                         case 4:
-                            enem = new FogBomb(getRandomX(), getRandomCustom(50, 25));
+                            enem = new FogBomb(getRandomX(), getRandomCustom(25, 5));
                             Spawn.createAndAddSpawn(lastValue, enem);
                             break;
                     }

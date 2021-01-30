@@ -11,7 +11,7 @@ class House extends Decoration {
         this.width = width;
         this.height = height;
         this.rendering_distance = rendering_distance;
-        if(!color) this.color = getCustomRandom(3,0);
+        if(!colorCode) this.color = getCustomRandom(3,0);
         else this.color = colorCode;
     }
 }
