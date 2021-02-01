@@ -42,6 +42,15 @@ This game needs players! Please give the game a feedback via the Issues function
 Some people tend to epilepsy triggered by (flashing) light effects. Theoretically, everyone can encounter this 
 the first time. If you are known for this type of epilepsy or notice that something is off, immediately stop to play the game.
 
+## HTML 5 Web Storage & Privacy
+
+The progress of the game can be saved if the player wishes so. The technology HTML 5 local storage does save data in a storage
+space managed by the used web browser per domain and protocol (i.e HTTP, HTTPS). In contrast to cookies, those data are NOT transferred to the server by default and in the case
+of the game, they are not transferred at any given time. Some web browsers manage the usage of this function the same way as they do for
+cookies. Some browsers might even state that the game does place cookies, but this is not completely the truth from a technical point of view. The game
+progress you can save (this does not happen automatically!) cannot be used to identify you. Also, it is impossible for the hoster of the involved
+web server to give you a copy of your game save and your own local storage space.
+
 ## Ways to prepare the game
 
 There are severals for you to play the game. Decide which one you like to use. \
