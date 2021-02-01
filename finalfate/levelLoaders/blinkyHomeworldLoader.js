@@ -12,7 +12,8 @@
  */
 function blinkyHomeworldLoader() {
     try {
-        background = new Enemy(0,0,background_dimension,func_noOp,background4_render);
+        background = new Enemy(0,0,background_dimension,background4_update,
+        background4_render);
         var enem = null;
         var lastValue = 0;
         if (player.checkpoint === 4) {
