@@ -5,15 +5,20 @@
 
 
 class House extends Decoration {
-    constructor(beginX,beginY,width,height,rendering_distance = 0, 
+    constructor(beginX,beginY,width,height,movement = 0, 
         colorCode = undefined) {
         super(beginX,beginY,house_render);
         this.width = width;
         this.height = height;
-        this.rendering_distance = rendering_distance;
         if(!colorCode) this.color = getCustomRandom(3,0);
         else this.color = colorCode;
+        this.movement = movement;
     }
+}
+
+function house_update(){
+    this.middleY+=this.movement;
+    this.height-=this.movement;    
 }
 
 function house_render(){
