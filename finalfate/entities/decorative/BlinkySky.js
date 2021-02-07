@@ -15,6 +15,7 @@ class BlinkySky extends Decoration {
     
 }
 function level4sky_update(){
+ if(this.depth>800)return;
  this.depth+=this.movement;   
 }
 function level4sky_render(){

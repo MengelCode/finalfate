@@ -7,7 +7,7 @@
 class House extends Decoration {
     constructor(beginX,beginY,width,height,movement = 0, 
         colorCode = undefined) {
-        super(beginX,beginY,house_render);
+        super(beginX,beginY,house_render,house_update);
         this.width = width;
         this.height = height;
         if(!colorCode) this.color = getCustomRandom(3,0);
@@ -17,8 +17,7 @@ class House extends Decoration {
 }
 
 function house_update(){
-    this.middleY+=this.movement;
-    this.height-=this.movement;    
+    this.middleY+=this.movement;   
 }
 
 function house_render(){
