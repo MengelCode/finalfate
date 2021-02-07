@@ -1,8 +1,8 @@
 # The Final Fate
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub issues](https://img.shields.io/github/issues/mengel38/finalfate.svg?label=%22Githubissues%22)](https://github.com/mengel38/finalfate/issues)
-[![GitHub stars](https://img.shields.io/github/stars/mengel38/finalfate.svg?style=social&label=Star)](https://github.com/mengel38/finalfate/)
+[![GitHub issues](https://img.shields.io/github/issues/mengelcode/finalfate.svg?label=%22Githubissues%22)](https://github.com/mengelcode/finalfate/issues)
+[![GitHub stars](https://img.shields.io/github/stars/mengelcode/finalfate.svg?style=social&label=Star)](https://github.com/mengelcode/finalfate/)
 
 [![Docker Build Type](https://img.shields.io/docker/cloud/automated/mengel38/finalfate.svg)](https://hub.docker.com/r/mengel38/finalfate/)
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/mengel38/finalfate.svg)](https://hub.docker.com/r/mengel38/finalfate/)
@@ -11,20 +11,45 @@
 
 ## The Project
 
-I decided to train JavaScript in my spare-time. I am in the creation of a HTML 5 space game. Your goal is it to successfully win all levels by shooting the bad guys down and challenging the level bosses. You can control the game with the arrow keys and the space key on your keyboard or go ahead and use a GamePad with an analogue stick and a designated fire button (chosen by pressing it on the title screen). Keep in mind that this feature is experimental.
+This HTML 5 space game's first commit has been made the Jul 4, 2019 by Manuel Engel willing to train in JavaScript during the spare-time.
 
-## The Goal
+## The Game
+This is a low poly 2D space game with differently colored enemies you will find on your way. You need to survive avoiding spaceships and missiles. The game has five levels and you can play it as a beginner, as a good player, a hard player or as a master. Your goal is to successfully win all levels by shooting the bad guys down and challenging the level bosses.
 
-The goal is to be fully compatible with modern Firefox and Chromium/Chrome browsers, while featuring a playable and fun space game with five levels.
+## User Interface
+When playing the game you can see the value of the score, health, lifes and level written at the bottom of the screen in a black horizontal bar. 
+
+## The player and the ship's missiles
+Your player is a low poly gray spaceship with a yellow head and orange sides.
+
+## The controls 
+ You can control the game with the arrow keys and the space key on your keyboard or by going ahead and use a gamepad with an analogue stick and a designated fire button (chosen by pressing it on the title screen). 
+You can pause the game using the "P" button if you use a keyboard or key 09 (mostly known as "The start button") if you use a gamepad. Keep in mind that the gamepad feature is experimental.
+
+## Game music and sounds effects
+The game has music and sounds effects. When you lower the volume of music then the sounds effects are also lowered. 
+
+## Web browser compatibility
+
+This game has to to be fully compatible with modern Firefox and Chromium/Chrome browsers. If you encounter any issues please send us the error you are facing.
 
 ## Play the current version
 
-Test players are needed! Feel free to give feedback via the Issues function. Available content : approx. 40 % out of the informally planned scope.
+This game needs players! Please give the game a feedback via the Issues function. Available content : approx. 60 % out of the informally planned scope.
 
 ### Epilepsy warning
 
-Some people tend to epilepsy triggered by (flashing) light effects. Theoretically, everyone can encounter this for
-their first time. If you are known for this type of epilepsy or notice that something is off, immediately stop to play the game.
+Some people tend to epilepsy triggered by (flashing) light effects. Theoretically, everyone can encounter this 
+the first time. If you are known for this type of epilepsy or notice that something is off, immediately stop to play the game.
+
+## HTML 5 Web Storage & Privacy
+
+The progress of the game can be saved if the player wishes so. The technology HTML 5 local storage does save data in a storage
+space managed by the used web browser per domain and protocol (i.e HTTP, HTTPS). In contrast to cookies, those data are NOT transferred to the server by default and in the case
+of the game, they are not transferred at any given time. Some web browsers manage the usage of this function the same way as they do for
+cookies. Some browsers might even state that the game does place cookies, but this is not completely the truth from a technical point of view. The game
+progress you can save (this does not happen automatically!) cannot be used to identify you. Also, it is impossible for the hoster of the involved
+web server to give you a copy of your game save and your own local storage space.
 
 ## Ways to prepare the game
 
@@ -33,12 +58,12 @@ There are severals for you to play the game. Decide which one you like to use. \
 If you do not want any big setup, but simply a quick round of action, you should definitely look [here](https://manuel-engel.de/finalfate/finalfate). \
 \
 **2) Locally storing the files and directly opening the html file** \
-Clone the repository, or, if Git is not your tool of choice (How did you find me in this case? Let me know.), you can manually download the respective files. Mandatory downloads are index.html and logic.js in the finalfate directory, the sound files are optional. Please include a copy of the license file when making the game available to others. \
+Clone the repository, or, if Git is not your tool of choice (How did you find me in this case? Let me know.), you can manually download the respective files. Mandatory downloads are index.html and all the .js files in the finalfate directory, the sound files are optional. Please include a copy of the license file when making the game available to others. \
 \
 **3) Serving the game's files over a webserver** \
-Do what listed in 2) and either host the game on your computer or a web hosting provider you trust.
+Follow the 2nd option "Locally storing the files" and either host the game on your computer or a web hosting provider you trust.
 This way needs a bit more technical knowledge, but the advantage is that your family at home or possibly the entire world can enjoy a cool space ship adventure!
-Please make sure the users are able to review the license, e.g. mentioning it on your homepage when you link to the game. \
+Please make sure users are able to review the license, e.g. mentioning it on your homepage when you link to the game. \
 \
 **4) Setting up a docker container as server** \
 Thanks to the [work](https://github.com/ichbestimmtnicht/docker-autobuild-release) of [Ludwig Werner Döhnert](https://github.com/ichbestimmtnicht/), docker images for amd64, arm32v7 and arm64v8 are available. \

@@ -48,8 +48,10 @@ function titleScreen() {
             }
         }
     } catch (error) {
-        window.alert("EXCEPTION OCCURED IN TITLE SCREEN!! \n" + "Exception name:" + error.name + "\n" + "Exception message:" + error.message + "\n" + "Stack Trace:" + error.stack);
-
+        //Code for title screen.
+        crashCauseSet = 3;
+        errorObject = error;
+       exchangeRenderLoop(crashHandler);
     }
 
 }
@@ -98,5 +100,5 @@ function title_and_copyright_render() {
     context.fillText("THE FINAL FATE", 120, 150);
     context.font = "17px Nonserif";
     context.fillStyle = "white";
-    context.fillText("GAME (C) 2019-2020 Manuel Engel", 220, 580);
+    context.fillText("GAME (C) 2019-2021 Manuel Engel", 220, 580);
 }
