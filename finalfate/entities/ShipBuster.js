@@ -32,6 +32,9 @@ function shipBuster_render() {
 //"Ship Buster" special invalidation function.
 function shipBuster_invalidateSpecial(){
     simplyPlaySound(sfx1);
-    player.health-=27;
+    if(player.skill === 0)player.health-=27;
+    else if(player.skill === -1)player.health-=14;
+    else if(player.skill === 1)player.health-=70;
+    else player.health = 0;
     displayList.addElement(new Boom(),false);
 }
