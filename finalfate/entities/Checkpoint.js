@@ -19,6 +19,6 @@ class Checkpoint extends Enemy {
 
 function checkpoint_update(){
 player.checkpoint = this.checkpointNo;
-this.savedScore = player.score;
+savedScore = player.score;
 }
 

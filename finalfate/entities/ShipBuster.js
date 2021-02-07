@@ -34,7 +34,7 @@ function shipBuster_invalidateSpecial(){
     simplyPlaySound(sfx1);
     if(player.skill === 0)player.health-=27;
     else if(player.skill === -1)player.health-=14;
-    else if(player.skill === 1)player.health-=70;
-    else player.health = 0;
+    else if(player.skill === 1)player.health-=45;
+    else player.health-=60;
     displayList.addElement(new Boom(),false);
 }
