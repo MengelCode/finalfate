@@ -36,6 +36,8 @@ function initAllInput() {
         window.addEventListener("keyup", getKeyRelease);
         //Mouse movement catching.
         window.addEventListener("mousemove", getMouseMovement);
+        window.addEventListener("mousedown", getMouseDown);
+        window.addEventListener("mouseup", getMouseUp);
     }
     if (gamepad_handle !== null) {
         //Terminate polling of specific (?) gamepad.
@@ -123,6 +125,21 @@ function getKeyPress(event) {
         } else if (event.keyCode === 80) {
             pause = 5;
         }
+    }
+}
+
+function getMouseDown(event) {
+    if (typeof event === 'object') {
+    //keycode 0 -> most browsers
+    //keycode 1 -> internet explorer left click -> middle mouse on other browsers
+      switch (event.button) {
+        case 0:
+          shoot = 5;
+          break;
+        case 1:
+          shoot = 5;
+          break;
+      }
     }
 }
 
@@ -245,6 +262,21 @@ function getKeyRelease(event) {
         }
     }
 
+}
+
+function getMouseUp(event) {
+    if (typeof event === 'object') {
+    //keycode 0 -> most browsers
+    //keycode 1 -> internet explorer left click -> middle mouse on other browsers
+      switch (event.button) {
+        case 0:
+          shoot = 0;
+          break;
+        case 1:
+          shoot = 0;
+          break;
+      }
+    }
 }
 
 /**
