@@ -55,8 +55,6 @@ initAllInput();
 window.addEventListener("resize", sizeChanged);
 //Invalidate keyboard input when window focus is lost.
 window.addEventListener("blur",focusLost);
-//window.canvas.width = 800;
-//window.canvas.height = 600;
 
 
 
@@ -749,10 +747,6 @@ function background1_render() {
     context.fillRect(this.middleX, this.middleY - 150, 800, 180);
     context.fillStyle = "#0000FF";
     context.fillRect(this.middleX, this.middleY, 800, 600);
-
-    //Spaceship moving bounds -- remove this at deployment
-    context.fillStyle = "#000089";
-    context.fillRect(20, 280, 760, 260);
 }
 
 //Level 2 - The Solar System rendering function
