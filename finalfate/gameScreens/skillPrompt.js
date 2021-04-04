@@ -47,15 +47,15 @@ function skillPrompt() {
         simplyPlaySound(sfx4);
         switch (loadSelected) {
             case 0:
-                initGame(skillSelected, Number(savedLevel % 10), Number(savedLevel / 10));
+                initGame(gamePlayArcade,skillSelected, Number(savedLevel % 10), Number(savedLevel / 10));
                 return;
             case undefined:
             case 1:
-                initGame(skillSelected);
+                initGame(gamePlayArcade,skillSelected);
                 return;
             case 2:
                 getLocalStorage().removeItem(gameStorageName);
-                initGame(skillSelected);
+                initGame(gamePlayArcade,skillSelected);
 
         }
     }

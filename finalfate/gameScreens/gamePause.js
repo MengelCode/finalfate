@@ -28,6 +28,7 @@ function gamePause() {
         simplyPlaySound(sfx4);
         pauseReleased = false;
         bgm.play();
+        //Keep in mind this needs to jump to the correct game mode.
         exchangeRenderLoop(gamePlay, true);
     }
     //Check for confirming something that does not mean continue.
@@ -87,7 +88,7 @@ function gamePause() {
     else if (shoot && selectedOption === pauseText.length + 1 && selectedSureOption && shootReleased) {
         simplyPlaySound(sfx4);
         pauseReleased = false;
-        exchangeRenderLoop(gamePlay, true);
+        exchangeRenderLoop(gamePlayArcade, true);
         player.health = 0;
     }
     //Confirming "Yes" when being asked to return to title.

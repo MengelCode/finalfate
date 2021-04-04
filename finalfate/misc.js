@@ -210,3 +210,5 @@ var newWidth = null;
 var newHeight = null;
 //Context
 var context = canvas.getContext("2d");
+//Rendering function of the corresponding game mode.
+var gamePlay = undefined;
