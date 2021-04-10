@@ -1,7 +1,22 @@
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * gamePlayParty.js
+ * Rendering cycle and helper functions for the game's Party Mode.
  */
-
+/**
+ * The main game loop of the "Party Mode".
+ * @returns {undefined}
+ */
+function gamePlayParty(){  
+ try {
+  updateGameObjects();   
+  deleteDeceased();   
+  window.requestAnimationFrame(renderInGame);   
+ }
+ catch (error) {
+      //Code for title screen.
+        crashCauseSet = 1;
+        errorObject = error;
+       exchangeRenderLoop(crashHandler);  
+    }
+}
 
