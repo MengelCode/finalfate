@@ -26,7 +26,7 @@ class SpaceCannon extends GameObject {
     }
 }
 /**
- * Rendering function of the 
+ * Rendering function of the space cannon's crossfire.
  * 
  */
 SpaceCannon.prototype.renderState = function(){

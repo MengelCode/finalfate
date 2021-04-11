@@ -31,19 +31,7 @@ function titleScreen() {
                 shootReleased = false;
             }
             if (keyboard || gamepad !== false) {
-                if (storageStatus === false) {
-                    simplyPlaySound(sfx4);
-                    exchangeRenderLoop(skillPrompt);
-                }
-                else if (storageStatus === null){
-                    simplyPlaySound(sfx4);
-                    exchangeRenderLoop(loadFail);
-                }
-                else {
-                    shootReleased = false;
-                    simplyPlaySound(sfx4);
-                    exchangeRenderLoop(loadPrompt);
-                }
+                exchangeRenderLoop(modePrompt);
 
             }
         }
@@ -70,7 +58,7 @@ var volumePause = "(change with left / right)";
 function volume_prompt_render(){
     context.fillStyle = "white";
     var volumeControls = renderFunction === skillPrompt ||
-            renderFunction === loadPrompt;
+            renderFunction === loadPrompt || renderFunction === modePrompt;
     if (volumeControls) {
         context.fillText(volumeText + " " + volumeTitle + ": " + masterVolume + " %", 195, 530);
         if (up && masterVolume < 100)

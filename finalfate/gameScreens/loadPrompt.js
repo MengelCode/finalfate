@@ -18,6 +18,7 @@ function loadPrompt() {
     validateReleasedState();
     checkGamepadRemoved(loadPrompt);
     volume_prompt_render();
+    renderGameModeHeading(0);
     context.fillStyle = "blue";
     context.fillRect(290, 190, 260, 200);
     context.font = "27px Nonserif";

@@ -14,9 +14,10 @@ function skillPrompt() {
     validateReleasedState();
     checkGamepadRemoved(skillPrompt);
     volume_prompt_render();
+    renderGameModeHeading(0);
     context.font = "27px Nonserif";
     context.fillStyle = "white";
-    context.fillText(selectSkill, 220, 450);
+    context.fillText(selectSkill, 220, 290);
     if (aniCount < 4) {
         skillSelected = undefined;
     } else if (aniCount === 5) {
@@ -31,7 +32,7 @@ function skillPrompt() {
         } else {
             context.fillStyle = "white";
         }
-        context.fillText(skillSelections[i + 2], 200 + skillScreenDelta[i + 2], 500);
+        context.fillText(skillSelections[i + 2], 200 + skillScreenDelta[i + 2], 340);
     }
     //Selecting around.
     if (right && axisXReleased && skillSelected < 2) {

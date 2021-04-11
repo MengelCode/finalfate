@@ -7,19 +7,28 @@
  * 
  * Define the beginning state of the game, then start with the first level.
  */
-function initGame(gameMode,skillLevel, savedLevel = undefined, bulletColor = 0) {
+function initGame(gameMode, skillLevel = 0, savedLevel = undefined, bulletColor = 0) {
     gamePlay = gameMode;
-    if(gamePlay === gamePlayArcade){
-    player = new SpaceShip(38, 52);
-    //CHEAT ZONE!!!
-    player.level = savedLevel === undefined ? 0 : savedLevel;
-    player.skill = skillLevel;
-    player.bulletColor = parseInt(bulletColor);
-    this.savedScore = 0;
-    // renderReset = 9000;
-    //CHEAT ZONE end.
-    loadLevel();
-}
+    if (gamePlay === gamePlayArcade) {
+        player = new SpaceShip(38, 52);
+        //CHEAT ZONE!!!
+        player.level = savedLevel === undefined ? 0 : savedLevel;
+        player.skill = skillLevel;
+        player.bulletColor = parseInt(bulletColor);
+        this.savedScore = 0;
+        // renderReset = 9000;
+        //CHEAT ZONE end.
+    } else if (gamePlay === gamePlayParty) {
+       player = new Array(6);
+       player.level = 0;
+       player.health = 100;
+       player.score = 0;
+       player.time = 0;
+       player.updateState = func_noOp;
+       player.renderState = func_noOp;
+        
+    }
+     loadLevel();
 }
 
 // 5 - Delete all elements which declared themselves as no longer needed. Or left the screen.
@@ -50,13 +59,29 @@ function renderHUD() {
     context.font = "27px Nonserif";
     context.fillText(player.score, 0, 581);
     context.fillText(player.health, 245, 581);
-    context.fillText(player.lifes, 350, 581);
     context.fillText(player.level + 1, 700, 581);
     context.font = "13px Nonserif";
-    context.fillText("SCORE", 0, 595);
     context.fillText("HEALTH", 245, 595);
-    context.fillText("LIVE", 350, 595);
     context.fillText("LEVEL", 700, 595);
+    if (gamePlay !== gamePlayParty) {
+        context.font = "27px Nonserif";
+        context.fillText(player.lifes, 350, 581);
+        context.font = "13px Nonserif";
+        context.fillText("SCORE", 0, 595);
+        context.fillText("LIFE", 350, 595);
+    }
+    else {
+        context.font = "27px Nonserif";
+        var wholeMinutes = Math.floor(player.time / 60);
+        var remainingSeconds = player.time % 60;
+        if(remainingSeconds < 10){
+            remainingSeconds = "0" + remainingSeconds;
+        }
+        context.fillText(wholeMinutes + ":" + remainingSeconds,350,581);
+        context.font = "13px Nonserif";
+        context.fillText("TEAM SCORE", 0, 595);
+        context.fillText("TIME", 350, 595);
+    }
 }
 
 
@@ -91,7 +116,9 @@ function loadLevel() {
             exchangeRenderLoop(null);
         } else {
             background = null;
-            loaders[player.level]();
+            if (gamePlay == gamePlayArcade) {
+                loaders[player.level]();
+            }
             if (loadingException === null) {
                 //TODO: Take care of this.
                 exchangeRenderLoop(gamePlay);
