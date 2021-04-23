@@ -9,7 +9,7 @@
 function gamePlayParty(){  
  try {
   updateGameObjects();   
-  deleteDeceased();   
+  deleteDeceased(true);   
   window.requestAnimationFrame(renderInGame);   
  }
  catch (error) {

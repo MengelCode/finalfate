@@ -16,24 +16,61 @@ class SpaceCannon extends GameObject {
      * @param {type} color Color string used upon rendering.
      * @returns {SpaceCannon}
      */
-    constructor(middleX,middleY,inputCode = undefined,color = "#DDCC11"){
+    constructor(middleX,middleY,color = "#DDCC11",inputCode = undefined,speed = 15){
         super();
         this.middleX = middleX;
         this.middleY = middleY;
-        this.radius = 60;
+        this.radius = 18;
         this.inputCode = inputCode;
         this.color = color;
+        this.speed = speed;
     }
 }
+/**
+ * 
+ * Update function of the space cannon's crossfire.
+ */
+SpaceCannon.prototype.updateState = function(){
+    //The input system is still not good - use this in order.
+    if(this.inputCode === undefined){
+        if(up){
+            this.middleY-=this.speed;
+        }
+        else if(down){
+           this.middleY+=this.speed; 
+        }
+        if(left){
+            this.middleX-=this.speed;
+        }
+        else if(right){
+           this.middleX+=this.speed; 
+        }
+    }
+};
+
 /**
  * Rendering function of the space cannon's crossfire.
  * 
  */
 SpaceCannon.prototype.renderState = function(){
 context.fillStyle = this.color;
-context.lineWidth = 20;
+context.fillText(this.middleY,20,20);
+//Begin: Draw the circle.    
 context.beginPath();
-context.arc(this.middleX, this.middleY, this.radius, 0, 2 * Math.PI, false);
+context.lineWidth = 2;
+context.strokeStyle = this.color;
+context.arc(this.middleX, this.middleY, this.radius, 0, 2 * Math.PI, true);
 context.stroke();
+//End: Draw the circle.
+//Begin: Lines.
+context.beginPath();
+context.lineWidth = 2;
+context.strokeStyle = this.color;
+context.moveTo(this.middleX-this.radius,this.middleY);
+context.lineTo(this.middleX+this.radius,this.middleY);
+context.moveTo(this.middleX,this.middleY-this.radius);
+context.lineTo(this.middleX,this.middleY+this.radius);
+context.stroke();
+//End: Lines.
 };
 

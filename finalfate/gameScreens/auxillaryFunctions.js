@@ -25,21 +25,20 @@ function initGame(gameMode, skillLevel = 0, savedLevel = undefined, bulletColor 
        player.score = 0;
        player.time = 0;
        player.updateState = func_noOp;
-       player.renderState = func_noOp;
-        
+       player.renderState = func_noOp;        
     }
      loadLevel();
 }
 
 // 5 - Delete all elements which declared themselves as no longer needed. Or left the screen.
 
-function deleteDeceased() {
+function deleteDeceased(party = false) {
     var lists = [displayList, enemyList, bulletList];
     for (var i = 0; i < lists.length; i++) {
         lists[i].resetIterator();
         while (lists[i].peekNext() !== null) {
             var objInQuestion = lists[i].getNext();
-            if (objInQuestion.invalid === true || objInQuestion.middleY > 70) {
+            if (objInQuestion.invalid === true || (!party && objInQuestion.middleY > 70)) {
                 lists[i].deleteElement(objInQuestion);
             }
         }
@@ -118,6 +117,10 @@ function loadLevel() {
             background = null;
             if (gamePlay == gamePlayArcade) {
                 loaders[player.level]();
+            }
+            else {
+                player[0] = new SpaceCannon(24, 54);
+                displayList.addElement(player[0], true);
             }
             if (loadingException === null) {
                 //TODO: Take care of this.
