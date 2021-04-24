@@ -79,7 +79,8 @@ function exchangeRenderLoop(func, preserveCounters = false) {
  * 
  * @returns random X coordinate.
  */
-function getRandomX() {
+function getRandomX(partyMode = false) {
+    if(partyMode) return getCustomRandom(800,0);
     return getCustomRandom(80,0);
 }
 
@@ -87,7 +88,8 @@ function getRandomX() {
  * 
  * @returns random Y coordinate.
  */
-function getRandomY() {
+function getRandomY(partyMode = false) {
+    if(partyMode) return getCustomRandom(600,0);
     return getCustomRandom(60,0);
 }
 /**

@@ -24,6 +24,7 @@ class SpaceCannon extends GameObject {
         this.inputCode = inputCode;
         this.color = color;
         this.speed = speed;
+        this.cannonX = getRandomX(true);
     }
 }
 /**
@@ -31,6 +32,7 @@ class SpaceCannon extends GameObject {
  * Update function of the space cannon's crossfire.
  */
 SpaceCannon.prototype.updateState = function(){
+    validateReleasedState();
     //The input system is still not good - use this in order.
     if(this.inputCode === undefined){
         if(up){
@@ -44,6 +46,10 @@ SpaceCannon.prototype.updateState = function(){
         }
         else if(right){
            this.middleX+=this.speed; 
+        }
+        if(shootReleased && shoot){
+            displayList.addElement(new CannonShot(this.cannonX,620,this.middleX,this.middleY));
+            shootReleased = false;
         }
     }
 };
