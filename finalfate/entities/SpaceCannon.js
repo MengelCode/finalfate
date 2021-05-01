@@ -16,11 +16,12 @@ class SpaceCannon extends GameObject {
      * @param {type} color Color string used upon rendering.
      * @returns {SpaceCannon}
      */
-    constructor(middleX,middleY,color = "#DDCC11",inputCode = undefined,speed = 15){
+    constructor(middleX,middleY,color = "#DDCC11",playerNo = 0,inputCode = undefined,speed = 15){
         super();
         this.middleX = middleX;
         this.middleY = middleY;
         this.radius = 18;
+        this.playerNo = playerNo;
         this.inputCode = inputCode;
         this.color = color;
         this.speed = speed;
@@ -48,7 +49,10 @@ SpaceCannon.prototype.updateState = function(){
            this.middleX+=this.speed; 
         }
         if(shootReleased && shoot){
-            displayList.addElement(new CannonShot(this.cannonX,620,this.middleX,this.middleY));
+            var shot = new CannonShot(this.cannonX,620,this.middleX,
+            this.middleY,this.playerNo,this.color);
+            displayList.addElement(shot);
+            bulletList.addElement(shot);
             shootReleased = false;
         }
     }

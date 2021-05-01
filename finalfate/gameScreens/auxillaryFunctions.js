@@ -10,6 +10,7 @@
 function initGame(gameMode, skillLevel = 0, savedLevel = undefined, bulletColor = 0) {
     gamePlay = gameMode;
     if (gamePlay === gamePlayArcade) {
+        sfx0.src = "shot.wav";
         player = new SpaceShip(38, 52);
         //CHEAT ZONE!!!
         player.level = savedLevel === undefined ? 0 : savedLevel;
@@ -19,6 +20,7 @@ function initGame(gameMode, skillLevel = 0, savedLevel = undefined, bulletColor 
         // renderReset = 9000;
         //CHEAT ZONE end.
     } else if (gamePlay === gamePlayParty) {
+       sfx0.src = "shot-cannon-2.wav"; 
        player = new Array(6);
        player.level = 0;
        player.health = 100;

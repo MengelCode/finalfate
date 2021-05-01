@@ -37,7 +37,6 @@ function sizeChanged() {
     newHeight = window.innerHeight - (window.innerHeight / 100 * 3);
     canvas.setAttribute("width", newWidth);
     canvas.setAttribute("height", newHeight);
-    //context.scale(newWidth / oldWidth, newHeight / oldHeight);
     context.setTransform(1, 0, 0, 1, 0, 0);
     context.scale(newWidth / oldestWidth, newHeight / oldestHeight);
     oldWidth = newWidth;

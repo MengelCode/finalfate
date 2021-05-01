@@ -9,17 +9,19 @@ class CannonShot extends GameObject {
      * Create a cannon shot which, if it does hit something, does destroy
      * obstacles / enemies.
      */
-    constructor(beginX, beginY, endX, endY, color) {
+    constructor(beginX, beginY, endX, endY, playerNo, color) {
         super();
         this.beginX = beginX;
         this.beginY = beginY;
         this.endX = endX;
         this.endY = endY;
+        this.playerNo = playerNo;
         this.color = color;
     }
 }
 
 CannonShot.prototype.updateState = function(){
+if(this.frameCounter === 0)simplyPlaySound(sfx0);
 this.frameCounter++;
 if(this.frameCounter === 4)this.invalidate();
 };

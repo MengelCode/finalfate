@@ -20,3 +20,6 @@ function gamePlayParty(){
     }
 }
 
+function partyModeCollision(){
+    
+}
