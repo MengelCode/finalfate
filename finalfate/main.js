@@ -25,12 +25,15 @@ var sfx4 = document.getElementById("sfx-channel-4");
 var game_over = document.getElementById("game-over");
 //Exception occured.
 var loadingException = null;
-//Level Loaders.
-var loaders = new Array(7);
-loaders[0] = earthLoader;
-loaders[1] = solarSystemLoader;
-loaders[2] = universeLoader;
-loaders[3] = blinkyHomeworldLoader;
+//Level Loaders. (for Arcade Mode)
+var loaders_arcade = new Array(7);
+loaders_arcade[0] = earthLoader;
+loaders_arcade[1] = solarSystemLoader;
+loaders_arcade[2] = universeLoader;
+loaders_arcade[3] = blinkyHomeworldLoader;
+//Level Loaders. (for Party Mode)
+var loaders_party = new Array(6);
+loaders_party[0] = partyTestLoader;
 //Black background.
 context.fillRect(0, 0, 800, 600);
 //Render function assigning.

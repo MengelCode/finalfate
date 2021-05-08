@@ -23,5 +23,6 @@ function meteorAlter_update(){
 
 function meteorAlter_render(){
     context.fillStyle = "brown";
+    console.log(this.middleY);
     context.fillRect(this.posX,this.posY,this.width,this.height);
 }

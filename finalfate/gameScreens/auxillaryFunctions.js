@@ -111,18 +111,19 @@ function loadLevel() {
 
     try {
         //throw new Error("Test");
-        if (loaders[player.level] === undefined) {
+        if (loaders_arcade[player.level] === undefined) {
             window.alert("D.J. Mengel is evil.");
             //Make everything stop.
             exchangeRenderLoop(null);
         } else {
             background = null;
             if (gamePlay == gamePlayArcade) {
-                loaders[player.level]();
+                loaders_arcade[player.level]();
             }
             else {
                 player[0] = new SpaceCannon(24, 54);
                 displayList.addElement(player[0], true);
+                loaders_party[0]();
             }
             if (loadingException === null) {
                 //TODO: Take care of this.
@@ -155,12 +156,12 @@ function updateGameObjects() {
         }
         var subject = next.gameObject;
         if (next.isForDisplay) {
-            displayList.addElement(subject);
+            displayList.addElementFront(subject);
         }
         if (next.isEnemy) {
-            enemyList.addElement(subject);
+            enemyList.addElementFront(subject);
         } else if (next.isBullet) {
-            bulletList.addElement(subject);
+            bulletList.addElementFront(subject);
         }
         next = spawnList.peekNext();
     }

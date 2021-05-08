@@ -9,7 +9,8 @@
 function gamePlayParty(){  
  try {
   updateGameObjects();   
-  deleteDeceased(true);   
+  deleteDeceased(true);
+  partyModeCollision();
   window.requestAnimationFrame(renderInGame);   
  }
  catch (error) {
@@ -19,7 +20,21 @@ function gamePlayParty(){
        exchangeRenderLoop(crashHandler);  
     }
 }
-
-function partyModeCollision(){
-    
+/**
+ * Check if any of the laser cannon shots hit an enemy.
+ * @returns {undefined}
+ */
+function partyModeCollision() {
+    bulletList.resetIterator();
+     while (bulletList.peekNext() !== null) {
+        var bullet = bulletList.getNext(); 
+        enemyList.resetIterator();
+        while (enemyList.peekNext() !== null){
+        var enemy = enemyList.getNext();    
+        if(bullet.endX > enemy.posX && bullet.endY > enemy.posY && bullet.endX <
+                enemy.posX+enemy.width && bullet.endY < enemy.posY+enemy.height){
+                enemy.invalidate();
+        }    
+        }
+    }
 }

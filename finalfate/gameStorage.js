@@ -76,7 +76,7 @@ function testStorageState() {
         return;
     }
     // Test 3B: Check if data is invalid in this version, but not necessarily always invalid.
-    if (!loaders[storageValue % 10]) {
+    if (!loaders_arcade[storageValue % 10]) {
         storageStatus = "UPGRADE";
         return;
     }
