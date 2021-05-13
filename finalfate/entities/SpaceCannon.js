@@ -16,15 +16,16 @@ class SpaceCannon extends GameObject {
      * @param {type} color Color string used upon rendering.
      * @returns {SpaceCannon}
      */
-    constructor(middleX,middleY,color = "#DDCC11",playerNo = 0,inputCode = undefined,speed = 15){
+    constructor(middleX,middleY,speed = 8){
         super();
         this.middleX = middleX;
         this.middleY = middleY;
         this.radius = 18;
-        this.playerNo = playerNo;
-        this.inputCode = inputCode;
-        this.color = color;
-        this.speed = speed;
+        this.playerNo = 0;
+        this.inputCode = undefined;
+        this.color = "#DDCC11";
+        this.speed = 15;
+        this.score = 0;
         this.cannonX = getRandomX(true);
     }
 }

@@ -34,6 +34,7 @@ function partyModeCollision() {
         if(bullet.endX > enemy.posX && bullet.endY > enemy.posY && bullet.endX <
                 enemy.posX+enemy.width && bullet.endY < enemy.posY+enemy.height){
                 enemy.invalidate();
+                player.score += enemy.score;
         }    
         }
     }
