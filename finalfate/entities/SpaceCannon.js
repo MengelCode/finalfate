@@ -16,7 +16,7 @@ class SpaceCannon extends GameObject {
      * @param {type} color Color string used upon rendering.
      * @returns {SpaceCannon}
      */
-    constructor(middleX,middleY,speed = 8){
+    constructor(middleX,middleY,speed = 15){
         super();
         this.middleX = middleX;
         this.middleY = middleY;
@@ -24,7 +24,7 @@ class SpaceCannon extends GameObject {
         this.playerNo = 0;
         this.inputCode = undefined;
         this.color = "#DDCC11";
-        this.speed = 15;
+        this.speed = speed;
         this.score = 0;
         this.cannonX = getRandomX(true);
     }
@@ -37,16 +37,16 @@ SpaceCannon.prototype.updateState = function(){
     validateReleasedState();
     //The input system is still not good - use this in order.
     if(this.inputCode === undefined){
-        if(up){
+        if(up && this.middleY>this.speed){
             this.middleY-=this.speed;
         }
-        else if(down){
+        else if(down && this.middleY<550-this.speed){
            this.middleY+=this.speed; 
         }
-        if(left){
+        if(left && this.middleX>this.speed){
             this.middleX-=this.speed;
         }
-        else if(right){
+        else if(right && this.middleX<800-this.speed){
            this.middleX+=this.speed; 
         }
         if(shootReleased && shoot){
