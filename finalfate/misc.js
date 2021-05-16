@@ -213,3 +213,10 @@ var newHeight = null;
 var context = canvas.getContext("2d");
 //Rendering function of the corresponding game mode.
 var gamePlay = undefined;
+//Party Mode limit when an object would be considered either hitting or not
+//hitting the space ship.
+var partyModeLimit = 680;
+//If a value of the real system's clock needs to be stored.
+var measuredTime = 0;
+//Boolean if time is up
+var timeIsUp = false;

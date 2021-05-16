@@ -16,7 +16,10 @@ class BlinkyAlter extends EnemyAlternate {
         super(posX,posY,width,height,meteorAlter_update, blinkyAlter_render);
     }    
 }
-
+/**
+ * BlinkyAlter rendering function.
+ * @returns {undefined}
+ */
 
 function blinkyAlter_render(){
         if (aniCount % 5 === 0) {
@@ -32,4 +35,11 @@ function blinkyAlter_render(){
     context.fillRect(this.posX,this.posY,this.width,this.height);
 }
 
-
+/**
+ * The variable which is used to determine the chance that an off-screen
+ * instance of this EnemyAlternate type will hit your space ship. 
+ * @returns {Number}
+ */
+BlinkyAlter.prototype.getChance = function () {
+    return 4;
+};

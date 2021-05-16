@@ -20,12 +20,14 @@ function initGame(gameMode, skillLevel = 0, savedLevel = undefined, bulletColor 
         // renderReset = 9000;
         //CHEAT ZONE end.
     } else if (gamePlay === gamePlayParty) {
-       sfx0.src = "shot-cannon-2.wav"; 
+       sfx0.src = "shot-cannon-2.wav";
+       measuredTime = 0;
        player = new Array(6);
        player.level = 0;
        player.health = 100;
        player.score = 0;
-       player.time = 0;
+       player.time = 30;
+       timeIsUp = false;
        player.updateState = func_noOp;
        player.renderState = func_noOp;        
     }

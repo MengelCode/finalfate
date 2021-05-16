@@ -22,3 +22,8 @@ EnemyAlternate.prototype.invalidate = function(){
 simplyPlaySound(sfx1);
 this.invalid = true;
 };
+//This decides the mathematical chance that the enemy will hit you once
+//it left the shooting range. Chance: 1 / x  
+EnemyAlternate.prototype.getChance = function () {
+    return 3;
+};
