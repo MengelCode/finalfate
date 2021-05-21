@@ -62,7 +62,7 @@ function detectOffScrHit() {
         // 1 - Detect if time for decision making has come.
         var enemy_obj = enemyList.getNext();
         if (enemy_obj.posY > partyModeLimit) {
-            var chance = getCustomRandom(enemy_obj.getChance()) === 0;
+            var chance = getCustomRandom((enemy_obj.getChance()-1)) === 0;
             if (chance) {
                 enemy_obj.invalidate();
                 player.health-= enemy_obj.damage;
