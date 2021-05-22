@@ -84,12 +84,27 @@ function partyModeCollision() {
         var bullet = bulletList.getNext(); 
         enemyList.resetIterator();
         while (enemyList.peekNext() !== null){
-        var enemy = enemyList.getNext();    
-        if(bullet.endX > enemy.posX && bullet.endY > enemy.posY && bullet.endX <
-                enemy.posX+enemy.width && bullet.endY < enemy.posY+enemy.height){
-                enemy.invalidate();
-                player.score += enemy.score;
-        }    
+        var enemy = enemyList.getNext();
+            //Make it possible that an enemy can have multiple areas which can be attacked...
+            var partsAvailable = enemy.parts && !isNaN(enemy.parts.length);
+            if (!partsAvailable) {
+                if (bullet.endX > enemy.posX && bullet.endY > enemy.posY && bullet.endX <
+                        enemy.posX + enemy.width && bullet.endY < enemy.posY + enemy.height) {
+                    enemy.invalidate();
+                    player.score += enemy.score;
+                }
+            }
+            else {
+                for (var i = 0; i < enemy.parts.length; i++) {
+                    if (bullet.endX > enemy.parts[i].posX && bullet.endY > enemy.parts[i].posY && bullet.endX <
+                            enemy.parts[i].posX + enemy.parts[i].width && bullet.endY < enemy.parts[i].posY + enemy.parts[i].height) {
+                        enemy.invalidate();
+                        player.score += enemy.score;
+                        break;
+                    }
+                }
+            }
+
         }
     }
 }
