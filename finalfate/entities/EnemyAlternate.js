@@ -27,3 +27,12 @@ this.invalid = true;
 EnemyAlternate.prototype.getChance = function () {
     return 3;
 };
+
+EnemyAlternate.updateMultiPart = function(enemy,deltaX,deltaY){
+    enemy.posX+= deltaX;
+    enemy.posY+= deltaY;
+    for(var i = 0; i<enemy.parts.length; i++){
+        enemy.parts[i].posX+= deltaX;
+        enemy.parts[i].posY+= deltaY;
+    }
+};
