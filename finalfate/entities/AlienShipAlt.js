@@ -24,17 +24,33 @@ class AlienShipAlt extends EnemyAlternate {
 function alienShipAlt_update() {
     this.frameCounter++;
     if (this.spawnTime !== 0 && this.frameCounter % this.spawnTime === 0) {
-        var enemyToCreate = null;
-        if (this.typeOfEnemy === 0) {
-            var enemyToCreate = new SimpleEnemyAlter(this.parts[0].posX, (this.parts[0].posY + 160));
+        var enemyToCreate = null;        
+        switch(this.typeOfEnemy){
+            case 0:
+                enemyToCreate = new SimpleEnemyAlter(this.parts[0].posX, (this.parts[0].posY + 160));
+                break;
+            case 1:
+                enemyToCreate = new BlinkyAlter(this.parts[0].posX, (this.parts[0].posY + 160));
+                break;
+            case 2:
+                enemyToCreate = new BlinkyTracerAlter(this.parts[0].posX, (this.parts[0].posY + 160));
+                break;     
         }
         enemyToCreate.width = this.parts[0].width;
         enemyToCreate.height = 40;
         displayList.addElement(enemyToCreate, false);
         enemyList.addElement(enemyToCreate, false);
-        if (this.typeOfEnemy === 0) {
-            enemyToCreate = new SimpleEnemyAlter(this.parts[2].posX, (this.parts[2].posY + 160));
-        }
+        switch(this.typeOfEnemy){
+            case 0:
+                enemyToCreate = new SimpleEnemyAlter(this.parts[2].posX, (this.parts[2].posY + 160));
+                break;
+            case 1:
+                enemyToCreate = new BlinkyAlter(this.parts[2].posX, (this.parts[2].posY + 160));
+                break;
+            case 2:
+                enemyToCreate = new BlinkyTracerAlter(this.parts[2].posX, (this.parts[2].posY + 160));
+                break;    
+        }        
         enemyToCreate.width = this.parts[2].width;
         enemyToCreate.height = 40;
         displayList.addElement(enemyToCreate, false);
