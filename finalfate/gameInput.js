@@ -21,8 +21,17 @@ var gamepad_removed = false;
 var gamepad_button = false;
 //Gamepad event handle.
 var gamepad_handle = null;
-
-
+//If the left mouse button is pressed.
+var mouse_LeftPressed = false;
+//Location (IN canvas) of the left mouse button press.
+var mouse_LeftPosX = 0;
+var mouse_LeftPosY = 0;
+//Sanitized 
+var sani_LeftPosX = 0;
+var sani_LeftPosY = 0;
+window.canvas.addEventListener("mousemove",getMouseMove);
+window.canvas.addEventListener("mousedown",getMousePressed);
+window.canvas.addEventListener("mouseup",getMouseReleased);
 
 /**
  * Resets all knowledge about used devices
@@ -45,6 +54,27 @@ function initAllInput() {
     gamepad = false;
     gamepad_removed = false;
 }
+
+// Event receiver for mouse presses.
+function getMouseMove(event){
+mouse_LeftPosX = event.offsetX;
+mouse_LeftPosY = event.offsetY;
+var zoomX = oldWidth / 800;
+var zoomY = oldHeight / 600;
+sani_LeftPosX = Math.round(mouse_LeftPosX / zoomX);
+sani_LeftPosY = Math.round(mouse_LeftPosY / zoomY);
+}
+
+//Event pressed for mouse.
+function getMousePressed(){
+mouse_LeftPressed = true;    
+}
+
+//Event released for mouse.
+function getMouseReleased(){
+mouse_LeftPressed = false;    
+}
+
 
 //Event receiver for key presses.
 function getKeyPress(event) {

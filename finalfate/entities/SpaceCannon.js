@@ -22,7 +22,7 @@ class SpaceCannon extends GameObject {
         this.middleY = middleY;
         this.radius = 18;
         this.playerNo = 0;
-        this.inputCode = undefined;
+        this.inputCode = "MOUSE";
         this.color = "#DDCC11";
         this.speed = speed;
         this.score = 0;
@@ -34,9 +34,9 @@ class SpaceCannon extends GameObject {
  * Update function of the space cannon's crossfire.
  */
 SpaceCannon.prototype.updateState = function(){
-    validateReleasedState();
     //The input system is still not good - use this in order.
     if(this.inputCode === undefined){
+        validateReleasedState();
         if(up && this.middleY>this.speed){
             this.middleY-=this.speed;
         }
@@ -57,6 +57,21 @@ SpaceCannon.prototype.updateState = function(){
             shootReleased = false;
         }
     }
+    else if(this.inputCode === "MOUSE"){
+        this.middleX = sani_LeftPosX;
+        this.middleY = sani_LeftPosY;
+        if(!mouse_LeftPressed){
+            shootReleased = true;
+        }
+       else if(shootReleased && mouse_LeftPressed){
+           //window.alert("Test.");
+            var shot = new CannonShot(this.cannonX, 620, this.middleX,
+                    this.middleY, this.playerNo, this.color);
+            displayList.addElement(shot);
+            bulletList.addElement(shot);
+            shootReleased = false;    
+       } 
+    }
 };
 
 /**
@@ -64,8 +79,11 @@ SpaceCannon.prototype.updateState = function(){
  * 
  */
 SpaceCannon.prototype.renderState = function(){
-context.fillStyle = this.color;
-context.fillText(this.middleY,20,20);
+//Debug     
+context.fillStyle = "cyan";
+context.fillText(sani_LeftPosX,20,20);
+context.fillStyle = "pink";
+context.fillText(sani_LeftPosY,760,20);
 //Begin: Draw the circle.    
 context.beginPath();
 context.lineWidth = 2;
