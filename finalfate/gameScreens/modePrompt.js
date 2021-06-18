@@ -57,7 +57,7 @@ function modePrompt(){
             }
         }
         else if (modeSelected === 1){
-            initGame(gamePlayParty);
+            initGame(gamePlayParty,0);
         }
     }
 }

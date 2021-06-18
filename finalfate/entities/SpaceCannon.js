@@ -35,7 +35,7 @@ class SpaceCannon extends GameObject {
  */
 SpaceCannon.prototype.updateState = function(){
     //The input system is still not good - use this in order.
-    if(this.inputCode === undefined){
+    if(this.inputCode === "KEYBOARD-GAMEPAD"){
         validateReleasedState();
         if(up && this.middleY>this.speed){
             this.middleY-=this.speed;

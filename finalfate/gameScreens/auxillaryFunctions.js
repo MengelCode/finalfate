@@ -7,7 +7,7 @@
  * 
  * Define the beginning state of the game, then start with the first level.
  */
-function initGame(gameMode, skillLevel = 0, savedLevel = undefined, bulletColor = 0) {
+function initGame(gameMode, multiPurpose = 0, savedLevel = undefined, bulletColor = 0) {
     gamePlay = gameMode;
     if (gamePlay === gamePlayArcade) {
         sfx0.src = "shot.wav";
@@ -29,9 +29,9 @@ function initGame(gameMode, skillLevel = 0, savedLevel = undefined, bulletColor 
        player.time = 30;
        timeIsUp = false;
        player.updateState = func_noOp;
-       player.renderState = func_noOp;        
+       player.renderState = func_noOp;
     }
-     loadLevel();
+     loadLevel(multiPurpose);
 }
 
 // 5 - Delete all elements which declared themselves as no longer needed. Or left the screen.
@@ -92,7 +92,7 @@ function renderHUD() {
  * 
  * Load a level. General Method.
  */
-function loadLevel() {
+function loadLevel(multiPurpose = 0) {
     if (player.health < 100) {
         player.health = 100;
     }
@@ -124,6 +124,13 @@ function loadLevel() {
             }
             else {
                 player[0] = new SpaceCannon(24, 54);
+                //Keyboard usage.
+                if(multiPurpose === 0){
+                    player[0].inputCode = "KEYBOARD-GAMEPAD";
+                }
+                else if (multiPurpose === 1){
+                    player[0].inputCode = "MOUSE";
+                }
                 displayList.addElement(player[0], true);
                 loaders_party[0]();
             }

@@ -23,6 +23,8 @@ var gamepad_button = false;
 var gamepad_handle = null;
 //If the left mouse button is pressed.
 var mouse_LeftPressed = false;
+//If the left mouse button is clicked.
+var mouse_LeftClicked = false;
 //Location (IN canvas) of the left mouse button press.
 var mouse_LeftPosX = 0;
 var mouse_LeftPosY = 0;
@@ -32,6 +34,7 @@ var sani_LeftPosY = 0;
 window.canvas.addEventListener("mousemove",getMouseMove);
 window.canvas.addEventListener("mousedown",getMousePressed);
 window.canvas.addEventListener("mouseup",getMouseReleased);
+window.canvas.addEventListener("click",getMouseClicked);
 
 /**
  * Resets all knowledge about used devices
@@ -75,6 +78,10 @@ function getMouseReleased(){
 mouse_LeftPressed = false;    
 }
 
+//Event clicked for mouse.
+function getMouseClicked(){
+mouse_LeftClicked = true;    
+}
 
 //Event receiver for key presses.
 function getKeyPress(event) {

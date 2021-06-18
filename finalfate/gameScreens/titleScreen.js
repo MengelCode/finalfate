@@ -3,6 +3,8 @@
  * Contains the rendering cycle for the difficulty selection and additional
  * data used for it.
  */
+// Was mouse once clicked already?
+var titleScreenMouse = false;
 
 /*
  * Render the title screen.
@@ -19,6 +21,15 @@ function titleScreen() {
             //Let the show begin!
             //Disabled game pad functionality.
             //if (shoot === 5 || pollButtonMemory()) {
+            if (!titleScreenMouse && mouse_LeftClicked){
+                titleScreenMouse = true;
+                mouse_LeftClicked = false;
+            }
+            else if (titleScreenMouse && mouse_LeftClicked){
+                titleScreenMouse = false;
+                mouse_LeftClicked = false;
+                initGame(gamePlayParty,1);
+            }
             if (keyboard) {
                 clearInterval(gamepad_handle);
                 shootReleased = false;
