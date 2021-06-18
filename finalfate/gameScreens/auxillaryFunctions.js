@@ -14,7 +14,7 @@ function initGame(gameMode, multiPurpose = 0, savedLevel = undefined, bulletColo
         player = new SpaceShip(38, 52);
         //CHEAT ZONE!!!
         player.level = savedLevel === undefined ? 0 : savedLevel;
-        player.skill = skillLevel;
+        player.skill = multiPurpose;
         player.bulletColor = parseInt(bulletColor);
         this.savedScore = 0;
         // renderReset = 9000;
