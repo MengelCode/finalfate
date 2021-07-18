@@ -34,6 +34,7 @@ loaders_arcade[3] = blinkyHomeworldLoader;
 //Level Loaders. (for Party Mode)
 var loaders_party = new Array(6);
 loaders_party[0] = partyTestLoader;
+loaders_party[1] = partyEarthLoader;
 //Black background.
 context.fillRect(0, 0, 800, 600);
 //Render function assigning.

@@ -4,6 +4,7 @@
  */
 
 function partyTestLoader() {
+    player.time = 30;
     //var enemyObj = new MeteorAlter(300, 20,35,35);
     var enemyObj = new MeteorAlter(300, 20,46,46);
     spawnList.addElement(new Spawn(89, enemyObj, false, true, true), true);

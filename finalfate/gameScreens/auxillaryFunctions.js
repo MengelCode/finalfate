@@ -26,7 +26,6 @@ function initGame(gameMode, multiPurpose = 0, savedLevel = undefined, bulletColo
        player.level = 0;
        player.health = 100;
        player.score = 0;
-       player.time = 30;
        timeIsUp = false;
        player.updateState = func_noOp;
        player.renderState = func_noOp;
