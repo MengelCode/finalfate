@@ -200,7 +200,8 @@ var aniCount = 0;
 var aniCountRelative = 0;
 //Animation counter for pause.
 var pauseCount = 0;
-
+//Event object. (TIme = single-player, Network = multi-player)
+var eventController = null;
 //HTML Canvas
 var canvas = document.getElementById("screen");
 const oldestWidth = 800;

@@ -9,6 +9,7 @@
  */
 function initGame(gameMode, multiPurpose = 0, savedLevel = undefined, bulletColor = 0) {
     gamePlay = gameMode;
+    eventController = null;
     if (gamePlay === gamePlayArcade) {
         sfx0.src = "shot.wav";
         player = new SpaceShip(38, 52);
@@ -153,6 +154,9 @@ function updateGameObjects() {
     displayList.resetIterator();
     while (displayList.peekNext() !== null) {
         displayList.getNext().updateState();
+    }
+    if(eventController !== null){
+       eventController.checkEventQueue();
     }
     var next = spawnList.peekNext();
     while (next !== null && ((next.isRelative === false && aniCount > next.frameDelta) || (next.isRelative === true && aniCountRelative > next.frameDelta))) {
