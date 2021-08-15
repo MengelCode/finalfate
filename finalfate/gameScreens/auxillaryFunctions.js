@@ -113,7 +113,7 @@ function loadLevel(multiPurpose = 0) {
 
     try {
         //throw new Error("Test");
-        if (loaders_arcade[player.level] === undefined) {
+        if (gamePlay == gamePlayArcade && loaders_arcade[player.level] === undefined) {
             window.alert("D.J. Mengel is evil.");
             //Make everything stop.
             exchangeRenderLoop(null);
@@ -132,7 +132,7 @@ function loadLevel(multiPurpose = 0) {
                     player[0].inputCode = "MOUSE";
                 }
                 displayList.addElement(player[0], true);
-                loaders_party[0]();
+                loaders_party[multiPurpose]();
             }
             if (loadingException === null) {
                 //TODO: Take care of this.

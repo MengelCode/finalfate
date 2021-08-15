@@ -18,9 +18,11 @@ class TimeQueue{
 }
 
 TimeQueue.prototype.checkEventQueue = function(){
-    var next = this.internalQueue.getNext();
-    while(next !== null && next.frameDelta<=player.time){
+    var next = this.internalQueue.peekNext();
+    while(next !== null && next.frameDelta>=player.time){
+        this.internalQueue.getNext();
+        window.alert("Hello...");
         spawnList.addElement(next);
-        next = this.internalQueue.getNext();
+        next = this.internalQueue.peekNext();
     }
 }
