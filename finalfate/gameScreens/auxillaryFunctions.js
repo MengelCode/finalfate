@@ -132,7 +132,7 @@ function loadLevel(multiPurpose = 0) {
                     player[0].inputCode = "MOUSE";
                 }
                 displayList.addElement(player[0], true);
-                loaders_party[multiPurpose]();
+                loaders_party[1]();
             }
             if (loadingException === null) {
                 //TODO: Take care of this.
