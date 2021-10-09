@@ -4,7 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/mengelcode/finalfate.svg?label=%22Githubissues%22)](https://github.com/mengelcode/finalfate/issues)
 [![GitHub stars](https://img.shields.io/github/stars/mengelcode/finalfate.svg?style=social&label=Star)](https://github.com/mengelcode/finalfate/)
 
-[![Docker Build Type](https://img.shields.io/docker/cloud/automated/mengel38/finalfate.svg)](https://hub.docker.com/r/mengel38/finalfate/)
+
 [![Docker Build Status](https://img.shields.io/docker/cloud/build/mengel38/finalfate.svg)](https://hub.docker.com/r/mengel38/finalfate/)
 [![Docker Stars](https://img.shields.io/docker/stars/mengel38/finalfate.svg)](https://hub.docker.com/r/mengel38/finalfate/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mengel38/finalfate.svg)](https://hub.docker.com/r/mengel38/finalfate/)
