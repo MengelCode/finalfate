@@ -15,7 +15,7 @@ function titleScreen() {
         if (aniCount % 5 === aniCount % 10) {
             context.font = "23px Nonserif";
             context.fillStyle = "gold";
-            context.fillText("PRESS SPACE TO START", 230, 520);
+            context.fillText("PRESS SPACE / GAMEPAD FIRE BUTTON", 130, 520);
             //Let the show begin!
             //Disabled game pad functionality.
             //if (shoot === 5 || pollButtonMemory()) {
