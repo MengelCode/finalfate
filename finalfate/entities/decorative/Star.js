@@ -34,7 +34,7 @@ function star_render() {
 }
 
 //Star factory function.
-function star_factory() {
+function star_factory(offsetX = 0,offsetY = 0) {
     var starList = new LinkedList();
 //Decide where to place stars.
     for (var i = 0; i < 80; i++) {
@@ -44,7 +44,7 @@ function star_factory() {
             var chance = 230;
             randomNumber = Math.floor(randomNumber * chance);
             if (randomNumber % chance === 0) {
-                starList.addElement(new Star(i, j));
+                starList.addElement(new Star(i + offsetX, j + offsetY));
             }
         }
     }

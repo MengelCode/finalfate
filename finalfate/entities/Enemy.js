@@ -25,7 +25,10 @@ class Enemy extends GameObject {
         super.updateState = updateRoutine;
         super.renderState = renderRoutine;
         this.killable = killable;
-        if (player.skill === 2) {
+        if(!player){
+           this.damage = 0; 
+        }
+        else if (player.skill === 2) {
             this.damage = Math.round(damage * 2);
         } else if (player.skill === -1) {
             this.damage = Math.round(damage / 2);

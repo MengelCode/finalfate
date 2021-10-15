@@ -15,6 +15,7 @@ var loadSelected = undefined;
  */
 function loadPrompt() {
     title_and_copyright_render();
+    title_animation_render();
     validateReleasedState();
     checkGamepadRemoved(loadPrompt);
     volume_prompt_render();

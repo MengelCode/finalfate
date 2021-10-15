@@ -11,6 +11,7 @@ var skillSelection = undefined;
 
 function skillPrompt() {
     title_and_copyright_render();
+    title_animation_render();
     validateReleasedState();
     checkGamepadRemoved(skillPrompt);
     volume_prompt_render();

@@ -731,7 +731,7 @@ function background1_render() {
 //Level 2 - The Solar System rendering function
 function background2_render() {
     if (this.next === null) {
-        this.next = star_factory();
+        this.next = star_factory(this.middleX,this.middleY);
     }
 
     this.next.resetIterator();

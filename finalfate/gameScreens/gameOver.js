@@ -20,6 +20,7 @@ function gameOver() {
     context.fillStyle = "yellow";
     context.fillText("GAME OVER", 180, 320);
     if (aniCount === 90) {
+        title_objects = [];
         initAllInput();
         exchangeRenderLoop(titleScreen);
     }

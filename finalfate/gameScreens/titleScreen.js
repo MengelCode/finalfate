@@ -4,14 +4,26 @@
  * data used for it.
  */
 
+/**
+ * 
+ * In-game objects rendered at the title screen.
+ */
+var title_objects = [];
 /*
  * Render the title screen.
  */
 function titleScreen() {
     title_and_copyright_render();
+    title_animation_render();
     //Fix for a potential menu glitch.
     loadSelected = undefined;
     try {
+        if(title_objects.length === 0 ){
+            title_objects.push(new Enemy(0, 20, background_dimension, 
+            background1_update, background2_render));
+            title_objects.push(new SimplestEnemy(17, 34));
+            title_objects.push(new SimplestEnemy(55, 34));
+        }
         if (aniCount % 5 === aniCount % 10) {
             context.font = "23px Nonserif";
             context.fillStyle = "gold";
@@ -101,4 +113,16 @@ function title_and_copyright_render() {
     context.font = "17px Nonserif";
     context.fillStyle = "white";
     context.fillText("GAME (C) 2019-2021 Manuel Engel", 220, 580);
+}
+
+/**
+ * Render the array with the in-game elements.
+ * @returns {undefined}
+ */
+function title_animation_render(){
+   for(var i = 0; i<title_objects.length; i++){
+       title_objects[i].updateState();
+       title_objects[i].renderState();
+    }
+   
 }
