@@ -14,7 +14,7 @@
 This HTML 5 space game's first commit has been made the Jul 4, 2019 by Manuel Engel willing to train in JavaScript during the spare-time.
 
 ## The Game
-This is a low poly 2D space game with differently colored enemies you will find on your way. You need to survive avoiding spaceships and missiles. The game has five levels and you can play it as a beginner, as a good player, a hard player or as a master. Your goal is to successfully win all levels by shooting the bad guys down and challenging the level bosses.
+This is a low poly 2D space game with differently colored enemies you will find on your way. You need to survive avoiding spaceships and missiles. The game will have five levels and you can play it as a beginner, as a good player, a hard player or as a master. Your goal is to successfully win all levels by shooting the bad guys down and challenging the level bosses.
 
 ## User Interface
 When playing the game you can see the value of the score, health, lifes and level written at the bottom of the screen in a black horizontal bar. 
