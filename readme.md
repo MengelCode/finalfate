@@ -65,7 +65,7 @@ Follow the 2nd option "Locally storing the files" and either host the game on yo
 This way needs a bit more technical knowledge, but the advantage is that your family at home or possibly the entire world can enjoy a cool space ship adventure!
 Please make sure users are able to review the license, e.g. mentioning it on your homepage when you link to the game. \
 \
-**4) Setting up a docker container as server** \
+**4) Setting up a docker container as server (No longer working as it should, refer to issue [121](https://github.com/MengelCode/finalfate/issues/121))** \
 Thanks to the [work](https://github.com/ichbestimmtnicht/docker-autobuild-release) of [Ludwig Werner Döhnert](https://github.com/ichbestimmtnicht/), docker images for amd64, arm32v7 and arm64v8 are available. \
 You can review the DockerHub repository of the game at [Dockerhub](https://hub.docker.com/repository/docker/mengel38/finalfate). In order to pull the latest image (Regardless of your underlying architecture), you can use
 
