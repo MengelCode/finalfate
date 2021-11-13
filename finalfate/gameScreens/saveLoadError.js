@@ -14,6 +14,7 @@ var data_warning_ok = "Confirm";
  */
 function loadFail() {
     title_and_copyright_render();
+    title_animation_render();
     validateReleasedState();
     checkGamepadRemoved(loadFail);
     context.fillStyle = "blue";
