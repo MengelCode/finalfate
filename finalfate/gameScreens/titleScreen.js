@@ -105,8 +105,7 @@ function volume_prompt_render(){
  * @returns {undefined}
  */
 function title_and_copyright_render() {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
+    clearScreen();
     context.font = "60px Serif";
     context.fillStyle = "red";
     context.fillText("THE FINAL FATE", 120, 150);

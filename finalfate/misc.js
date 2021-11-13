@@ -170,6 +170,15 @@ function fillTextMultiLine(string,x,y,offset, delimiter = "\n") {
     }
 }
 
+/**
+ * Overdraws the entire Canvas content with a black background.
+ * @returns {undefined}
+ */
+function clearScreen() {
+    context.fillStyle = "black";
+    context.fillRect(0, 0, oldestWidth, oldestHeight);
+}
+
 //General-purpose dialogue options and text.
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];

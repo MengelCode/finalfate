@@ -8,8 +8,7 @@
  * @returns {undefined}
  */
 function gameOver() {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
+    clearScreen();
     if (aniCount < 30)
         return;
     if (aniCount === 44) {

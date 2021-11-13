@@ -32,7 +32,7 @@ loaders[1] = solarSystemLoader;
 loaders[2] = universeLoader;
 loaders[3] = blinkyHomeworldLoader;
 //Black background.
-context.fillRect(0, 0, 800, 600);
+clearScreen();
 //Render function assigning.
 renderFunction = boot;
 //Make keys unpressed over time.

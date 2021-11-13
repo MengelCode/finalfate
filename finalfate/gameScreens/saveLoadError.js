@@ -48,8 +48,7 @@ function loadFail() {
  * @returns {undefined}
  */
 function saveCorrupt() {
-    context.fillStyle = "black";
-    context.fillRect(0, 0, 800, 600);
+    clearScreen();
     context.fillStyle = "red";
     context.fillRect(290, 190, 260, 200);
     context.font = "27px Nonserif";

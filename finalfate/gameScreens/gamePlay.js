@@ -166,8 +166,7 @@ function bulletOnEnemies() {
 // 4 -  Render game objects.
 function renderInGame() {
     try {
-        context.fillStyle = "black";
-        context.fillRect(0, 0, 800, 600);
+        clearScreen();
         if (background !== null && background instanceof GameObject) {
             if (renderFunction !== gamePause)
                 background.updateState();
