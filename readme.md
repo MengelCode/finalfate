@@ -14,7 +14,7 @@
 This HTML 5 space game's first commit has been made the Jul 4, 2019 by Manuel Engel willing to train in JavaScript during the spare-time.
 
 ## The Game
-This is a low poly 2D space game with differently colored enemies you will find on your way. You need to survive avoiding spaceships and missiles. The game has five levels and you can play it as a beginner, as a good player, a hard player or as a master. Your goal is to successfully win all levels by shooting the bad guys down and challenging the level bosses.
+This is a low poly 2D space game with differently colored enemies you will find on your way. You need to survive avoiding spaceships and missiles. The game will have five levels and you can play it as a beginner, as a good player, a hard player or as a master. Your goal is to successfully win all levels by shooting the bad guys down and challenging the level bosses.
 
 ## User Interface
 When playing the game you can see the value of the score, health, lifes and level written at the bottom of the screen in a black horizontal bar. 
@@ -65,7 +65,7 @@ Follow the 2nd option "Locally storing the files" and either host the game on yo
 This way needs a bit more technical knowledge, but the advantage is that your family at home or possibly the entire world can enjoy a cool space ship adventure!
 Please make sure users are able to review the license, e.g. mentioning it on your homepage when you link to the game. \
 \
-**4) Setting up a docker container as server** \
+**4) Setting up a docker container as server (No longer working as it should, refer to issue [121](https://github.com/MengelCode/finalfate/issues/121))** \
 Thanks to the [work](https://github.com/ichbestimmtnicht/docker-autobuild-release) of [Ludwig Werner Döhnert](https://github.com/ichbestimmtnicht/), docker images for amd64, arm32v7 and arm64v8 are available. \
 You can review the DockerHub repository of the game at [Dockerhub](https://hub.docker.com/repository/docker/mengel38/finalfate). In order to pull the latest image (Regardless of your underlying architecture), you can use
 
