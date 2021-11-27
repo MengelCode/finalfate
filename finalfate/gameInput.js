@@ -136,12 +136,12 @@ function gamepadPoll() {
 //Is button pressed?
     shoot = controller.buttons[gamepad_button].pressed;
     //Validate axis states.
-    left = controller.axes[0] < -0.4;
-    right = controller.axes[0] > 0.4;
-    up = controller.axes[1] < -0.4;
-    down = controller.axes[1] > 0.4;
+    left = controller.axes[0] < -0.4 || controller.axes[4] < -0.4;
+    right = controller.axes[0] > 0.4 || controller.axes[4] > 0.4;
+    up = controller.axes[1] < -0.4 || controller.axes[5] < -0.4;
+    down = controller.axes[1] > 0.4 || controller.axes[5] > 0.4;
     //Is pause pressed?
-    pause = controller.buttons[9].pressed;
+    pause = controller.buttons[8].pressed || controller.buttons[9].pressed;
 }
 
 //Makes sure keys are not pressed for eternity.
