@@ -84,8 +84,8 @@ function gamepadAskAnyButton() {
         if (!testController.buttons)
             continue;
         for (var j = 0; testController.buttons.length && j < testController.buttons.length; j++) {
-//Prevent "Start button" from ever becoming the fire button.
-            if (j === 9)
+//Prevent "Start (or select) button" from ever becoming the fire button.
+            if (j=== 8 || j === 9)
                 continue;
             if (testController.connected && testController.buttons[j] && testController.buttons[j].pressed) {
                 gamepad = i;
