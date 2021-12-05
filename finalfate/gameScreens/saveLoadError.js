@@ -27,9 +27,6 @@ function loadFail() {
     context.fillText(data_load_fail[1], 255, 275);
     context.fillText(data_load_fail[2], 255, 290);
     context.fillText(data_load_fail[3], 255, 305);
-    if (aniCount === 3) {
-        initAllInput();
-    }
     if (shoot && shootReleased) {
         simplyPlaySound(sfx4);
         exchangeRenderLoop(skillPrompt);
