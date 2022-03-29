@@ -55,6 +55,7 @@ web server to give you a copy of your game save and your own local storage space
 
 There are severals for you to play the game. Decide which one you like to use. \
 **1) Give it a quick look on my server** \
+WARNING: The server is no longer reachable as of March 29, 2022, 18:37 CEST.
 If you do not want any big setup, but simply a quick round of action, you should definitely look [here](https://manuel-engel.de/finalfate/finalfate). \
 \
 **2) Locally storing the files and directly opening the html file** \
