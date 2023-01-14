@@ -5,8 +5,8 @@
  * removed.
  */
 
-var notifyText = ["Gamepad was removed.", "Please reconnect it or use another device"
-    , "and then press space / the fire key."];
+var notifyText = ["Gamepad removed.", "Please reconnect it or use another"
+    , "device and then press space", "or the fire key."];
 
 //Remember the last screen.
 var renderingCycle = undefined;
@@ -43,6 +43,7 @@ function _gameNoController(){
     context.font = "14px Nonserif";
     context.fillText(notifyText[1], 290, 280);
     context.fillText(notifyText[2], 290, 310);
+    context.fillText(notifyText[3], 290, 340);
     
        
 }

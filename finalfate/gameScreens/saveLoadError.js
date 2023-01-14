@@ -6,7 +6,7 @@
 
 var info_string = "Data Management";
 var data_corrupt = ["Saved game corrupted.", "Deletion required.", "Press SPACE on keyboard or any", "key on gamepad to continue."];
-var data_load_fail = ["Cannot access local storage.","Either your browser is too old or you disabled","web storage / cookies for this website.","Progress cannot be saved."];
+var data_load_fail = ["Cannot access local storage.","Either your browser is too old or","you disabled web storage / cookies","for this website. Progress cannot", "be saved."];
 var data_warning_ok = "Confirm";
 /**
  * Confirmation prompt 
@@ -27,6 +27,7 @@ function loadFail() {
     context.fillText(data_load_fail[1], 255, 275);
     context.fillText(data_load_fail[2], 255, 290);
     context.fillText(data_load_fail[3], 255, 305);
+    context.fillText(data_load_fail[4], 255, 320);
     if (shoot && shootReleased) {
         simplyPlaySound(sfx4);
         exchangeRenderLoop(skillPrompt);
