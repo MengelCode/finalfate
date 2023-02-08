@@ -95,12 +95,14 @@ function boss2fb_update() {
     if (player.middleX < this.middleX) {
         player.health = player.health - 12;
         player.middleX = player.middleX + 4;
+        player.noHit = false;
     }
     //Uncomment this if you want pinball action.....
     //else if(player.middleX>this.middleX+10){
     else if (player.middleX > this.middleX + 18) {
         player.health = player.health - 12;
         player.middleX = player.middleX - 4;
+        player.noHit = false;
     }
 }
 
