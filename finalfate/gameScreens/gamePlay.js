@@ -248,6 +248,19 @@ function renderInGame() {
                 saveFailureTimer--;
             }
         }
+   //If level intro timer is not yet dead.
+    if(level_timer > 0){
+        context.globalAlpha = 0.66;
+        context.fillStyle = "black";
+        context.fillRect(290,60,260,35);
+        context.fillRect(290,100,260,35);
+        context.fillStyle = "goldenrod";
+        context.font = "27px Serif";
+        context.fillText("~ LEVEL " + parseInt((player.level + 1)) + "~",290,90);
+        context.fillText(level_names[player.level],290,130);
+        context.globalAlpha = 1.0;
+        level_timer--;
+    }
     } catch (error) {
 //Code for title screen.
         crashCauseSet = 0;
@@ -315,6 +328,7 @@ function initGame(skillLevel, savedLevel = undefined, bulletColor = 0) {
  * Load a level. General Method.
  */
 function loadLevel() {
+    level_timer = 130;
     if (player.health < 100) {
         player.health = 100;
     }
