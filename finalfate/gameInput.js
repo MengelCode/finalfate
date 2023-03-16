@@ -11,6 +11,8 @@ var left = 0;
 var right = 0;
 var pause = 0;
 //"Boolean" for specific input source.
+//"Touch screen" boolean.
+var touchs = false;
 //"Keyboard" boolean.
 var keyboard = false;
 //"Gamepad" boolean.
@@ -41,6 +43,7 @@ function initAllInput() {
     }//Gamepad input catching.
     gamepad_handle = setInterval(gamepadAskAnyButton, FRAME_RATE);
     //Reset used state.
+    touchs = false;
     keyboard = false;
     gamepad = false;
     gamepad_removed = false;
