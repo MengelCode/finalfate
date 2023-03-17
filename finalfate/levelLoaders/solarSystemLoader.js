@@ -100,7 +100,7 @@ function solarSystemLoader() {
         enem = airCraft2_factory(0, -6);
         spawnListArrayAdd(enem, 1350);
         //Blinky mania!!!
-        for (var i = 0; i < 40; i++) {
+        for (var i = 0; i < 15; i++) {
             enem = new BlinkyTracer(getRandomX(), 0);
             //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
             enem = new Spawn(1400 + i * 20, enem);
@@ -115,7 +115,7 @@ function solarSystemLoader() {
                 spawnList.addElement(enem);
             }
         }
-        //Frame: 2180.
+        //Frame: 2180 old. 1880 new.
         //A bit more randomness.
         for (var i = 0; i < 120; i++) {
             //window.alert(2217 + 119 * 15);
@@ -125,7 +125,7 @@ function solarSystemLoader() {
             var enem = null;
             if (i === 20 || i === 77) {
                 enem = new HealthBoost(player.middleX, 0);
-                enem = new Spawn(2217 + i * 15, enem, false, true, false, false);
+                enem = new Spawn(1817 + i * 15, enem, false, true, false, false);
                 spawnList.addElement(enem);
             }
             //Object generation.
@@ -141,7 +141,7 @@ function solarSystemLoader() {
                 case 4:
                 case 5:
                     enem = airCraft2_factory(getRandomX(), -5);
-                    spawnListArrayAdd(enem, 2217 + i * 15);
+                    spawnListArrayAdd(enem, 1817 + i * 15);
                     break;
                 case 6:
                     enem = new Blinky(getRandomX(), 0);
@@ -149,17 +149,17 @@ function solarSystemLoader() {
 
             }
             if (randon !== 3 && randon !== 4 && randon !== 5) {
-                enem = new Spawn(2217 + i * 15, enem);
+                enem = new Spawn(1817 + i * 15, enem);
                 spawnList.addElement(enem);
             }
         }
-        //Frame: 4002
+        //Frame: 4002 old. 3702 new.
         //Blinky mania!!!
-        for (var i = 0; i < 70; i++) {
+        for (var i = 0; i < 30; i++) {
 
             enem = new BlinkyTracer(getRandomX(), 0);
             //enem = new Enemy(Math.random() * (80),0,meteor_dimension, meteor_update, meteor_render, meteor_damage());
-            enem = new Spawn(4030 + i * 20, enem);
+            enem = new Spawn(3730 + i * 20, enem);
             spawnList.addElement(enem);
             if (i % 5 === 0) {
                 var rando = getRandomX() % 2 === 0;
@@ -167,13 +167,13 @@ function solarSystemLoader() {
                     enem = new BlinkyTracer(78, 11);
                 } else
                     enem = new BlinkyTracer(-1, 11);
-                enem = new Spawn(4030 + i * 20, enem);
+                enem = new Spawn(3730 + i * 20, enem);
                 spawnList.addElement(enem);
             }
         }
-        //Frame: 5410
+        //Frame: 5410 old. 4310 new.
         enem = boss2_factory(boss2_constants.prototype.x, boss2_constants.prototype.y);
-        enem = new Spawn(5450, enem);
+        enem = new Spawn(4310, enem);
         spawnList.addElement(enem);
     } catch (error) {
         loadingException = error;
