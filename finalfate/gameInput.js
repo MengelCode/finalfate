@@ -41,6 +41,9 @@ const TOUCH_SHOOT_S = 50;
 const TOUCH_PAUSE_X = 60;
 const TOUCH_PAUSE_Y = 375;
 
+//Debugging value screen values.
+const DEBUG_TOUCH_NORM = false;
+
 
 /**
  * Resets all knowledge about used devices
@@ -96,10 +99,59 @@ function getKeyPress(event) {
  * @returns {undefined}
  */
 function registerTouch(event){
+    //Jump out of here if gamepad is in use.
     if(gamepad)return;
     touchs = true;
     keyboard = 1;
-    shoot = 5;
+    up = 0;
+    down = 0;
+    left = 0;
+    right = 0;
+    pause = 0;
+    shoot = 0;
+    var treat = event.changedTouches;
+    for(var i = 0; i<treat.length; i++){
+        var point = treat[i];
+        //Transform touch coordinates into in-game format (800x600).
+        sani_x = Math.round(point.clientX / (oldWidth / 800));
+        sani_y = Math.round(point.clientY / (oldHeight / 600));
+        
+        //Detect acts of touching.
+        if(sani_x >= TOUCH_UP_X && sani_y >=TOUCH_UP_Y && 
+                sani_x <= TOUCH_UP_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_UP_Y + TOUCH_NORMAL_S){
+            up = 5;
+        }
+        else if(sani_x >= TOUCH_DOWN_X && sani_y >=TOUCH_DOWN_Y && 
+                sani_x <= TOUCH_DOWN_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_DOWN_Y + TOUCH_NORMAL_S){
+            down = 5;
+        }
+        else if(sani_x >= TOUCH_LEFT_X && sani_y >=TOUCH_LEFT_Y && 
+                sani_x <= TOUCH_LEFT_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_LEFT_Y + TOUCH_NORMAL_S){
+            left = 5;
+        }
+        else if(sani_x >= TOUCH_RIGHT_X && sani_y >=TOUCH_RIGHT_Y && 
+                sani_x <= TOUCH_RIGHT_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_RIGHT_Y + TOUCH_NORMAL_S){
+            right = 5;
+        }
+        else if(sani_x >= TOUCH_PAUSE_X && sani_y >=TOUCH_PAUSE_Y && 
+                sani_x <= TOUCH_PAUSE_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_PAUSE_Y + TOUCH_NORMAL_S){
+            pause = 5;
+        }
+        else {
+            shoot = 5;
+        }
+        //Debug output.
+        if(DEBUG_TOUCH_NORM){
+           window.alert("X not-norm " + point.clientX + " Y not-norm " + point.clientY);   
+           window.alert("X normalized " + sani_x + " Y normalized " + sani_y);
+        }
+    }
+    
 }
 
 /**
@@ -108,7 +160,44 @@ function registerTouch(event){
  * @returns {undefined}
  */
 function unregisterTouch(event){
-    shoot = 0;
+    var treat = event.changedTouches;
+    for(var i = 0; i<treat.length; i++){
+        var point = treat[i];
+        //Transform touch coordinates into in-game format (800x600).
+        sani_x = Math.round(point.clientX / (oldWidth / 800));
+        sani_y = Math.round(point.clientY / (oldHeight / 600));
+        
+        //Detect acts of touching.
+        if(sani_x >= TOUCH_UP_X && sani_y >=TOUCH_UP_Y && 
+                sani_x <= TOUCH_UP_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_UP_Y + TOUCH_NORMAL_S){
+            up = 0;
+        }
+        else if(sani_x >= TOUCH_DOWN_X && sani_y >=TOUCH_DOWN_Y && 
+                sani_x <= TOUCH_DOWN_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_DOWN_Y + TOUCH_NORMAL_S){
+            down = 0;
+        }
+        else if(sani_x >= TOUCH_LEFT_X && sani_y >=TOUCH_LEFT_Y && 
+                sani_x <= TOUCH_LEFT_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_LEFT_Y + TOUCH_NORMAL_S){
+            left = 0;
+        }
+        else if(sani_x >= TOUCH_RIGHT_X && sani_y >=TOUCH_RIGHT_Y && 
+                sani_x <= TOUCH_RIGHT_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_RIGHT_Y + TOUCH_NORMAL_S){
+            right = 0;
+        }
+        else if(sani_x >= TOUCH_PAUSE_X && sani_y >=TOUCH_PAUSE_Y && 
+                sani_x <= TOUCH_PAUSE_X + TOUCH_NORMAL_S &&
+                sani_y <= TOUCH_PAUSE_Y + TOUCH_NORMAL_S){
+            pause = 0;
+        }
+        else {
+            shoot = 0;
+        }
+        //Debug output.
+    }
 }
 
 
