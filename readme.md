@@ -17,9 +17,13 @@ When playing the game you can see the value of the score, health, lifes and leve
 ## The player and the ship's missiles
 Your player is a low poly gray spaceship with a yellow head and orange sides.
 
-## The controls 
+## The controls
+#### Classical: Keyboard and gamepad (PC)
  You can control the game with the arrow keys and the space key on your keyboard or by going ahead and use a gamepad with an analogue stick and a designated fire button (chosen by pressing it on the title screen). 
 You can pause the game using the "P" button if you use a keyboard or key 09 (mostly known as "The start button") if you use a gamepad. Keep in mind that the gamepad feature is experimental.
+#### New: Touch controls
+A recent addition to the game are touch controls! Just press anywhere on the touch screen of your device (at the title screen) to activate them!
+At the lower left, you will find your D-Pad, above that, the pause button. To the right, this is your fire button. Make extensive use of this!
 
 ## Game music and sounds effects
 The game has music and sounds effects. When you lower the volume of music then the sounds effects are also lowered. 
