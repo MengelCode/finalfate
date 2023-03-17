@@ -101,14 +101,9 @@ function getKeyPress(event) {
 function registerTouch(event){
     //Jump out of here if gamepad is in use.
     if(gamepad)return;
+    event.preventDefault();
     touchs = true;
     keyboard = 1;
-    up = 0;
-    down = 0;
-    left = 0;
-    right = 0;
-    pause = 0;
-    shoot = 0;
     var treat = event.changedTouches;
     for(var i = 0; i<treat.length; i++){
         var point = treat[i];
@@ -159,7 +154,7 @@ function registerTouch(event){
  * @param {type} event
  * @returns {undefined}
  */
-function unregisterTouch(event){
+function unregisterTouch(event){ 
     var treat = event.changedTouches;
     for(var i = 0; i<treat.length; i++){
         var point = treat[i];
