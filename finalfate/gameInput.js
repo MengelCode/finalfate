@@ -23,6 +23,8 @@ var gamepad_removed = false;
 var gamepad_button = false;
 //Gamepad event handle.
 var gamepad_handle = null;
+//First touch?
+var first_touch = true;
 
 
 //Constants for touch screen gameplay.
@@ -66,6 +68,7 @@ function initAllInput() {
     keyboard = false;
     gamepad = false;
     gamepad_removed = false;
+    first_touch = true;
 }
 
 //Event receiver for key presses.
@@ -102,9 +105,12 @@ function registerTouch(event){
     //Jump out of here if gamepad is in use.
     if(gamepad)return;
     event.preventDefault();
-    touchs = true;
     keyboard = 1;
     var treat = event.changedTouches;
+    if(!touchs){
+            shoot = 5;
+            touchs = true;
+    }
     for(var i = 0; i<treat.length; i++){
         var point = treat[i];
         //Transform touch coordinates into in-game format (800x600).
@@ -137,7 +143,9 @@ function registerTouch(event){
                 sani_y <= TOUCH_PAUSE_Y + TOUCH_NORMAL_S){
             pause = 5;
         }
-        else {
+        else if(sani_x >= TOUCH_SHOOT_X && sani_y >=TOUCH_PAUSE_Y && 
+                sani_x <= TOUCH_SHOOT_X + TOUCH_SHOOT_S &&
+                sani_y <= TOUCH_SHOOT_Y + TOUCH_SHOOT_S){
             shoot = 5;
         }
         //Debug output.
@@ -188,8 +196,14 @@ function unregisterTouch(event){
                 sani_y <= TOUCH_PAUSE_Y + TOUCH_NORMAL_S){
             pause = 0;
         }
-        else {
+        else if(sani_x >= TOUCH_SHOOT_X && sani_y >=TOUCH_PAUSE_Y && 
+                sani_x <= TOUCH_SHOOT_X + TOUCH_SHOOT_S &&
+                sani_y <= TOUCH_SHOOT_Y + TOUCH_SHOOT_S){
             shoot = 0;
+        }
+        else if(first_touch){
+            shoot = 0;
+            first_touch = false;
         }
         //Debug output.
     }
