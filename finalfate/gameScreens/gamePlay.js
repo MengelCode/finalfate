@@ -261,6 +261,9 @@ function renderInGame() {
         context.globalAlpha = 1.0;
         level_timer--;
     }
+    if(touchs){
+        touchOverlay();
+    }
     } catch (error) {
 //Code for title screen.
         crashCauseSet = 0;

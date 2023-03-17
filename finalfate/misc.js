@@ -72,7 +72,17 @@ function exchangeRenderLoop(func, preserveCounters = false) {
     } else {
         renderFunction = func;
     }
-    renderTimer = setInterval(renderFunction, FRAME_RATE);
+    if(!touchs){
+        renderTimer = setInterval(renderFunction, FRAME_RATE);
+    }
+    else {
+        renderTimer = setInterval(renderLoopTouch, FRAME_RATE);
+    }
+}
+
+function renderLoopTouch(){
+    renderFunction();
+    touchOverlay();
 }
 
 /**

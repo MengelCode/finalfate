@@ -25,6 +25,22 @@ var gamepad_button = false;
 var gamepad_handle = null;
 
 
+//Constants for touch screen gameplay.
+const TOUCH_UP_X = 60;
+const TOUCH_UP_Y = 430;
+const TOUCH_DOWN_X = 60;
+const TOUCH_DOWN_Y = 500;
+const TOUCH_LEFT_X = 30;
+const TOUCH_LEFT_Y = 465;
+const TOUCH_RIGHT_X = 90;
+const TOUCH_RIGHT_Y = 465;
+const TOUCH_NORMAL_S = 30;
+const TOUCH_SHOOT_X = 680;
+const TOUCH_SHOOT_Y = 460;
+const TOUCH_SHOOT_S = 50;
+const TOUCH_PAUSE_X = 60;
+const TOUCH_PAUSE_Y = 375;
+
 
 /**
  * Resets all knowledge about used devices
