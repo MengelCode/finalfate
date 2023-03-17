@@ -91,6 +91,28 @@ function getKeyPress(event) {
 }
 
 /**
+ * Function for registering touch input.
+ * @param {type} event
+ * @returns {undefined}
+ */
+function registerTouch(event){
+    if(gamepad)return;
+    touchs = true;
+    keyboard = 1;
+    shoot = 5;
+}
+
+/**
+ * Function for unregistering touch input.
+ * @param {type} event
+ * @returns {undefined}
+ */
+function unregisterTouch(event){
+    shoot = 0;
+}
+
+
+/**
  * Poll every button on every gamepad.
  * @returns {Boolean}
  */

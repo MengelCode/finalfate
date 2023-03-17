@@ -189,26 +189,6 @@ function clearScreen() {
     context.fillRect(0, 0, oldestWidth, oldestHeight);
 }
 
-/**
- * Function for registering touch input.
- * @param {type} event
- * @returns {undefined}
- */
-function registerTouch(event){
-    touchs = true;
-    keyboard = 1;
-    shoot = 5;
-}
-
-/**
- * Function for unregistering touch input.
- * @param {type} event
- * @returns {undefined}
- */
-function unregisterTouch(event){
-    shoot = 0;
-}
-
 //General-purpose dialogue options and text.
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];
