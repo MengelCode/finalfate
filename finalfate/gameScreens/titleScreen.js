@@ -79,21 +79,21 @@ var volumePause = "(change with left / right)";
  * Volume display render.
  * @returns {undefined}
  */
-function volume_prompt_render(){
+function volume_prompt_render(lockVolume = false){
     context.fillStyle = "white";
     var volumeControls = renderFunction === skillPrompt ||
             renderFunction === loadPrompt;
     if (volumeControls) {
         context.fillText(volumeText + " " + volumeTitle + ": " + masterVolume + " %", 195, 530);
-        if (up && masterVolume < 100)
+        if (up && masterVolume < 100 && !lockVolume)
             masterVolume = masterVolume + 1;
-        else if (down && masterVolume > 0)
+        else if (down && masterVolume > 0 && !lockVolume)
             masterVolume = masterVolume - 1;
     } else {
         context.fillText(volumeText + " " + volumePause + ": " + masterVolume + " %", 390, 580);
-        if (left && masterVolume < 100)
+        if (left && masterVolume < 100 && !lockVolume)
             masterVolume = masterVolume + 1;
-        else if (right && masterVolume > 0)
+        else if (right && masterVolume > 0 && !lockVolume)
             masterVolume = masterVolume - 1;
     }
     bgm.volume = masterVolume / 100;

@@ -187,7 +187,12 @@ function renderInGame() {
             renderHUD();
         if (renderFunction === gamePause) {
             renderHUD();
-            volume_prompt_render();
+            if(selectedOption >= pauseText.length){
+              volume_prompt_render(true);   
+            }
+            else {
+                volume_prompt_render(false);
+            }
             context.font = "27px Nonserif";
             //Shared Y,X coordinates
             let y = 245;
