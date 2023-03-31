@@ -108,6 +108,7 @@ function getRandomY() {
  */
 function getCustomRandom(maxValue,minValue = 0){
     var rand = Math.random();
+    maxValue++;
     maxValue = maxValue - minValue;
     var generated = Math.floor(rand * maxValue) + minValue;
     return generated;

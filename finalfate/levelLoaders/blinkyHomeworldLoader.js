@@ -126,7 +126,7 @@ function blinkyHomeworldLoader() {
                             spawnListArrayAdd(enem, lastValue);
                             break;
                         case 4:
-                            enem = new FogBomb(getRandomX(), getRandomCustom(25, 5));
+                            enem = new FogBomb(getRandomX(), getCustomRandom(25, 5));
                             Spawn.createAndAddSpawn(lastValue, enem);
                             break;
                     }
