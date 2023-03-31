@@ -8,14 +8,11 @@
 
 This HTML 5 space game's first commit has been made the Jul 4, 2019 by Manuel Engel willing to train in JavaScript during the spare-time.
 
-## The Game
+## The game
 This is a low poly 2D space game with differently colored enemies you will find on your way. You need to survive avoiding spaceships and missiles. The game will have five levels and you can play it as a beginner, as a good player, a hard player or as a master. Your goal is to successfully win all levels by shooting the bad guys down and challenging the level bosses.
 
-## User Interface
+## User interface
 When playing the game you can see the value of the score, health, lifes and level written at the bottom of the screen in a black horizontal bar. 
-
-## The player and the ship's missiles
-Your player is a low poly gray spaceship with a yellow head and orange sides.
 
 ## The controls
 #### Classical: Keyboard and gamepad (PC)
@@ -25,16 +22,13 @@ You can pause the game using the "P" button if you use a keyboard or key 09 (mos
 A recent addition to the game are touch controls! Just press anywhere on the touch screen of your device (at the title screen) to activate them!
 At the lower left, you will find your D-Pad, above that, the pause button. To the right, this is your fire button. Make extensive use of this!
 
-## Game music and sounds effects
-The game has music and sounds effects. When you lower the volume of music then the sounds effects are also lowered. 
-
 ## Web browser compatibility
 
-This game has to to be fully compatible with modern Firefox and Chromium/Chrome browsers. If you encounter any issues please send us the error you are facing.
+It is an aim for this game is to be fully compatible with modern Firefox and Chromium/Chrome browsers. If you encounter any issues please send us the error you are facing.
 
 ## Play the current version
 
-This game needs players! Please give the game a feedback via the Issues function. Available content : approx. 60 % out of the informally planned scope.
+This game needs players! Please provide feedback via the Issues function if something is wrong.
 
 ### Epilepsy warning
 
