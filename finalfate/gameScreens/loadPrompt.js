@@ -21,10 +21,10 @@ function loadPrompt() {
     volume_prompt_render();
     context.fillStyle = "blue";
     context.fillRect(290, 190, 260, 200);
-    context.font = "27px Nonserif";
+    context.font = "27px sans-serif";
     context.fillStyle = "white";
     context.fillText(info_string, 290, 220);
-    context.font = "14px Nonserif";
+    context.font = "14px sans-serif";
     context.fillText(savedGameFound[0], 290, 250);
     context.fillStyle = "gold";
     var savedLevelUserFriendly = Number(savedLevel) + 1;
@@ -35,7 +35,7 @@ function loadPrompt() {
     } else if (aniCount === 5) {
         loadSelected = 0;
     } else {
-        context.font = "27px Nonserif";
+        context.font = "27px sans-serif";
         context.fillStyle = "white";
         for (var i = 0; i < loadingSelections.length; i++) {
             if (loadSelected === i) {

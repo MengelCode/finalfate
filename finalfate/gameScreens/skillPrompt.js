@@ -15,7 +15,7 @@ function skillPrompt() {
     validateReleasedState();
     checkGamepadRemoved(skillPrompt);
     volume_prompt_render();
-    context.font = "27px Nonserif";
+    context.font = "27px sans-serif";
     context.fillStyle = "white";
     context.fillText(selectSkill, 220, 450);
     if (aniCount < 4) {

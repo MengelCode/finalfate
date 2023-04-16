@@ -193,7 +193,7 @@ function renderInGame() {
             else {
                 volume_prompt_render(false);
             }
-            context.font = "27px Nonserif";
+            context.font = "27px sans-serif";
             //Shared Y,X coordinates
             let y = 245;
             let x = 330;
@@ -215,7 +215,7 @@ function renderInGame() {
                 context.fillRect(290, 190, 260, 200);
                 context.fillStyle = "black";
                 context.fillRect(290, 190, 260, 35);
-                context.font = "27px Nonserif";
+                context.font = "27px sans-serif";
                 context.fillStyle = "white";
                 context.fillText(pauseText[selectedOption - 3], 290, 220);
                 context.fillText(youSureQuestion, 290, 250);
@@ -241,14 +241,14 @@ function renderInGame() {
                 context.fillStyle = "black";
                 context.fillRect(290, 190, 260, 35);
                 context.fillStyle = "white";
-                context.font = "27px Nonserif";
+                context.font = "27px sans-serif";
                 context.fillText(saveComplete, 290, 220);
                 saveCompleteTimer--;
             } else if (saveFailureTimer) {
                 context.fillStyle = "black";
                 context.fillRect(290, 190, 260, 35);
                 context.fillStyle = "white";
-                context.font = "27px Nonserif";
+                context.font = "27px sans-serif";
                 context.fillText(saveFailure, 290, 220);
                 saveFailureTimer--;
             }
@@ -302,12 +302,12 @@ function renderHUD() {
     context.fillStyle = "#222222";
     context.fillRect(0, 550, 800, 50);
     context.fillStyle = "white";
-    context.font = "27px Nonserif";
+    context.font = "27px sans-serif";
     context.fillText(player.score, 0, 581);
     context.fillText(player.health, 245, 581);
     context.fillText(player.lifes, 350, 581);
     context.fillText(player.level + 1, 700, 581);
-    context.font = "13px Nonserif";
+    context.font = "13px sans-serif";
     context.fillText("SCORE", 0, 595);
     context.fillText("HEALTH", 245, 595);
     context.fillText("LIVE", 350, 595);

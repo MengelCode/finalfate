@@ -19,10 +19,10 @@ function loadFail() {
     checkGamepadRemoved(loadFail);
     context.fillStyle = "blue";
     context.fillRect(255, 190, 260, 200);
-    context.font = "27px Nonserif";
+    context.font = "27px sans-serif";
     context.fillStyle = "white";
     context.fillText(info_string, 255, 220);
-    context.font = "14px Nonserif";
+    context.font = "14px sans-serif";
     context.fillText(data_load_fail[0], 255, 250);
     context.fillText(data_load_fail[1], 255, 275);
     context.fillText(data_load_fail[2], 255, 290);
@@ -34,7 +34,7 @@ function loadFail() {
         shootReleased = false;
     }
     if (aniCount % 5 === aniCount % 10) {
-        context.font = "27px Nonserif";
+        context.font = "27px sans-serif";
         context.fillStyle = "yellow";
         context.fillText(data_warning_ok, 340, 380);
     }
@@ -49,10 +49,10 @@ function saveCorrupt() {
     clearScreen();
     context.fillStyle = "red";
     context.fillRect(290, 190, 260, 200);
-    context.font = "27px Nonserif";
+    context.font = "27px sans-serif";
     context.fillStyle = "white";
     context.fillText(info_string, 290, 220);
-    context.font = "14px Nonserif";
+    context.font = "14px sans-serif";
     context.fillText(data_corrupt[0], 290, 250);
     context.fillText(data_corrupt[1], 290, 275);
     context.fillText(data_corrupt[2], 290, 290);
@@ -67,7 +67,7 @@ function saveCorrupt() {
         exchangeRenderLoop(titleScreen);
     }
     if (aniCount % 5 === aniCount % 10) {
-        context.font = "27px Nonserif";
+        context.font = "27px sans-serif";
         context.fillStyle = "yellow";
         context.fillText(data_warning_ok, 360, 380);
     }

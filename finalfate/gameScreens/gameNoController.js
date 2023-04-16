@@ -37,10 +37,10 @@ function _gameNoController(){
     }
     context.fillStyle = "#111111";
     context.fillRect(290, 190, 260, 170);
-    context.font = "26px Nonserif";
+    context.font = "26px sans-serif";
     context.fillStyle = "white";
     context.fillText(notifyText[0], 290, 250);
-    context.font = "14px Nonserif";
+    context.font = "14px sans-serif";
     context.fillText(notifyText[1], 290, 280);
     context.fillText(notifyText[2], 290, 310);
     context.fillText(notifyText[3], 290, 340);

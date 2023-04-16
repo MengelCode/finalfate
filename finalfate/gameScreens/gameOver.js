@@ -15,7 +15,7 @@ function gameOver() {
         bgm.pause();
         simplyPlaySound(game_over);
     }
-    context.font = "60px Nonerif";
+    context.font = "60px sans-serif";
     context.fillStyle = "yellow";
     context.fillText("GAME OVER", 180, 320);
     if (aniCount === 90) {

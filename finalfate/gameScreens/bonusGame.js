@@ -19,7 +19,7 @@ function bonusGame() {
     context.fillStyle = "#000000";
     context.fillRect(0, 0, 800, 600);
     context.fillStyle = "cyan";
-    context.font = "50px Nonserif";
+    context.font = "50px sans-serif";
     context.fillText("BONUS GAME !!", 190, 80);
     if (aniCount < 130)
         return;

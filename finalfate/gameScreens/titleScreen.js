@@ -25,7 +25,7 @@ function titleScreen() {
             title_objects.push(new SimplestEnemy(55, 34));
         }
         if (aniCount % 5 === aniCount % 10) {
-            context.font = "23px Nonserif";
+            context.font = "23px sans-serif";
             if(aniCount % 250 < 150){
                 context.fillStyle = "gold";
                 context.fillText("PRESS SPACE / GAMEPAD FIRE BUTTON", 130, 520);
@@ -115,7 +115,7 @@ function title_and_copyright_render() {
     context.font = "60px Serif";
     context.fillStyle = "red";
     context.fillText("THE FINAL FATE", 120, 150);
-    context.font = "17px Nonserif";
+    context.font = "17px sans-serif";
     context.fillStyle = "white";
     context.fillText("GAME (C) 2019-2023 Manuel Engel", 220, 580);
 }
