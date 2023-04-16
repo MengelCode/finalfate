@@ -30,11 +30,10 @@ function loadPrompt() {
     var savedLevelUserFriendly = Number(savedLevel) + 1;
     context.fillText(savedGameFound[1] + (savedLevelUserFriendly%10) + "?", 290, 275);
     context.fillText(savedGameFound[2], 290, 290);
-    if (aniCount < 4) {
-        loadSelected = undefined;
-    } else if (aniCount === 5) {
+    if (aniCount < 6) {
         loadSelected = 0;
-    } else {
+    } 
+    else {
         context.font = "27px sans-serif";
         context.fillStyle = "white";
         for (var i = 0; i < loadingSelections.length; i++) {
