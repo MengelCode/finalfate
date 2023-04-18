@@ -57,6 +57,12 @@ function initAllInput() {
         //Keyboard input catching.
         window.addEventListener("keydown", getKeyPress);
         window.addEventListener("keyup", getKeyRelease);
+        //Add touch event listener.
+        canvas.addEventListener("touchstart", registerTouch);
+        //Remove touch event listener.
+        canvas.addEventListener("touchend", unregisterTouch);
+        //Touch watch guard.
+        canvas.addEventListener("touchmove",killTouch);
     }
     if (gamepad_handle !== null) {
         //Terminate polling of specific (?) gamepad.
@@ -207,6 +213,24 @@ function unregisterTouch(event){
         }
         //Debug output.
     }
+}
+
+
+
+function killTouch(event){
+   if(up!== 0)up--;
+   if(down!== 0)down--;
+   if(left!==0)left--;
+   if(right!==0)right--;
+   if(pause!==0)pause--;
+   if(shoot!==0)shoot--;
+   
+   if(up< 2)up=0;
+   if(down<2)down=0;
+   if(left<2)left=0;
+   if(right<2)right=0;
+   if(pause<2)pause=0;
+   if(shoot<2)shoot=0;
 }
 
 

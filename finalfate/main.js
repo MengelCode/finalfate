@@ -63,10 +63,6 @@ initAllInput();
 window.addEventListener("resize", sizeChanged);
 //Invalidate keyboard input when window focus is lost.
 window.addEventListener("blur",focusLost);
-//Add touch event listener.
-window.addEventListener("touchstart", registerTouch);
-//Remove touch event listener.
-window.addEventListener("touchend", unregisterTouch);
 
 
 
