@@ -398,3 +398,7 @@ function validateReleasedState() {
         axisXReleased = true;
     }
 }
+//Disable the event responsible for zooming.
+document.addEventListener("dblclick", function (event) {
+    event.preventDefault();
+}, {passive: false});
