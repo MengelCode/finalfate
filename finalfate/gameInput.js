@@ -59,6 +59,7 @@ function initAllInput() {
         window.addEventListener("keyup", getKeyRelease);
         //Add touch event listener.
         canvas.addEventListener("touchstart", registerTouch);
+        canvas.addEventListener("touchmove", registerTouch);
         //Remove touch event listener.
         canvas.addEventListener("touchend", unregisterTouch);
         //Touch watch guard.
@@ -112,10 +113,18 @@ function registerTouch(event){
     if(gamepad)return;
     event.preventDefault();
     keyboard = 1;
-    var treat = event.changedTouches;
+    var treat = event.touches;
     if(!touchs){
             shoot = 5;
             touchs = true;
+    }
+    else {
+        up = false;
+        down = false;
+        left = false;
+        right = false;
+        shoot = false;
+        pause = false;
     }
     for(var i = 0; i<treat.length; i++){
         var point = treat[i];
