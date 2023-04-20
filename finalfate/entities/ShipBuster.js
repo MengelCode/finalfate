@@ -20,7 +20,7 @@ class ShipBuster extends Bomb {
 var shipBuster_dimension = meteor_dimension;
 
 //"Ship Buster" update function.
-var shipBuster_update = func_noOp
+var shipBuster_update = func_noOp;
 
 //Ship Buster rendering function
 function shipBuster_render() {
@@ -37,4 +37,5 @@ function shipBuster_invalidateSpecial(){
     else if(player.skill === 1)player.health-=45;
     else player.health-=60;
     displayList.addElement(new Boom(),false);
+    player.noHit = false;
 }
