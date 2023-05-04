@@ -66,6 +66,19 @@ class LinkedList {
 
 
         };
+        //Create shallow copy.
+        this.createShallowCopy = function(){
+          if(this.peekNext() !== null){  
+          var theCopy = new LinkedList();
+          theCopy.next = this.next;
+          theCopy.next.value = this.next.value;
+          return theCopy;
+      }
+      else {
+          return new LinkedList();
+      }
+        };
+        
         //Deletes the entire list.
         this.deleteAll = function () {
             this.next = null;

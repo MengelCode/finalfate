@@ -18,7 +18,7 @@ function blinkyHomeworldLoader() {
         var lastValue = 0;
         if (player.checkpoint === 4) {
             lastValue += 100;
-            enem = boss4_factory();
+            enem = boss4b_factory();
             Spawn.createAndAddSpawn(lastValue, enem);
             return;
         }
@@ -188,7 +188,7 @@ function blinkyHomeworldLoader() {
             lastValue+=22;            
         }
         lastValue+=100;
-        enem = boss4_factory();
+        enem = boss4b_factory();
         Spawn.createAndAddSpawn(lastValue, enem);
 
     } catch (error) {
