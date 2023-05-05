@@ -25,12 +25,9 @@ function boss4b_update() {
     if (this.frameCounter % 11 === 0) {
         this.subCounterAnimation++;
     }
-    //Stage 0 code.
-    //Shoot objects in direction of player.
-    if(this.frameCounter % 77 === 0){
-       boss4b_spamEnemies1();
+    if (this.stage === 0) {
+        boss4b_firstPhase.call(this);
     }
-    //END: Stage 0 code.
     //Detect bullets shot.
     bulletList.resetIterator();
     while(bulletList.peekNext() !== null){
@@ -81,6 +78,18 @@ function boss4b_factory() {
     giant_boss = first_element;
     return first_element;
 }
+
+/**
+ * Code related to first phase of boss.
+ */
+function boss4b_firstPhase() {
+    //Shoot objects in direction of player.
+    if (this.frameCounter % 77 === 0) {
+        boss4b_spamEnemies1();
+    }
+}
+
+
 /**
  * Spam the player with invulnerable Blinkies, hurray!
  * @returns {undefined}
