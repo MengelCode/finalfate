@@ -25,6 +25,13 @@ function boss4b_update() {
     if (this.frameCounter % 11 === 0) {
         this.subCounterAnimation++;
     }
+    //Stage 0 code.
+    //Shoot objects in direction of player.
+    if(this.frameCounter % 77 === 0){
+       boss4b_spamEnemies1();
+    }
+    //END: Stage 0 code.
+    //Detect bullets shot.
     bulletList.resetIterator();
     while(bulletList.peekNext() !== null){
         var bullet = bulletList.getNext();
@@ -73,4 +80,37 @@ function boss4b_factory() {
     var first_element = new Enemy(0, 0, func_noDim, boss4b_update, boss4b_render);
     giant_boss = first_element;
     return first_element;
+}
+/**
+ * Spam the player with invulnerable Blinkies, hurray!
+ * @returns {undefined}
+ */
+function boss4b_spamEnemies1(){
+    //1st left.
+    var blinkyAnnoying = new BlinkyTracerInv(B4_REL_X,B4_REL_Y + B4_REL_HEIGHT);
+    enemyList.addElement(blinkyAnnoying, false);
+    displayList.addElement(blinkyAnnoying, false);
+    //2nd left.
+    blinkyAnnoying = new BlinkyTracerInv(B4_REL_X + 6,B4_REL_Y + B4_REL_HEIGHT);
+    enemyList.addElement(blinkyAnnoying, false);
+    displayList.addElement(blinkyAnnoying, false);
+    //3nd left.
+    blinkyAnnoying = new BlinkyTracerInv(B4_REL_X + 12,B4_REL_Y + B4_REL_HEIGHT);
+    enemyList.addElement(blinkyAnnoying, false);
+    displayList.addElement(blinkyAnnoying, false);
+    //1st right.
+    blinkyAnnoying = new BlinkyTracerInv(B4_REL_X + B4_REL_WIDTH - 2,
+    B4_REL_Y + B4_REL_HEIGHT);
+    enemyList.addElement(blinkyAnnoying, false);
+    displayList.addElement(blinkyAnnoying, false);
+     //2nd right.
+    blinkyAnnoying = new BlinkyTracerInv(B4_REL_X + B4_REL_WIDTH - 8,
+    B4_REL_Y + B4_REL_HEIGHT);
+    enemyList.addElement(blinkyAnnoying, false);
+    displayList.addElement(blinkyAnnoying, false);
+    //3rd right.
+    blinkyAnnoying = new BlinkyTracerInv(B4_REL_X + B4_REL_WIDTH - 14,
+    B4_REL_Y + B4_REL_HEIGHT);
+    enemyList.addElement(blinkyAnnoying, false);
+    displayList.addElement(blinkyAnnoying, false);
 }
