@@ -20,6 +20,11 @@ function boss4b_update() {
     if (this.frameCounter === 0) {
         this.subCounterAnimation = 0;
         this.stage = 0;
+        //Health points. Per phase.
+        this.hp = 510;
+        //"Rage" which increases every time the boss loses hp.
+        //Will decharge until a specific threshold is reached.
+        this.rage = 0;
     }
     this.frameCounter++;
     if (this.frameCounter % 11 === 0) {
@@ -37,6 +42,8 @@ function boss4b_update() {
                 bullet.middleY-2 > B4_REL_Y &&
                 bullet.middleY-2 < B4_REL_Y + B4_REL_HEIGHT){
             bullet.middleY = -76;
+            this.hp-= 7;
+            this.rage += 7;
         }
         
     }
@@ -87,6 +94,40 @@ function boss4b_firstPhase() {
     if (this.frameCounter % 77 === 0) {
         boss4b_spamEnemies1();
     }
+    //"Release rage" if hit enough.
+    if (this.rage >= 170){
+        var blinkyAnnoying = new BlinkyInv(B4_REL_X + B4_REL_WIDTH / 2, 
+        B4_REL_Y + B4_REL_HEIGHT);
+        enemyList.addElement(blinkyAnnoying, false);
+        displayList.addElement(blinkyAnnoying, false);
+        this.rage-=5;
+    }
+    //Draw player a bit to the middle once damaged enough.
+    if(this.hp <= 320 && this.frameCounter % 5 === 0){
+        //If player more left, to draw them to the middle.
+        if(player.middleX < B4_REL_X + B4_REL_WIDTH / 2){
+            player.middleX+= 1;
+        }
+        else if (player.middleX > B4_REL_X + B4_REL_WIDTH / 2){
+            player.middleX-= 1;
+        }
+    }
+    //Release even more rage and that oddly when even more damage is taken.
+    if(this.hp <= 270 && this.rage >= 150){
+        if (player.middleX < B4_REL_X + B4_REL_WIDTH / 2) {
+            var blinkyAnnoying = new BlinkyInv(B4_REL_X, B4_REL_Y + 4);
+            enemyList.addElement(blinkyAnnoying, false);
+            displayList.addElement(blinkyAnnoying, false);
+            this.rage -= 5;
+        } else if (player.middleX > B4_REL_X + B4_REL_WIDTH / 2) {
+            var blinkyAnnoying = new BlinkyInv(B4_REL_X + 
+                    B4_REL_WIDTH- 2, B4_REL_Y + 4);
+            enemyList.addElement(blinkyAnnoying, false);
+            displayList.addElement(blinkyAnnoying, false);
+            this.rage -= 5;
+        }
+    }
+    
 }
 
 
