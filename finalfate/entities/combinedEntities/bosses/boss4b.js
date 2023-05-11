@@ -33,20 +33,6 @@ function boss4b_update() {
     if (this.stage === 0) {
         boss4b_firstPhase.call(this);
     }
-    //Detect bullets shot.
-    bulletList.resetIterator();
-    while(bulletList.peekNext() !== null){
-        var bullet = bulletList.getNext();
-        if(bullet.middleX+2 > B4_REL_X && 
-                bullet.middleX < B4_REL_X + B4_REL_WIDTH &&
-                bullet.middleY-2 > B4_REL_Y &&
-                bullet.middleY-2 < B4_REL_Y + B4_REL_HEIGHT){
-            bullet.middleY = -76;
-            this.hp-= 7;
-            this.rage += 7;
-        }
-        
-    }
 }
 
 function boss4b_render() {
@@ -92,50 +78,55 @@ function boss4b_factory() {
 function boss4b_firstPhase() {
     //Shoot objects in direction of player.
     if (this.frameCounter % 77 === 0) {
-        boss4b_spamEnemies1();
+        boss4b_phase1SpamEnemies1();
     }
     //"Release rage" if hit enough.
     if (this.rage >= 170){
-        var blinkyAnnoying = new BlinkyInv(B4_REL_X + B4_REL_WIDTH / 2, 
-        B4_REL_Y + B4_REL_HEIGHT);
-        enemyList.addElement(blinkyAnnoying, false);
-        displayList.addElement(blinkyAnnoying, false);
-        this.rage-=5;
+        boss4b_phase1Rage1.call(this);
     }
     //Draw player a bit to the middle once damaged enough.
     if(this.hp <= 320 && this.frameCounter % 5 === 0){
-        //If player more left, to draw them to the middle.
-        if(player.middleX < B4_REL_X + B4_REL_WIDTH / 2){
-            player.middleX+= 1;
-        }
-        else if (player.middleX > B4_REL_X + B4_REL_WIDTH / 2){
-            player.middleX-= 1;
-        }
+        boss4b_phase1Hazard1.call(this);
     }
     //Release even more rage and that oddly when even more damage is taken.
     if(this.hp <= 270 && this.rage >= 150){
-        if (player.middleX < B4_REL_X + B4_REL_WIDTH / 2) {
-            var blinkyAnnoying = new BlinkyInv(B4_REL_X, B4_REL_Y + 4);
-            enemyList.addElement(blinkyAnnoying, false);
-            displayList.addElement(blinkyAnnoying, false);
-            this.rage -= 5;
-        } else if (player.middleX > B4_REL_X + B4_REL_WIDTH / 2) {
-            var blinkyAnnoying = new BlinkyInv(B4_REL_X + 
-                    B4_REL_WIDTH- 2, B4_REL_Y + 4);
-            enemyList.addElement(blinkyAnnoying, false);
-            displayList.addElement(blinkyAnnoying, false);
-            this.rage -= 5;
-        }
+       boss4b_phase1Rage2.call(this);
     }
+    boss4b_normalHitDetection.call(this);
     
 }
 
+/**
+ * Standard hit detection for boss 4.
+ * Used in: Phase 1
+ * @returns {undefined}
+ */
+function boss4b_normalHitDetection(){
+    //Detect bullets shot.
+    bulletList.resetIterator();
+    while (bulletList.peekNext() !== null) {
+        var bullet = bulletList.getNext();
+        if (bullet.middleX + 2 > B4_REL_X &&
+                bullet.middleX < B4_REL_X + B4_REL_WIDTH &&
+                bullet.middleY - 2 > B4_REL_Y &&
+                bullet.middleY - 2 < B4_REL_Y + B4_REL_HEIGHT) {
+            bullet.middleY = -76;
+            this.hp -= 7;
+            this.rage += 7;
+        }
+
+    }
+}
+
+
+
+// --- AUXILLARY FUNCTIONS FOR PHASE 1 ---
 
 /**
  * Spam the player with invulnerable Blinkies, hurray!
  * @returns {undefined}
  */
-function boss4b_spamEnemies1(){
+function boss4b_phase1SpamEnemies1(){
     //1st left.
     var blinkyAnnoying = new BlinkyTracerInv(B4_REL_X,B4_REL_Y + B4_REL_HEIGHT);
     enemyList.addElement(blinkyAnnoying, false);
@@ -163,4 +154,48 @@ function boss4b_spamEnemies1(){
     B4_REL_Y + B4_REL_HEIGHT);
     enemyList.addElement(blinkyAnnoying, false);
     displayList.addElement(blinkyAnnoying, false);
+}
+
+
+/** First type of reaction the enemy shows in phase 1
+ *  if it feels seriously attacked.
+ */
+
+function boss4b_phase1Rage1() {
+    var blinkyAnnoying = new BlinkyInv(B4_REL_X + B4_REL_WIDTH / 2,
+            B4_REL_Y + B4_REL_HEIGHT);
+    enemyList.addElement(blinkyAnnoying, false);
+    displayList.addElement(blinkyAnnoying, false);
+    this.rage -= 5;
+}
+/**
+ * Second type of reacion to the enemy feeling attacked
+ * seriously attacked by player in phase 1.
+ */
+function boss4b_phase1Rage2(){
+    if (player.middleX < B4_REL_X + B4_REL_WIDTH / 2) {
+        var blinkyAnnoying = new BlinkyInv(B4_REL_X, B4_REL_Y + 4);
+        enemyList.addElement(blinkyAnnoying, false);
+        displayList.addElement(blinkyAnnoying, false);
+        this.rage -= 5;
+    } else if (player.middleX > B4_REL_X + B4_REL_WIDTH / 2) {
+        var blinkyAnnoying = new BlinkyInv(B4_REL_X +
+                B4_REL_WIDTH - 2, B4_REL_Y + 4);
+        enemyList.addElement(blinkyAnnoying, false);
+        displayList.addElement(blinkyAnnoying, false);
+        this.rage -= 5;
+    }
+}
+
+/** First type of game mechanism hazard in phase 1.
+ * 
+ */
+
+function boss4b_phase1Hazard1() {
+    //If player more left, to draw them to the middle.
+    if (player.middleX < B4_REL_X + B4_REL_WIDTH / 2) {
+        player.middleX += 1;
+    } else if (player.middleX > B4_REL_X + B4_REL_WIDTH / 2) {
+        player.middleX -= 1;
+    }
 }
