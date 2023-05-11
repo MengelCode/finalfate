@@ -18,10 +18,11 @@ const B4_REL_HEIGHT = B4_ABS_HEIGHT / 10;
 function boss4b_update() {
     //Init code block.
     if (this.frameCounter === 0) {
+        player.checkpoint = 4;
         this.subCounterAnimation = 0;
         this.stage = 0;
         //Health points. Per phase.
-        this.hp = 510;
+        this.hp = 410;
         //"Rage" which increases every time the boss loses hp.
         //Will decharge until a specific threshold is reached.
         this.rage = 0;
@@ -35,10 +36,14 @@ function boss4b_update() {
     }
 }
 
+
+const DEBUG_BOSS4B_RENDER_OBJ = false;
+
 function boss4b_render() {
     //Rendering of the boss body.
     if (this.subCounterAnimation === undefined) return;
     if (this.subCounterAnimation === 6) this.subCounterAnimation = 0;
+    if(DEBUG_BOSS4B_RENDER_OBJ)window.alert(JSON.stringify(this));
     
     // switch (this.subCounterAnimation) {
     //     case 5:
@@ -59,7 +64,12 @@ function boss4b_render() {
     //     default:
     //         context.fillStyle = "green";
     // }
-    context.fillStyle = "magenta";
+    if(this.stage === 1){
+            context.fillStyle = "white";
+    }
+    else {
+        context.fillStyle = "magenta";
+    }
     context.fillRect(B4_ABS_X,B4_ABS_Y,B4_ABS_WIDTH,B4_ABS_HEIGHT);
 }
 
@@ -76,6 +86,11 @@ function boss4b_factory() {
  * Code related to first phase of boss.
  */
 function boss4b_firstPhase() {
+    //First phase pretty much
+    if(this.hp < 0){
+        this.stage = 1;
+        return;
+    }
     //Shoot objects in direction of player.
     if (this.frameCounter % 77 === 0) {
         boss4b_phase1SpamEnemies1();
@@ -85,11 +100,12 @@ function boss4b_firstPhase() {
         boss4b_phase1Rage1.call(this);
     }
     //Draw player a bit to the middle once damaged enough.
-    if(this.hp <= 320 && this.frameCounter % 5 === 0){
-        boss4b_phase1Hazard1.call(this);
+    if(this.hp <= 220 && this.frameCounter % 5 === 0){
+        //UNUSED! Makes game too hard!
+        //boss4b_phase1Hazard1.call(this);
     }
     //Release even more rage and that oddly when even more damage is taken.
-    if(this.hp <= 270 && this.rage >= 150){
+    if(this.hp <= 170 && this.rage >= 150){
        boss4b_phase1Rage2.call(this);
     }
     boss4b_normalHitDetection.call(this);
@@ -174,12 +190,12 @@ function boss4b_phase1Rage1() {
  */
 function boss4b_phase1Rage2(){
     if (player.middleX < B4_REL_X + B4_REL_WIDTH / 2) {
-        var blinkyAnnoying = new BlinkyInv(B4_REL_X, B4_REL_Y + 4);
+        var blinkyAnnoying = new BlinkyTracer(B4_REL_X, B4_REL_Y + 4);
         enemyList.addElement(blinkyAnnoying, false);
         displayList.addElement(blinkyAnnoying, false);
         this.rage -= 5;
     } else if (player.middleX > B4_REL_X + B4_REL_WIDTH / 2) {
-        var blinkyAnnoying = new BlinkyInv(B4_REL_X +
+        var blinkyAnnoying = new BlinkyTracer(B4_REL_X +
                 B4_REL_WIDTH - 2, B4_REL_Y + 4);
         enemyList.addElement(blinkyAnnoying, false);
         displayList.addElement(blinkyAnnoying, false);
