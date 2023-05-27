@@ -115,9 +115,9 @@ function boss4b_secondPhase(){
         this.hp = 410;
         this.rage = 0;
         this.weakX = B4_ABS_X;
-        this.weakY = B4_ABS_Y + B4_ABS_HEIGHT - 40;
-        this.weakWidth = 70;
-        this.weakHeight = 40;
+        this.weakY = B4_ABS_Y + B4_ABS_HEIGHT - 100;
+        this.weakWidth = 80;
+        this.weakHeight = 100;
     }
     if(this.hp === 0){
         this.stage = 2;
@@ -128,6 +128,12 @@ function boss4b_secondPhase(){
         this.weakWidth = null;
         this.weakHeight = null;
         return;
+    }
+    if(this.frameCounter % 30 === 0){
+        this.weakX+= 20;
+        if(this.weakX > 620){
+           this.weakX = B4_ABS_X; 
+        }
     }
      boss4b_phase2HitDetection.call(this);
 }
@@ -254,6 +260,17 @@ function boss4b_phase2HitDetection(){
                 bullet.middleX < B4_REL_X + B4_REL_WIDTH &&
                 bullet.middleY - 2 > B4_REL_Y &&
                 bullet.middleY - 2 < B4_REL_Y + B4_REL_HEIGHT) {
+            //Did it hit the weak spot?
+            if(bullet.middleX + 2 > this.weakX / 10 &&
+                    bullet.middleX < this.weakX / 10 + this.weakWidth / 10 &&
+                    bullet.middleY - 2 > this.weakY / 10 && 
+                    bullet.middleY - 2 < this.weakY / 10 + this.weakHeight / 10){
+                //TODO Do damage.
+            }
+            else {
+               displayList.addElement(new Fog(),false);
+            }
+            //Bullet hit in general - is gone.
             bullet.middleY = -76;
         }
 
