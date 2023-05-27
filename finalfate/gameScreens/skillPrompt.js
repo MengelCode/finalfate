@@ -18,9 +18,7 @@ function skillPrompt() {
     context.font = "27px sans-serif";
     context.fillStyle = "white";
     context.fillText(selectSkill, 220, 450);
-    if (aniCount < 4) {
-        skillSelected = undefined;
-    } else if (aniCount === 5) {
+    if (aniCount < 6) {
         skillSelected = 0;
     }
     for (var i = -1; i < skillSelections.length - 2; i++) {
