@@ -26,13 +26,23 @@ function boss4b_update() {
         //"Rage" which increases every time the boss loses hp.
         //Will decharge until a specific threshold is reached.
         this.rage = 0;
+        //Position of weak point and dimensions.
+        this.weakX = null;
+        this.weakY = null;
+        this.weakWidth = null;
+        this.weakHeight = null;
     }
     this.frameCounter++;
     if (this.frameCounter % 11 === 0) {
         this.subCounterAnimation++;
     }
-    if (this.stage === 0) {
-        boss4b_firstPhase.call(this);
+    switch (this.stage) {
+        case 0:
+            boss4b_firstPhase.call(this);
+            break;
+        case 1:
+            boss4b_secondPhase.call(this);
+            break;
     }
 }
 
@@ -44,26 +54,6 @@ function boss4b_render() {
     if (this.subCounterAnimation === undefined) return;
     if (this.subCounterAnimation === 6) this.subCounterAnimation = 0;
     if(DEBUG_BOSS4B_RENDER_OBJ)window.alert(JSON.stringify(this));
-    
-    // switch (this.subCounterAnimation) {
-    //     case 5:
-    //         context.fillStyle = "red";
-    //         break;
-    //     case 4:
-    //         context.fillStyle = "yellow";
-    //         break;           
-        
-    //     case 3:
-    //         context.fillStyle = "magenta";
-    //         break;
-        
-    //     case 2:
-    //         context.fillStyle = "white";
-    //         break;   
-            
-    //     default:
-    //         context.fillStyle = "green";
-    // }
     if(this.stage === 1){
             context.fillStyle = "white";
     }
@@ -71,6 +61,10 @@ function boss4b_render() {
         context.fillStyle = "magenta";
     }
     context.fillRect(B4_ABS_X,B4_ABS_Y,B4_ABS_WIDTH,B4_ABS_HEIGHT);
+    if(this.weakX && this.weakY && this.weakWidth && this.weakHeight){
+        context.fillStyle = this.frameCounter % 8 < 3 ? "red" : "goldenrod";
+        context.fillRect(this.weakX,this.weakY,this.weakWidth, this.weakHeight);
+    }
 }
 
 /**
@@ -86,7 +80,7 @@ function boss4b_factory() {
  * Code related to first phase of boss.
  */
 function boss4b_firstPhase() {
-    //First phase pretty much
+    //First phase pretty much over.
     if(this.hp < 0){
         this.stage = 1;
         return;
@@ -111,6 +105,33 @@ function boss4b_firstPhase() {
     boss4b_normalHitDetection.call(this);
     
 }
+
+/**
+ * 
+ * Code related to second phase of boss.
+ */
+function boss4b_secondPhase(){
+    if(this.weakX === null){
+        this.hp = 410;
+        this.rage = 0;
+        this.weakX = B4_ABS_X;
+        this.weakY = B4_ABS_Y + B4_ABS_HEIGHT - 40;
+        this.weakWidth = 70;
+        this.weakHeight = 40;
+    }
+    if(this.hp === 0){
+        this.stage = 2;
+        this.hp = 410;
+        this.rage = 0;
+        this.weakX = null;
+        this.weakY = null;
+        this.weakWidth = null;
+        this.weakHeight = null;
+        return;
+    }
+     boss4b_phase2HitDetection.call(this);
+}
+
 
 /**
  * Standard hit detection for boss 4.
@@ -213,5 +234,28 @@ function boss4b_phase1Hazard1() {
         player.middleX += 1;
     } else if (player.middleX > B4_REL_X + B4_REL_WIDTH / 2) {
         player.middleX -= 1;
+    }
+}
+
+// --- AUXILLARY FUNCTIONS FOR PHASE 2 ---
+
+
+/**
+ * Standard hit detection for boss 4.
+ * Used in: Phase 2
+ * @returns {undefined}
+ */
+function boss4b_phase2HitDetection(){
+    //Detect bullets shot.
+    bulletList.resetIterator();
+    while (bulletList.peekNext() !== null) {
+        var bullet = bulletList.getNext();
+        if (bullet.middleX + 2 > B4_REL_X &&
+                bullet.middleX < B4_REL_X + B4_REL_WIDTH &&
+                bullet.middleY - 2 > B4_REL_Y &&
+                bullet.middleY - 2 < B4_REL_Y + B4_REL_HEIGHT) {
+            bullet.middleY = -76;
+        }
+
     }
 }
