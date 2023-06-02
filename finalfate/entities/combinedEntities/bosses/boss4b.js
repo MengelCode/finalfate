@@ -43,6 +43,11 @@ function boss4b_update() {
         case 1:
             boss4b_secondPhase.call(this);
             break;
+        case 2:
+            if(player.skill === -1){
+                this.invalid = true;
+                return;
+            }
     }
 }
 
@@ -119,7 +124,7 @@ function boss4b_secondPhase(){
         this.weakWidth = 80;
         this.weakHeight = 100;
     }
-    if(this.hp === 0){
+    if(this.hp < 0){
         this.stage = 2;
         this.hp = 410;
         this.rage = 0;
@@ -261,14 +266,20 @@ function boss4b_phase2HitDetection(){
                 bullet.middleY - 2 > B4_REL_Y &&
                 bullet.middleY - 2 < B4_REL_Y + B4_REL_HEIGHT) {
             //Did it hit the weak spot?
-            if(bullet.middleX + 2 > this.weakX / 10 &&
+            if (bullet.middleX + 2 > this.weakX / 10 &&
                     bullet.middleX < this.weakX / 10 + this.weakWidth / 10 &&
-                    bullet.middleY - 2 > this.weakY / 10 && 
-                    bullet.middleY - 2 < this.weakY / 10 + this.weakHeight / 10){
-                //TODO Do damage.
-            }
-            else {
-               displayList.addElement(new Fog(),false);
+                    bullet.middleY - 2 > this.weakY / 10 &&
+                    bullet.middleY - 2 < this.weakY / 10 + this.weakHeight / 10) 
+            {
+                this.hp -= 20;
+            } else {
+                if(player.skill === 2){
+                    player.health = 0;
+                }
+                else {
+                    player.health-= player.skill > 0 ? 30 : 5;
+                }
+                displayList.addElement(new Fog(), false);
             }
             //Bullet hit in general - is gone.
             bullet.middleY = -76;
