@@ -297,6 +297,7 @@ function boss4b_phase2HitDetection(){
                 }
                 else {
                     player.health-= player.skill > 0 ? 30 : 5;
+                    player.noHit = false;
                 }
                 displayList.addElement(new Fog(), false);
             }
