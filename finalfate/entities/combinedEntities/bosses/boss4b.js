@@ -48,6 +48,10 @@ function boss4b_update() {
                 this.invalid = true;
                 return;
             }
+            else{
+                boss4b_thirdPhase.call(this);
+            }
+            break;
     }
 }
 
@@ -59,7 +63,10 @@ function boss4b_render() {
     if (this.subCounterAnimation === undefined) return;
     if (this.subCounterAnimation === 6) this.subCounterAnimation = 0;
     if(DEBUG_BOSS4B_RENDER_OBJ)window.alert(JSON.stringify(this));
-    if(this.stage === 1){
+    if(this.stage === 2){
+        context.fillStyle = this.vulnerable ? "green" : "red"; 
+    }
+    else if(this.stage === 1){
             context.fillStyle = "white";
     }
     else {
@@ -77,6 +84,7 @@ function boss4b_render() {
  */
 function boss4b_factory() {
     var first_element = new Enemy(0, 0, func_noDim, boss4b_update, boss4b_render);
+    first_element.score = 25000;
     giant_boss = first_element;
     return first_element;
 }
@@ -126,7 +134,7 @@ function boss4b_secondPhase(){
     }
     if(this.hp < 0){
         this.stage = 2;
-        this.hp = 410;
+        this.hp = 130;
         this.rage = 0;
         this.weakX = null;
         this.weakY = null;
@@ -142,7 +150,18 @@ function boss4b_secondPhase(){
     }
      boss4b_phase2HitDetection.call(this);
 }
-
+/**
+ * 
+ * Code related to third phase of boss.
+ */
+function boss4b_thirdPhase(){
+    if (this.hp < 0) {
+        this.invalid = true;
+        return;
+    }
+    this.vulnerable = (this.frameCounter % 80) < 25;
+    boss4b_phase3HitDetection.call(this);
+}
 
 /**
  * Standard hit detection for boss 4.
@@ -283,6 +302,35 @@ function boss4b_phase2HitDetection(){
             }
             //Bullet hit in general - is gone.
             bullet.middleY = -76;
+        }
+
+    }
+}
+
+// --- AUXILLARY FUNCTIONS FOR PHASE 3 ---
+
+function boss4b_phase3HitDetection(){
+    //Detect bullets shot.
+    bulletList.resetIterator();
+    while (bulletList.peekNext() !== null) {
+        var bullet = bulletList.getNext();
+        if (bullet.middleX + 2 > B4_REL_X &&
+                bullet.middleX < B4_REL_X + B4_REL_WIDTH &&
+                bullet.middleY - 2 > B4_REL_Y &&
+                bullet.middleY - 2 < B4_REL_Y + B4_REL_HEIGHT) {
+            bullet.middleY = -76;
+            if(this.vulnerable){
+                this.hp -= 7;
+            }
+            else {
+                if(player.skill > 0){
+                    player.health = 0;
+                }
+                else {
+                    player.health -= 9;
+                    player.noHit = false;
+                }
+            }
         }
 
     }
