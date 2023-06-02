@@ -18,7 +18,6 @@ const B4_REL_HEIGHT = B4_ABS_HEIGHT / 10;
 function boss4b_update() {
     //Init code block.
     if (this.frameCounter === 0) {
-        player.checkpoint = 4;
         this.subCounterAnimation = 0;
         this.stage = 0;
         //Health points. Per phase.
@@ -94,6 +93,7 @@ function boss4b_factory() {
  */
 function boss4b_firstPhase() {
     //First phase pretty much over.
+    player.checkpoint = 4;
     if(this.hp < 0){
         this.stage = 1;
         return;
