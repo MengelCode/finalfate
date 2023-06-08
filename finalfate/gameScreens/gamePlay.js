@@ -382,6 +382,9 @@ function loadLevel() {
 function loseLife() {
     player.massfire = false;
     player.quadfire = false;
+    if(player.score > player.bestScore){
+        player.bestScore = player.score;
+    }
     player.score = this.savedScore;
     simplyPlaySound(sfx3);
     if (player.lifes > 0) {

@@ -178,6 +178,10 @@ class SpaceShip extends GameObject {
          */
         this.score = 0;
         /**
+         * Best score of the player in all their current lifes.
+         */
+        this.bestScore = 0;
+        /**
          * Score required to get a new life.
          */
         this.score_newlife = 20000;

@@ -18,7 +18,11 @@ function gameOver() {
     context.font = "60px sans-serif";
     context.fillStyle = "yellow";
     context.fillText("GAME OVER", 180, 320);
-    if (aniCount === 90) {
+    context.font = "26px sans-serif";
+    context.fillStyle = "gold";
+    context.fillText("LAST SCORE: " + player.score,180,360);
+    context.fillText("BEST SCORE: " + player.bestScore,180,410);
+    if (aniCount === 140) {
         title_objects = [];
         initAllInput();
         exchangeRenderLoop(titleScreen);
