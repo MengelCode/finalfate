@@ -355,7 +355,10 @@ function loadLevel() {
 
     try {
         //throw new Error("Test");
-        if (loaders[player.level] === undefined) {
+        if(player.level === 4 && player.skill<=0){
+            exchangeRenderLoop(badEndingScene);
+        }
+        else if (loaders[player.level] === undefined) {
             window.alert("D.J. Mengel is evil.");
             //Make everything stop.
             exchangeRenderLoop(null);
