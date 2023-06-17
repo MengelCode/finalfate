@@ -45,6 +45,7 @@ function boss4b_update() {
         case 2:
             if(player.skill === -1){
                 this.invalid = true;
+                player.score += 15000;
                 return;
             }
             else{
@@ -156,6 +157,16 @@ function boss4b_secondPhase(){
  */
 function boss4b_thirdPhase(){
     if (this.hp < 0) {
+        switch(player.skill){
+            case 2:
+                player.score+=50000;
+                break;
+            case 1:
+                player.score+=40000;
+                break;
+            case 0:
+                player.score+=25000;
+        }
         this.invalid = true;
         return;
     }
