@@ -28,4 +28,9 @@ function meMoOut_render(context){
     context.fillRect(this.middleX+35,this.middleY-65,40,40);
     //Nose.
     context.fillRect(this.middleX-10, this.middleY+10,40,40);
+    //Mouth.
+    for(var i = -100; i<80; i+=20){
+        context.fillRect(this.middleX+i,this.middleY+80,40,40);    
+    }
+    
 }
