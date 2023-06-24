@@ -12,8 +12,9 @@ function badEndingScene() {
     if(!badEndingScene_moon){
      badEndingScene_moon = new MetallicMoonOuterior(350,250,0);   
     }
+    badEndingScene_moon.updateRoutine();
+    badEndingScene_moon.renderRoutine();
     context.font = "26px sans-serif";
     context.fillStyle = "gold";
     context.fillText("YOUR SCORE: " + player.score,180,560);
-    badEndingScene_moon.renderRoutine(context);
 }

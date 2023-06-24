@@ -16,7 +16,7 @@ meMoOut_update[0] = func_noOp;
 
 
 
-function meMoOut_render(context){
+function meMoOut_render(){
     //Body of Metallic Moon.
     //Head.
     context.fillStyle = "gray";
