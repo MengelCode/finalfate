@@ -10,10 +10,10 @@ var badEndingScene_moon = null;
 function badEndingScene() {
     clearScreen();
     if(!badEndingScene_moon){
-        badEndingScene_moon = new MetallicMoonOuterior(350,250,0);
+     badEndingScene_moon = new MetallicMoonOuterior(350,250,0);   
     }
     context.font = "26px sans-serif";
     context.fillStyle = "gold";
     context.fillText("YOUR SCORE: " + player.score,180,560);
-    badEndingScene_moon.renderRoutine();
+    badEndingScene_moon.renderRoutine(context);
 }
