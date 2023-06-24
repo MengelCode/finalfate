@@ -29,8 +29,18 @@ function meMoOut_render(context){
     //Nose.
     context.fillRect(this.middleX-10, this.middleY+10,40,40);
     //Mouth.
-    for(var i = -100; i<80; i+=20){
-        context.fillRect(this.middleX+i,this.middleY+80,40,40);    
+    var whichWay = aniCount % 60 > 30;
+    for(var i = -120; i<80; i+=40){
+        if (whichWay && i % 80 === 0) {
+            context.fillStyle = "red";
+        } else if (!whichWay && i % 80 === 0) {
+            context.fillStyle = "yellow";
+        } else if (whichWay) {
+            context.fillStyle = "yellow";
+        } else {
+            context.fillStyle = "red";
+        } 
+        context.fillRect(this.middleX+i+20,this.middleY+80,40,40);    
     }
     
 }
