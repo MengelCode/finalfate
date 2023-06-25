@@ -9,6 +9,9 @@
  */
 function gameOver() {
     clearScreen();
+    if(player.score > player.bestScore){
+        player.bestScore = player.score;
+    }
     if (aniCount < 30)
         return;
     if (aniCount === 44) {
