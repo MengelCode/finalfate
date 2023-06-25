@@ -359,9 +359,8 @@ function loadLevel() {
             exchangeRenderLoop(badEndingScene);
         }
         else if (loaders[player.level] === undefined) {
-            window.alert("D.J. Mengel is evil.");
             //Make everything stop.
-            exchangeRenderLoop(null);
+            exchangeRenderLoop(comingSoonScene);
         } else {
             background = null;
             loaders[player.level]();
