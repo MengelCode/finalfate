@@ -31,12 +31,14 @@ loaders[0] = earthLoader;
 loaders[1] = solarSystemLoader;
 loaders[2] = universeLoader;
 loaders[3] = blinkyHomeworldLoader;
+loaders[4] = metallicMoonLoader;
 //Level names.
 var level_names = new Array(7);
 level_names[0] = "Earth";
 level_names[1] = "Solar System";
 level_names[2] = "Universe";
 level_names[3] = "Blinky Homeworld";
+level_names[4] = "Metallic Moon";
 //Level name display timer.
 var level_timer = 0;
 //Black background.
