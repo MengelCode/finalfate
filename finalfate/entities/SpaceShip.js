@@ -45,6 +45,8 @@ class SpaceShip extends GameObject {
         this.keyReleased = true;
         //Quad-fire upgrade collected?
         this.quadfire = false;
+        //Quad-fire count until gone.
+        this.quadfireAmmo = 0;
         //Auto-fire upgrade collected?
         this.massfire = false;
         //Auto-fire cooldown.
@@ -107,7 +109,6 @@ class SpaceShip extends GameObject {
                 this.keyReleased = true;
             }
             if ((shoot && this.keyReleased && this.massfire === false) || (shoot && this.massfire === true && this.cooldown === 0) || (this.skill < -1 && this.cooldown === 0)) {
-                this.keyReleased = false;
                 if (this.skill < -1) {
                     this.massfire = true;
                 }
@@ -125,15 +126,16 @@ class SpaceShip extends GameObject {
                 bullet = new Bullet(this.middleX + 2, this.middleY);
                 displayList.addElement(bullet, false);
                 bulletList.addElement(bullet, false);
-                if (this.quadfire) {
+                if (this.quadfire && this.keyReleased && this.quadfireAmmo) {
                     bullet = new Bullet(this.middleX - 1, this.middleY);
                     displayList.addElement(bullet, false);
                     bulletList.addElement(bullet, false);
                     bullet = new Bullet(this.middleX + 1, this.middleY);
                     displayList.addElement(bullet, false);
                     bulletList.addElement(bullet, false);
+                    this.quadfireAmmo--;
                 }
-
+                this.keyReleased = false;
 
             }
 
@@ -159,7 +161,8 @@ class SpaceShip extends GameObject {
             context.fillStyle = "orange";
             context.fillRect((this.middleX - 2) * 10, (this.middleY - 1) * 10, 10, 10);
             context.fillRect((this.middleX + 2) * 10, (this.middleY - 1) * 10, 10, 10);
-            if (this.quadfire) {
+            if (this.quadfire && this.quadfireAmmo) {
+                context.fillStyle = "blue";
                 context.fillRect((this.middleX - 1) * 10, (this.middleY - 1) * 10, 10, 10);
                 context.fillRect((this.middleX + 1) * 10, (this.middleY - 1) * 10, 10, 10);
             }
