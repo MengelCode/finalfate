@@ -8,6 +8,7 @@ class BulletBoost extends FireBoost {
     constructor(middleX, middleY){
         super(middleX, middleY);
         this.renderState = bulletBoost_render;
+        this.updateState = bulletBoost_update;
         
     }
     
@@ -18,6 +19,25 @@ function decideBoost(middleX, middleY){
         return new BulletBoost(middleX,middleY);
     }
     return new FireBoost(middleX,middleY);
+}
+
+
+// "Bullet Boost" update function.
+function bulletBoost_update(){
+    if (player.collides(this)) {
+        this.invalid = true;
+        simplyPlaySound(sfx2);
+        player.quadfire = true;
+        player.quadfireAmmo = 20;
+        return;
+    }
+    this.middleY = this.middleY + 1;
+    if (player.collides(this)) {
+        this.invalid = true;
+        simplyPlaySound(sfx2);
+        player.quadfire = true;
+        player.quadfireAmmo = 20;
+    }
 }
 
 
