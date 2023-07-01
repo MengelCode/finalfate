@@ -20,9 +20,15 @@ function skillPrompt() {
     context.fillText(selectSkill, 220, 450);
     if (aniCount < 6) {
         skillSelected = 0;
+        if(Number(savedLevel % 10>=4) && loadSelected === 0){
+            skillSelected = 1;
+        }
     }
     for (var i = -1; i < skillSelections.length - 2; i++) {
         if (i === -2){
+            context.fillStyle = "gray";
+        }
+        else if(Number(savedLevel % 10)>=4 && i<1 && loadSelected === 0){
             context.fillStyle = "gray";
         }
         else if (skillSelected === i) {
@@ -37,7 +43,10 @@ function skillPrompt() {
         simplyPlaySound(sfx4);
         skillSelected++;
         axisXReleased = false;
-    } else if (left && axisXReleased && skillSelected > -1) {
+    } else if ((left && axisXReleased && skillSelected > -1 
+            && (loadSelected !== 0 || Number(savedLevel % 10)<4))  || 
+            (left && Number(savedLevel % 10)>=4 && axisXReleased && 
+            skillSelected > 1 && loadSelected === 0)) {
         simplyPlaySound(sfx4);
         skillSelected--;
         axisXReleased = false;
