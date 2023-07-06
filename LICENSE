@@ -1,6 +1,3 @@
--License for the game and assets in finalfate folder-
-
-
 MIT License
 
 Copyright (c) 2019-2023 Manuel Engel  
@@ -24,11 +21,3 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 The README file was created by Manuel Engel and improved/corrected by Ludwig Werner Döhnert and Zoeinfp.
-
--License mention for the Docker-related files-
-
-
-# https://github.com/ichbestimmtnicht/docker-autobuild-release
-# Template created 2020 by Ludwig Werner Döhnert
-# This work is licensed under the Creative Commons Attribution 4.0 International License.
-# To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/.
