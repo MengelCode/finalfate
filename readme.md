@@ -56,11 +56,11 @@ Clone the repository, or, if Git is not your tool of choice (How did you find me
 **3) Serving the game's files over a webserver** \
 Follow the 2nd option "Locally storing the files" and either host the game on your computer or a web hosting provider you trust.
 This way needs a bit more technical knowledge, but the advantage is that your family at home or possibly the entire world can enjoy a cool space ship adventure!
-Please make sure users are able to review the license, e.g. mentioning it on your homepage when you link to the game. \
+Please make sure users are able to review the license, e.g. mentioning it on your homepage when you link to the game.
 
 ## Licensing
 
-The software is licensed under the MIT license. Please retain the license notice with all copies you distribute, publish and modify. \
+The software is licensed under the MIT license. Please retain the license notice with all copies you distribute, publish and modify. 
 
 ## Collaboration
 
