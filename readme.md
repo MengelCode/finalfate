@@ -56,30 +56,11 @@ Clone the repository, or, if Git is not your tool of choice (How did you find me
 **3) Serving the game's files over a webserver** \
 Follow the 2nd option "Locally storing the files" and either host the game on your computer or a web hosting provider you trust.
 This way needs a bit more technical knowledge, but the advantage is that your family at home or possibly the entire world can enjoy a cool space ship adventure!
-Please make sure users are able to review the license, e.g. mentioning it on your homepage when you link to the game. \
-\
-**4) Setting up a docker container as server (No longer working as it should, refer to issue [121](https://github.com/MengelCode/finalfate/issues/121))** \
-Thanks to the [work](https://github.com/ichbestimmtnicht/docker-autobuild-release) of [Ludwig Werner Döhnert](https://github.com/ichbestimmtnicht/), docker images for amd64, arm32v7 and arm64v8 are available. \
-You can review the DockerHub repository of the game at [Dockerhub](https://hub.docker.com/repository/docker/mengel38/finalfate). In order to pull the latest image (Regardless of your underlying architecture), you can use
-
-```bash
-docker pull mengel38/finalfate
-```
-
-in your terminal. In order to both pull (if update available) and run the container, you can use
-
-```bash
-docker run -p port:80 -dit mengel38/finalfate
-```
-
-with the word port replaced by the TCP port you want the contained Apache server to use. \
-Please make sure the users are able to review the license, e.g. mentioning it on your homepage when you link to the game.
+Please make sure users are able to review the license, e.g. mentioning it on your homepage when you link to the game.
 
 ## Licensing
 
-The software is licensed under the MIT license. Please retain the license notice with all copies you distribute, publish and modify. \
-\
-Multiarch Dockerimage automation is based on [Docker Autobuild](https://github.com/ichbestimmtnicht/docker-autobuild-release) by Ludwig Werner Döhnert licensed under Creative Commons Attribution 4.0 International License. To view a copy of this license, visit [http://creativecommons.org/licenses/by/4.0/](http://creativecommons.org/licenses/by/4.0/).
+The software is licensed under the MIT license. Please retain the license notice with all copies you distribute, publish and modify. 
 
 ## Collaboration
 
