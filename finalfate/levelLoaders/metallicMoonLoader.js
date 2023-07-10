@@ -14,6 +14,15 @@ function metallicMoonLoaderTest(){
 }
 
 
+function metallicMoonLoaderTest2(){
+    var enem = new BoostSelector();
+    enem = new Spawn(20, enem, false, true, false, false);
+    spawnList.addElement(enem);
+    var enem = new BoostSelector();
+    enem = new Spawn(40, enem, false, true, false, false);
+    spawnList.addElement(enem);
+}
+
 function metallicMoonLoader(){
     
 }
