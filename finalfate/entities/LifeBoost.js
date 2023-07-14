@@ -17,6 +17,7 @@ class LifeBoost extends GameObject {
         super.getOccupiedSpace = lifeBoost_dimension;
         super.updateState = lifeBoost_update;
         super.renderState = lifeBoost_render;
+        super.damage = 0;
     }
 }
 

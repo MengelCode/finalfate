@@ -17,6 +17,7 @@ class FireBoost extends GameObject {
         super.getOccupiedSpace = fireBoost_dimension;
         super.updateState = fireBoost_update;
         super.renderState = fireBoost_render;
+        super.damage = 0;
     }
 }
 //"Fire Boost" dimension function.

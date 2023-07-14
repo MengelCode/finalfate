@@ -17,6 +17,7 @@ class HealthBoost extends GameObject {
         super.getOccupiedSpace = healthBoost_dimension;
         super.updateState = healthBoost_update;
         super.renderState = healthBoost_render;
+        super.damage = 0;
     }
 }
 
