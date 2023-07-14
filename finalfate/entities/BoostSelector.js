@@ -15,12 +15,12 @@ class BoostSelector extends Enemy {
 
 function boostSelector_update(){
     if(player.massfire){
-        var boost = new BulletBoost(player.middleX,player.middleY-5);
+        var boost = new BulletBoost(player.middleX,player.middleY-10);
         enemyList.addElement(boost, false);
         displayList.addElement(boost, false);
     }
     else {
-        var boost = new FireBoost(player.middleX, player.middleY - 5);
+        var boost = new FireBoost(player.middleX, player.middleY - 10);
         enemyList.addElement(boost, false);
         displayList.addElement(boost, false); 
     }
