@@ -25,4 +25,5 @@ function boostSelector_update(){
         displayList.addElement(boost, false); 
     }
     this.invalid = true;
+    this.middleX = 877474;
 }
