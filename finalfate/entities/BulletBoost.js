@@ -9,6 +9,7 @@ class BulletBoost extends FireBoost {
         super(middleX, middleY);
         this.renderState = bulletBoost_render;
         this.updateState = bulletBoost_update;
+        super.damage = 0;
         
     }
     
