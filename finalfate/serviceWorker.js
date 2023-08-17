@@ -13,6 +13,7 @@ const assets = [
   "/select.wav",
   // MISC - MAIN SYSTEMS
   "/misc.js",
+  "/serviceWorkerLoader.js",
   "/gameStorage.js",
   "/gameInput.js",
   "/LinkedList.js",
@@ -48,8 +49,41 @@ const assets = [
   "/entities/SimpleEnemy.js",
   "/entities/SimplestEnemy.js",
   "/entities/Meteor.js",
-  //TODO Continue.
-  ""
+  "/entities/Blinky.js",
+  "/entities/BlinkyTracer.js",
+  "/entities/BlinkyTracerInv.js",
+  "/entities/SilentBlinky.js",
+  "/entities/Bomb.js",
+  "/entities/FogBomb.js",
+  "/entities/ShipBuster.js",
+  "/entities/SingleLaserBeam.js",
+  // Bosses
+  "/entities/combinedEntities/bosses/boss_general.js",
+  "/entities/combinedEntities/bosses/boss1.js",
+  "/entities/combinedEntities/bosses/boss2.js",
+  "/entities/combinedEntities/bosses/boss3.js",
+  "/entities/combinedEntities/bosses/boss4.js",
+  "/entities/combinedEntities/bosses/boss4b.js",
+  // Types of explosion
+  "/entities/decorative/Fog.js",
+  "/entities/decorative/Boom.js",
+  // Decorative objects
+  "/entities/decorative/Star.js",
+  "/entities/decorative/Heat.js",
+  "/entities/decorative/Box.js",
+  "/entities/decorative/BGBox.js",
+  "/entities/decorative/House.js",
+  "/entities/decorative/BlinkySky.js",
+  "/entities/decorative/BlinkyGround.js",
+  "/entities/decorative/MetallicMoonOuterior.js",
+  // Background files.
+  "/entities/lvl_backgrounds/level4_background.js",
+  // Boosts.
+  "/entities/HealthBoost.js",
+  "/entities/FireBoost.js",
+  "/entities/LifeBoost.js",
+  // ACTUAL BEGIN OF EXECUTION
+  "/main.js"
   
 ];
 
@@ -58,6 +92,6 @@ self.addEventListener("install", installEvent => {
     caches.open(staticFinalFate).then(cache => {
       cache.addAll(assets);
     })
-  )
+  );
 });
 
