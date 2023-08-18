@@ -87,9 +87,9 @@ const assets = [
   
 ];
 
-self.addEventListener("install", installEvent => {
+self.addEventListener("install", function(installEvent) {
   installEvent.waitUntil(
-    caches.open(staticFinalFate).then(cache => {
+    caches.open(staticFinalFate).then(function(cache){
       cache.addAll(assets);
     })
   );
