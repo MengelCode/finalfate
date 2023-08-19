@@ -3,7 +3,7 @@
     "short_name": "The Final Fate",
     "start_url": "index.html",
     "display": "standalone",
-    "background_color": "#000000",
+    "background_color": "#000001",
     "theme_color": "#440000",
     "orientation": "landscape",
     "icons":
