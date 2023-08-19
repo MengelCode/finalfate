@@ -1,16 +1,16 @@
 {
     "name": "The Final Fate",
-    "short_name": "finalfate",
+    "short_name": "The Final Fate",
     "start_url": "index.html",
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#ff0000",
     "orientation": "landscape",
     "icons":
-        {
+        [{
             "src": "favicon.ico",
             "type": "image/x-icon",
             "sizes": "98x55"
-        }
+    }]
 }
 
