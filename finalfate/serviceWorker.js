@@ -1,4 +1,4 @@
-const staticFinalFate = "finalfate-v1";
+const staticFinalFate = "finalfate-v2";
 
 const assets = [
   "index.html",
