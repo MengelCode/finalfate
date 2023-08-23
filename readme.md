@@ -47,6 +47,7 @@ web server to give you a copy of your game save and your own local storage space
 ## Ways to prepare the game
 
 There are severals for you to play the game. Decide which one you like to use. \
+\
 **1) Give it a quick look on my server** \
 If you do not want any big setup, but simply a quick round of action, you should definitely look [here](https://manuel-engel.de/finalfate/finalfate). \
 \
