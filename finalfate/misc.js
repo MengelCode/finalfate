@@ -190,6 +190,37 @@ function clearScreen() {
     context.fillRect(0, 0, oldestWidth, oldestHeight);
 }
 
+/* Boot sequence.
+ * 
+ * @returns {undefined}
+ * 
+ */
+function boot() {
+    exchangeRenderLoop(titleScreen);
+}
+
+/**
+ Attract mode...
+ */
+function finalFate() {
+
+}
+
+/**
+ * 
+ * Default score.
+ */
+function default_score() {
+    return 100;
+}
+
+//"Background" dimension function.
+function background_dimension() {
+    return null;
+}
+
+//Black background.
+
 //General-purpose dialogue options and text.
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];
@@ -230,3 +261,25 @@ var newWidth = null;
 var newHeight = null;
 //Context
 var context = canvas.getContext("2d");
+
+
+//Function Pointer to what should happen in the next rendering cycle.
+var renderFunction = null;
+//Time to reset the frame counter to.
+var renderReset = 0;
+//For music/sound playback.
+var bgm = document.getElementById("mainBGM");
+//Shot sound effect.
+var sfx0 = document.getElementById("sfx-channel-0");
+//Hit SFX.
+var sfx1 = document.getElementById("sfx-channel-1");
+//Item SFX.
+var sfx2 = document.getElementById("sfx-channel-2");
+//Die.
+var sfx3 = document.getElementById("sfx-channel-3");
+//Menu select.
+var sfx4 = document.getElementById("sfx-channel-4");
+//Game over tune.
+var game_over = document.getElementById("game-over");
+//Exception occured.
+var loadingException = null;

@@ -5,26 +5,6 @@
 
 //Fit canvas and context to actual screen size.
 sizeChanged();
-//Function Pointer to what should happen in the next rendering cycle.
-var renderFunction = null;
-//Time to reset the frame counter to.
-var renderReset = 0;
-//For music/sound playback.
-var bgm = document.getElementById("mainBGM");
-//Shot sound effect.
-var sfx0 = document.getElementById("sfx-channel-0");
-//Hit SFX.
-var sfx1 = document.getElementById("sfx-channel-1");
-//Item SFX.
-var sfx2 = document.getElementById("sfx-channel-2");
-//Die.
-var sfx3 = document.getElementById("sfx-channel-3");
-//Menu select.
-var sfx4 = document.getElementById("sfx-channel-4");
-//Game over tune.
-var game_over = document.getElementById("game-over");
-//Exception occured.
-var loadingException = null;
 //Level Loaders.
 var loaders = new Array(7);
 loaders[0] = earthLoader;
@@ -39,7 +19,6 @@ level_names[2] = "Universe";
 level_names[3] = "Blinky Homeworld";
 //Level name display timer.
 var level_timer = 0;
-//Black background.
 clearScreen();
 //Render function assigning.
 renderFunction = boot;
@@ -81,28 +60,6 @@ window.addEventListener("blur",focusLost);
 
 //Game Screens
 
-/* Boot sequence.
- * 
- * @returns {undefined}
- * 
- */
-function boot() {
-    exchangeRenderLoop(titleScreen);
-}
-
-
-
-
-
-
-
-
-/**
- Attract mode...
- */
-function finalFate() {
-
-}
 
 
 //Enemy functions, per enemy.
@@ -112,23 +69,12 @@ function finalFate() {
 
 //All "Score" functions. Not always required.
 
-function default_score() {
-    return 100;
-}
-
 //All "damage" functions. Not always required.
 
 
 
 
 //All dimension matrix functions.
-
-
-
-//"Background" dimension function.
-function background_dimension() {
-    return null;
-}
 
 //All update routines.
 
