@@ -190,6 +190,193 @@ function clearScreen() {
     context.fillRect(0, 0, oldestWidth, oldestHeight);
 }
 
+/* Boot sequence.
+ * 
+ * @returns {undefined}
+ * 
+ */
+function boot() {
+    exchangeRenderLoop(titleScreen);
+}
+
+/**
+ Attract mode...
+ */
+function finalFate() {
+
+}
+
+/**
+ * 
+ * Default score.
+ */
+function default_score() {
+    return 100;
+}
+
+//"Background" dimension function.
+function background_dimension() {
+    return null;
+}
+
+//"Wingman" update function.
+function wingman_update() {
+    this.middleY = this.middleY + 1;
+}
+
+//"Background 1" update function.
+function background1_update() {
+    this.middleY = this.middleY + 0.1;
+}
+
+//"Slow movement" update function. To be called by everything that wants to move slowly!!!
+
+function slowMove_update() {
+    this.frameCounter++;
+    // this.frameCounter = this.frameCounter % 2;
+    if (this.frameCounter % 2 === 1) {
+        this.middleY = this.middleY + 1;
+    }
+}
+
+//"Aircraft 2 -  shooting cannon" update function
+
+function aircraft2sc_update() {
+    slowMove_update.call(this);
+    if (this.frameCounter % 20 === 0) {
+        var enemy = new Enemy(this.middleX, this.middleY, blinkyTracer_dimension, meteor2_update, meteor_render);
+        enemyList.addElement(enemy, false);
+        displayList.addElement(enemy, false);
+    }
+
+}
+
+//Aircraft 3- shooting cannon update function
+function aircraft3sc_update() {
+    slowMove_update.call(this);
+    if (this.frameCounter % 20 === 0) {
+        var enemy = new Enemy(this.middleX, this.middleY, blinkyTracer_dimension, blinkyTracer_update, blinkyTracer_render, blinkyTracer_damage());
+        enemyList.addElement(enemy, false);
+        displayList.addElement(enemy, false);
+    }
+
+}
+
+//"Meteor 2" update function.
+function meteor2_update() {
+
+    this.middleY = this.middleY + 1;
+}
+
+//All rendering routines.
+
+
+//Level 1 - The Earth rendering function
+function background1_render() {
+    context.fillStyle = "#0000BB";
+    context.fillRect(this.middleX, this.middleY - 350, 800, 280);
+    context.fillStyle = "#0000DD";
+    context.fillRect(this.middleX, this.middleY - 150, 800, 180);
+    context.fillStyle = "#0000FF";
+    context.fillRect(this.middleX, this.middleY, 800, 600);
+}
+
+//Level 2 - The Solar System rendering function
+function background2_render() {
+    if (this.next === null) {
+        this.next = star_factory(this.middleX,this.middleY);
+    }
+
+    this.next.resetIterator();
+    while (this.next.peekNext() !== null) {
+        var star = this.next.getNext();
+        star.renderRoutine();
+    }
+}
+
+
+
+//"Wingman" rendering function
+function wingman_render() {
+    context.fillStyle = "white";
+    var arrayS = this.getOccupiedSpace();
+    for (var i = 0; i < arrayS[0].length; i++) {
+        context.fillRect(arrayS[0][i] * 10, arrayS[1][i] * 10, 10, 10);
+    }
+}
+
+//"Simple Square" rendering function. To be called by every 3x3 object!!!
+function simpleSquare_render(usingMiddleX = this.middleX, usingMiddleY = this.middleY) {
+    context.fillRect((usingMiddleX - 1) * 10, (usingMiddleY - 1) * 10, 10, 10);
+    context.fillRect(usingMiddleX * 10, (usingMiddleY - 1) * 10, 10, 10);
+    context.fillRect((usingMiddleX + 1) * 10, (usingMiddleY - 1) * 10, 10, 10);
+    //Middle row.
+    context.fillRect((usingMiddleX - 1) * 10, usingMiddleY * 10, 10, 10);
+    context.fillRect(usingMiddleX * 10, usingMiddleY * 10, 10, 10);
+    context.fillRect((usingMiddleX + 1) * 10, usingMiddleY * 10, 10, 10);
+    //Upper row.
+    context.fillRect((usingMiddleX - 1) * 10, (usingMiddleY + 1) * 10, 10, 10);
+    context.fillRect(usingMiddleX * 10, (usingMiddleY + 1) * 10, 10, 10);
+    context.fillRect((usingMiddleX + 1) * 10, (usingMiddleY + 1) * 10, 10, 10);
+}
+
+//Factory Functions.
+
+//Air Craft 1
+function airCraft1_factory(middleX, middleY) {
+    var enemy_array = [];
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    combineEnemyBricks(enemy_array);
+    return enemy_array;
+}
+
+//Air Craft 2
+function airCraft2_factory(middleX, middleY) {
+    var enemy_array = [];
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft2sc_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, aircraft2sc_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    combineEnemyBricks(enemy_array);
+    return enemy_array;
+}
+
+
+//Air Craft 3
+function airCraft3_factory(middleX, middleY) {
+    var enemy_array = [];
+    var enem_obj = new Enemy(middleX - 3, middleY + 2, meteor_dimension, aircraft3sc_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX - 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 2, middleY, meteor_dimension, meteor_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    enem_obj = new Enemy(middleX + 3, middleY + 2, meteor_dimension, aircraft3sc_update, simpleEnemy_render, meteor_damage());
+    enemy_array.push(enem_obj);
+    combineEnemyBricks(enemy_array);
+    return enemy_array;
+}
+
+
+//Black background.
+
 //General-purpose dialogue options and text.
 var youSure = ["No", "Yes"];
 var youSureQuestion = ["Are you sure?"];
@@ -230,3 +417,25 @@ var newWidth = null;
 var newHeight = null;
 //Context
 var context = canvas.getContext("2d");
+
+
+//Function Pointer to what should happen in the next rendering cycle.
+var renderFunction = null;
+//Time to reset the frame counter to.
+var renderReset = 0;
+//For music/sound playback.
+var bgm = document.getElementById("mainBGM");
+//Shot sound effect.
+var sfx0 = document.getElementById("sfx-channel-0");
+//Hit SFX.
+var sfx1 = document.getElementById("sfx-channel-1");
+//Item SFX.
+var sfx2 = document.getElementById("sfx-channel-2");
+//Die.
+var sfx3 = document.getElementById("sfx-channel-3");
+//Menu select.
+var sfx4 = document.getElementById("sfx-channel-4");
+//Game over tune.
+var game_over = document.getElementById("game-over");
+//Exception occured.
+var loadingException = null;
