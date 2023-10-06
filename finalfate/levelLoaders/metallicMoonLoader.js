@@ -32,14 +32,12 @@ function metallicMoonLoaderTest2(){
 
 /**
  * First level generator sub-function.
- * Target length: ~2800 frames.
+ * Target length: ~520 frames.
  * @param {type} spawnOffset
  * @returns {integer spawnOffset}
  */
 function mmlSection0(spawnOffset){
-    var enem = new BoostSelector();
-    enem = new Spawn(spawnOffset, enem, false, true, false, false);
-    spawnList.addElement(enem);
+    var enem = addBoostSelector(spawnOffset);
     //Use 480 frames in this
     while(spawnOffset<480){
         var elemIndi = getRandomY();
@@ -94,30 +92,69 @@ function mmlSection0(spawnOffset){
         else {
             var enem = new SimpleEnemy(10,40);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             enem = new SimpleEnemy(30,40);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             enem = new SimpleEnemy(50,40);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             
             enem = new SimpleEnemy(20,46);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             enem = new SimpleEnemy(40,46);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             enem = new SimpleEnemy(60,46);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             
             enem = new SimpleEnemy(10,23);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             enem = new SimpleEnemy(30,23);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             enem = new SimpleEnemy(50,23);
             enem = new Spawn(spawnOffset, enem);
+            spawnList.addElement(enem);  
             
         }
       spawnOffset+=10;
       //Frame: 520.
+      addCheckpoint(spawnOffset, 0);
     }
     return spawnOffset;
+}
+/**
+ * Second level generator sub-function.
+ * Target length: ~520 frames.
+ * @param {type} spawnOffset
+ * @returns {integer spawnOffset}
+ */
+function mmlSection1(spawnOffset){
+    var enem = new BoostSelector();
+    //Total frame: 520
+
+
+    addCheckpoint(spawnOffset,1);
+    return spawnOffset;
+}
+
+
+
+function addBoostSelector(spawnOffset){
+    var enem = new BoostSelector();
+    enem = new Spawn(spawnOffset, enem, false, true, false, false);
+    spawnList.addElement(enem);
+    return null;
+}
+
+function addCheckpoint(spawnOffset, no){
+    enem = new Checkpoint(no);
+    enem = new Spawn(spawnOffset,enem);
+    spawnList.addElement(enem);  
 }
 
 /**
@@ -129,5 +166,7 @@ function metallicMoonLoader(){
     switch(player.checkpoint){
         case -1:
              spawnOffset = mmlSection0(spawnOffset);     
+        case 0:
+             spawnOffset = mmlSection1(spawnOffset);     
     }
 }
