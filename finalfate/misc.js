@@ -425,6 +425,7 @@ var renderFunction = null;
 var renderReset = 0;
 //For music/sound playback.
 var bgm = document.getElementById("mainBGM");
+var bgm_special = document.getElementById("specialBGM");
 //Shot sound effect.
 var sfx0 = document.getElementById("sfx-channel-0");
 //Hit SFX.

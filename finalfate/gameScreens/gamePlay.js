@@ -10,7 +10,7 @@
  */
 function gamePlay() {
     if (aniCount === 5 && !musicAlreadyPlayed) {
-        simplyPlaySound(bgm);
+        simplyPlaySound(player.level<4 ? bgm : bgm_special);
         musicAlreadyPlayed = true;
     }
     try {

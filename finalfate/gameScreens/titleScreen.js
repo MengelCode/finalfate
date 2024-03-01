@@ -117,7 +117,7 @@ function title_and_copyright_render() {
     context.fillText("THE FINAL FATE", 120, 150);
     context.font = "17px sans-serif";
     context.fillStyle = "white";
-    context.fillText("GAME (C) 2019-2023 Manuel Engel", 220, 580);
+    context.fillText("GAME (C) 2019-2024 Manuel Engel", 220, 580);
 }
 
 /**
