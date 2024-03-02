@@ -123,7 +123,7 @@ function mmlSection0(spawnOffset){
         }
       spawnOffset+=10;
       //Frame: 520.
-      addCheckpoint(spawnOffset, 0);
+      //addCheckpoint(spawnOffset, 0);
     }
     return spawnOffset;
 }
