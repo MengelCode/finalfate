@@ -16,6 +16,7 @@ function gameOver() {
         return;
     if (aniCount === 44) {
         bgm.pause();
+        bgm_special.pause();
         simplyPlaySound(game_over);
     }
     context.font = "60px sans-serif";

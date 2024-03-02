@@ -103,6 +103,7 @@ function volume_prompt_render(lockVolume = false){
             masterVolume = masterVolume - 1;
     }
     bgm.volume = masterVolume / 100;
+    bgm_special.volume = masterVolume / 100;
 }
 
 

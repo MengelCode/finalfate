@@ -27,7 +27,12 @@ function gamePause() {
         saveFailureTimer = 0;
         simplyPlaySound(sfx4);
         pauseReleased = false;
-        bgm.play();
+        if(player.level<4){
+            bgm.play();
+        }
+        else {
+            bgm_special.play();
+        }
         exchangeRenderLoop(gamePlay, true);
     }
     //Check for confirming something that does not mean continue.

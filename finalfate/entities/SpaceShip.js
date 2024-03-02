@@ -145,6 +145,7 @@ class SpaceShip extends GameObject {
             }
             if (pause && pauseReleased) {
                 bgm.pause();
+                bgm_special.pause();
                 pauseReleased = false;
                 selectedOption = 0;
                 exchangeRenderLoop(gamePause, true);
