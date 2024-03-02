@@ -121,7 +121,7 @@ function mmlSection0(spawnOffset){
             spawnList.addElement(enem);  
             
         }
-      spawnOffset+=10;
+      spawnOffset+=50;
       //Frame: 520.
       //addCheckpoint(spawnOffset, 0);
     }
