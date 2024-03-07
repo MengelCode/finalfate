@@ -138,7 +138,7 @@ function mmlSection0(spawnOffset){
 function mmlSection1(spawnOffset){
    // var enem = new BoostSelector();
     //Total frame: 1020
-    var enem = new MetallicMoon(10,7);
+    var enem = new MetallicMoon(6,6);
     enem = new Spawn(spawnOffset, enem);
     spawnOffset+=20;
     spawnList.addElement(enem);  
