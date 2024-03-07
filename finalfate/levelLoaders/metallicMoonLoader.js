@@ -32,11 +32,13 @@ function metallicMoonLoaderTest2(){
 
 /**
  * First level generator sub-function.
- * Target length: ~520 frames.
+ * Target length: 1040 frames.
  * @param {type} spawnOffset
  * @returns {integer spawnOffset}
  */
 function mmlSection0(spawnOffset){
+    background = new Enemy(0,0,background_dimension,background5_update,
+        background5_render);
     var enem = addBoostSelector(spawnOffset);
     //Use 480 frames in this
     while(spawnOffset<480){
@@ -122,9 +124,9 @@ function mmlSection0(spawnOffset){
             
         }
       spawnOffset+=50;
-      //Frame: 520.
       //addCheckpoint(spawnOffset, 0);
     }
+    window.alert(spawnOffset);
     return spawnOffset;
 }
 /**
@@ -134,10 +136,12 @@ function mmlSection0(spawnOffset){
  * @returns {integer spawnOffset}
  */
 function mmlSection1(spawnOffset){
-    var enem = new BoostSelector();
-    //Total frame: 520
-
-
+   // var enem = new BoostSelector();
+    //Total frame: 1020
+    var enem = new MetallicMoon(10,7);
+    enem = new Spawn(spawnOffset, enem);
+    spawnOffset+=20;
+    spawnList.addElement(enem);  
     addCheckpoint(spawnOffset,1);
     return spawnOffset;
 }
