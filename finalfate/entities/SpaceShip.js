@@ -69,7 +69,7 @@ class SpaceShip extends GameObject {
         this.bulletColor = 0;
         //POTENTIAL CHEAT ZONE.
         //Checkpoint memory. Because levels start to count with zero, I set the default to -1 here.
-        this.checkpoint = -1;
+        this.checkpoint = 0;
         super.updateState = function () {
             //If memorized button here, then poll that from controller.
             //Disabled for now.

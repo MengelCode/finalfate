@@ -142,7 +142,7 @@ function mmlSection1(spawnOffset){
     enem = new Spawn(spawnOffset, enem);
     spawnOffset+=20;
     spawnList.addElement(enem);  
-    addCheckpoint(spawnOffset,1);
+    addCheckpoint(spawnOffset,0);
     return spawnOffset;
 }
 
