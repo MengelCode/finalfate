@@ -19,10 +19,10 @@ meMoOut_update[0] = func_noOp;
 function meMoOut_render() {
     //Body of Metallic Moon.
     //Head.
-    context.fillStyle = "gray";
-    //context.arc(this.middleX, this.middleY, 160, 0, 2 * Math.PI);
-    //context.fill();
-    context.fillRect(this.middleX-150,this.middleY-150,300,300);
+    if(!BOSS5_DEBUG_HEAD){
+        context.fillStyle = "gray";
+        context.fillRect(this.middleX-150,this.middleY-150,300,300);
+    }
     //Eyes.
     context.fillStyle = "red";
     context.fillRect(this.middleX - 65, this.middleY - 65, 40, 40);
