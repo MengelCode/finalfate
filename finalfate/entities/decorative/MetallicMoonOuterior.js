@@ -7,6 +7,8 @@ class MetallicMoonOuterior extends Decoration {
     constructor(posX, posY, updateFctNo) {
         super(posX, posY, meMoOut_render, meMoOut_update[updateFctNo]);
         this.posZ = 0;
+        //Iteration of animation.
+        this.firstIter = true;
     }
 
 }
@@ -31,6 +33,7 @@ function meMoOut_render() {
     context.fillRect(this.middleX - 10, this.middleY + 10, 40, 40);
     //Mouth.
     var whichWay = aniCount % 60 > 30;
+    this.firstIter = !whichWay;
         for (var i = -120; i < 80; i += 40) {
             if (whichWay && i % 80 === 0) {
                 context.fillStyle = "red";
