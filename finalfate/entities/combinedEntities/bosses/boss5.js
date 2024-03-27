@@ -11,6 +11,9 @@ class MetallicMoon extends Enemy {
         super(middleX,middleY, func_noDim, metallicMoon_update, metallicMoon_render);
         this.middleX = middleX*10;
         this.middleY = middleY*10;
+        //Collision grid coordinates.
+        this.originalX = this.middleX;
+        this.originalY = this.middleY;
         this.firstUpdate = true;
         this.trueEnemy = true;
         //Absolute world coordinates.
@@ -25,6 +28,8 @@ class MetallicMoon extends Enemy {
         this.mouthHp = 200;
         //Iteration of animation.
         this.firstIter = true;
+        //Defeated?
+        this.defeated = false;
     }
     
 
@@ -35,6 +40,9 @@ const BOSS5_DEBUG_HEAD = false;
 
 
 function metallicMoon_update(){
+    if(this.defeated){
+        return;
+    }
     if(this.firstUpdate){
         giant_boss = this;
         this.firstUpdate = false;
@@ -80,37 +88,83 @@ function metallicMoon_update(){
         }
 
         // B - Detect nose hit.
+        else if(!this.noseDamaged && bullet.middleY < 24 && bullet.middleX > 38 && bullet.middleX < 43){
+            bullet.middleX = -80;
+            bullet.middleY = -80;
+            // A - The right time for hitting the nose is here.
+            if(this.leftDamaged && this.rightDamaged){
+                bullet.middleX = -80;
+                bullet.middleY = -80;
+                this.noseDamaged = true;
+                this.defeated = true;
+                simplyPlaySound(sfx1);
+            }
+            // B - Wrong timing, Hard mode.
+            else if(player.skill < 2){
+                simplyPlaySound(sfx2);
+                this.mouthHp = 85;
+            }
+            // C - Wrong timing, Master mode.
+            else{
+                player.health = 0;
+            }
+        }
 
         // C - Detect left eye hit.
+        else if(!this.leftDamaged && bullet.middleY < 17 && bullet.middleX > 32 && bullet.middleX < 38){
+            bullet.middleX = -80;
+            bullet.middleY = -80;
+            this.leftDamaged = 200;
+            simplyPlaySound(sfx1);
+        }
 
         // D - Detect right eye hit.
+        else if(!this.rightDamaged && bullet.middleY < 17 && bullet.middleX > 42 && bullet.middleX < 48){
+            bullet.middleX = -80;
+            bullet.middleY = -80;
+            this.rightDamaged = 200;
+            simplyPlaySound(sfx1);
+        }
     }
 
     //Ocassionally fire bullets from eye.
     //TODO 1: Bullets are out of place, wrong coordinate system used!
     //TODO 2: It seems the bullets spawn way too often!
-    var randomChance = player.skill < 2 ? 27 : 12;
+    var randomChance = player.skill < 2 ? 120 : 78;
     if(!this.leftDamaged && getCustomRandom(randomChance) === 7){
-        var blinky = new BlinkyTracerInv(this.middleX - 65, this.middleY - 65);
+        var blinky = new BlinkyInv(34, 12);
         enemyList.addElement(blinky, false);
         displayList.addElement(blinky, false);
     }
     if(!this.rightDamaged && getCustomRandom(randomChance) === 7){
-        var blinky = new BlinkyTracerInv(this.middleX + 35, this.middleY - 65);
+        var blinky = new BlinkyInv(45,12);
         enemyList.addElement(blinky, false);
         displayList.addElement(blinky, false);
     }
 
 
+
+    
+    
     
 }
 
+
+function transformToReal(){
+        //Exchange coordinates system. ("Collision grid" to "Real life")
+        this.middleX = this.visualX;
+        this.middleY = this.visualY;
+}
+
+function transformToCollision(){
+        //Exchange coordinates system. ("Real life" to "Collision")
+        this.middleX = this.originalX;
+        this.middleY = this.originalY;
+}
+
+
 function metallicMoon_render(){
-    //Exchange coordinates system. ("Collision grid" to "Real life")
-    var originalX = this.middleX;
-    var originalY = this.middleY;
-    this.middleX = this.visualX;
-    this.middleY = this.visualY;
+    transformToReal.call(this);
     //Render base object.
     meMoOut_render.call(this);
     //Render "dead eyes".
@@ -127,8 +181,6 @@ function metallicMoon_render(){
     if(this.mouthHp<=0){
         context.fillRect(this.middleX - 100, this.middleY + 80, 200, 40);
     }
-    //Swap system back.
-    this.middleX = originalX;
-    this.middleY = originalY;
+    transformToCollision.call(this);
 
 }
