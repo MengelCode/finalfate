@@ -76,12 +76,13 @@ function metallicMoon_update(){
     }
     //Detect bullets collision.
     bulletList.resetIterator();
+    var mouthStillHere = this.mouthHp > 0;
     while(bulletList.peekNext()){
         var bullet = bulletList.getNext();
 
         // A - Detect mouth hit.
         //Boundary complete mouth: Y < 30. X1 < 50. X0 > 29
-        if(this.mouthHp > 0 && bullet.middleY < 30 && bullet.middleX >29 && bullet.middleX < 50){
+        if(mouthStillHere && bullet.middleY < 30 && bullet.middleX >29 && bullet.middleX < 50){
             bullet.middleX = -80;
             bullet.middleY = -80;
             simplyPlaySound(sfx1);
