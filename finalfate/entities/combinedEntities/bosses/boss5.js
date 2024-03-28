@@ -30,6 +30,8 @@ class MetallicMoon extends Enemy {
         this.firstIter = true;
         //Defeated?
         this.defeated = false;
+        //Defeated frame counter.
+        this.defeatedFrame = 0;
     }
     
 
@@ -41,6 +43,19 @@ const BOSS5_DEBUG_HEAD = false;
 
 function metallicMoon_update(){
     if(this.defeated){
+        if(aniCount%13 === 0){
+            simplyPlaySound(sfx1);
+            displayList.addElement(new Fog(),false);
+        }
+        if(aniCount%37 === 0){
+            simplyPlaySound(sfx1);
+            displayList.addElement(new Boom(),false);
+        }
+        if(this.defeatedFrame>150){
+            //TODO: Screen / scene to actually jump to. This just freezes the game.
+            exchangeRenderLoop(null);
+        }
+        this.defeatedFrame++;
         return;
     }
     if(this.firstUpdate){
@@ -97,7 +112,9 @@ function metallicMoon_update(){
                 bullet.middleY = -80;
                 this.noseDamaged = true;
                 this.defeated = true;
+                player.score = player.skill < 2? player.score+=200000 : player.score+=270000;
                 simplyPlaySound(sfx1);
+                displayList.addElement(new Fog(),false);
             }
             // B - Wrong timing, Hard mode.
             else if(player.skill < 2){
@@ -128,8 +145,6 @@ function metallicMoon_update(){
     }
 
     //Ocassionally fire bullets from eye.
-    //TODO 1: Bullets are out of place, wrong coordinate system used!
-    //TODO 2: It seems the bullets spawn way too often!
     var randomChance = player.skill < 2 ? 120 : 78;
     if(!this.leftDamaged && getCustomRandom(randomChance) === 7){
         var blinky = new BlinkyInv(34, 12);
@@ -141,11 +156,6 @@ function metallicMoon_update(){
         enemyList.addElement(blinky, false);
         displayList.addElement(blinky, false);
     }
-
-
-
-    
-    
     
 }
 
