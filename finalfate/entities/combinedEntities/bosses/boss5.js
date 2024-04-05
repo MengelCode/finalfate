@@ -53,7 +53,7 @@ function metallicMoon_update(){
         }
         if(this.defeatedFrame>150){
             //TODO: Screen / scene to actually jump to. This just freezes the game.
-            exchangeRenderLoop(null);
+            exchangeRenderLoop(goodEndingScene);
         }
         this.defeatedFrame++;
         return;
