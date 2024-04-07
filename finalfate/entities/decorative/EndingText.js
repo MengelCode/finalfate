@@ -17,24 +17,61 @@ class EndingText extends Decoration {
 var endingTextMoving = new Array();
 
 var endingTextObject = [
-    "Test 1",
-    "Test 2",
-    "",
-    "",
-    "Test 3",
+    "The fight is over.",
     "",
     "",
     "",
+    "The Blinkies have all been defeated",
+    "and Metallic Moon has fallen.",
+    "Humanity can continue to live on.",
     "",
     "",
     "",
-    "Test 4",
+    "It is time to go home and be",
+    "recognized as the hero you are!",
+    "",
+    "",
+    "",
+    "~THE FINAL FATE ~",
+    "",
+    "",
+    "GitHub Contributors",
+    "",
+    "Ichbestimmtnicht - Docker / README",
+    "VicFinistere - README / Issues / PRs",
+    "karakasis - Issues / PRs",
+    "gitvitox - PRs",
+    "Fibii -  Issues",
+    "",
+    "",
+    "Many, many silent supporters, fans",
+    "and contributors... like K and.",
+    "Einsamer Wolf.",
+    "",
+    "And you, for being like one of the few",
+    "people ever seeing this.",
+    "",
+    "",
+    "Main Development / Sound / Pixel Art",
+    "MengelCode / Manuel Engel",
+    "",
+    "",
+    "",
+    "Est. 2019-2024",
+    "",
+    "",
+    "THANK YOU FOR PLAYING!!!",
+    "",
+    "",
+    "",
+    "",
     "\0",
+
 ];
 
 
 function endingText_render(){
-    context.fillStyle = "gray";
+    context.fillStyle = "white";
     context.font = "28px serif";
     for(var i = 0; i<endingTextMoving.length; i++){
         context.fillText(endingTextMoving[i].text,endingTextMoving[i].pos_x,endingTextMoving[i].pos_y);
@@ -61,7 +98,7 @@ function endingText_update(){
     }
     endingTextMoving.forEach(element => {
         //Part 2: Move text.
-        element.pos_y-=1;
+        element.pos_y-=3;
     });
 
     if(endingTextMoving[i] && endingTextMoving[i].pos_y < -28){
