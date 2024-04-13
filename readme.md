@@ -51,13 +51,10 @@ There are severals for you to play the game. Decide which one you like to use. \
 **1) Give it a quick look on my server** \
 If you do not want any big setup, but simply a quick round of action, you should definitely look [here](https://manuel-engel.de/finalfate/finalfate). \
 \
-**2) EXPERIMENTAL: Install as PWA** \
-Follow 1) and then seek out for an option like "Add to start screen" or "install". This way, no Internet access will be required for play. \
-\
-**3) Locally storing the files and directly opening the html file** \
+**2) Locally storing the files and directly opening the html file** \
 Clone the repository, or, if Git is not your tool of choice (How did you find me in this case? Let me know.), you can manually download the respective files. Mandatory downloads are index.html and all the .js files in the finalfate directory, the sound files are optional. Please include a copy of the license file when making the game available to others. \
 \
-**4) Serving the game's files over a webserver** \
+**3) Serving the game's files over a webserver** \
 Follow the 2nd option "Locally storing the files" and either host the game on your computer or a web hosting provider you trust.
 This way needs a bit more technical knowledge, but the advantage is that your family at home or possibly the entire world can enjoy a cool space ship adventure!
 Please make sure users are able to review the license, e.g. mentioning it on your homepage when you link to the game.
