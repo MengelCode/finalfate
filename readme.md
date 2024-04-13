@@ -27,7 +27,7 @@ At the lower left, you will find your D-Pad, above that, the pause button. To th
 ## Difficulty selection
 
 The game offers four difficulty levels in order to customize the challenge you are seeking.
-Every difficulty has its own combination of damage done by enemy units and subtile change3 in game play.
+Every difficulty has its own combination of damage done by enemy units and subtile changes in game play.
 In Beginner and Normal, you shoot three bullets at a time and play four levels. In Hard and Master you
 only shoot two bullets, play five levels and must expect that some troops and traps may cost you a life
 instantly.
