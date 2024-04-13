@@ -167,6 +167,7 @@ function boss4b_thirdPhase(){
             case 0:
                 player.score+=25000;
         }
+        player.checkpoint = -1;
         this.invalid = true;
         return;
     }
