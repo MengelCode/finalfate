@@ -13,6 +13,7 @@ function goodEndingScene(){
     if(aniCount>80){
         if(!endingTextCode){
             endingTextCode = new EndingText();
+            bgm_sus.play();
         }
         endingTextCode.updateRoutine();
         endingTextCode.renderRoutine();
