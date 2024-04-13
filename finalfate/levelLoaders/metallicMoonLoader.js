@@ -126,7 +126,6 @@ function mmlSection0(spawnOffset){
       spawnOffset+=50;
       //addCheckpoint(spawnOffset, 0);
     }
-    window.alert(spawnOffset);
     return spawnOffset;
 }
 /**
