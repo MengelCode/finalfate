@@ -36,6 +36,8 @@ instantly.
 
 There are severals for you to play the game. Decide which one you like to use. \
 \
+**ATTENTION: Especially if you have played a version prior to the update state of version 1.00, it is crucial you flush your browser cache. Otherwise, you might have a version missing of the recent additions due to an older version in your device's memory.**
+
 **1) Give it a quick look on my server** \
 If you do not want any big setup, but simply a quick round of action, you should definitely look [here](https://manuel-engel.de/finalfate/finalfate). \
 \
