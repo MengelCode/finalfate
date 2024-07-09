@@ -4,6 +4,10 @@
  * in the code or data / code which is multi-purpose.
  */
 
+//issue-27: Set emulation mode.
+navigator.gamepadInputEmulation = "gamepad";
+
+
 /**
  * Volume value for the SFX / music.
  * @type Number
