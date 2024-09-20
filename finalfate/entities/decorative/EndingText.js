@@ -79,8 +79,18 @@ function endingText_render(){
 }
 
 function endingText_update(){
+    this.frameCounter++
     // Part 0: Do nothing if scroll is over.
-    if(this.endReached){
+    if(this.endReached && !this.lastCountdown){
+       this.lastCountdown = this.frameCounter + 300;
+       return; 
+    }
+    else if (this.endReached && this.lastCountdown && this.frameCounter > this.lastCountdown){
+        bgm_sus.pause();
+        exchangeRenderLoop(gameOver);
+        return;
+    }
+    else if(this.endReached && this.lastCountdown){
         return;
     }
     // Part 1: Insert new line every X frames.
@@ -105,5 +115,4 @@ function endingText_update(){
         endingTextMoving.shift();
     }
     
-    this.frameCounter++;
 }
