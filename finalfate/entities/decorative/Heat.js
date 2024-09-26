@@ -23,8 +23,8 @@ function heat_render() {
     //Additional code while "heat" is active.
 
     //Starting with relevant coordinates and data. 
-    player_x_real = player.middleX * 10;
-    player_y_real = player.middleY * 10;
+    player_x_real = transformToCanvasCoords(player.middleX);
+    player_y_real = transformToCanvasCoords(player.middleY);
     //Positions general array.
     flame_positions = [];
     //Array for first part of loop.

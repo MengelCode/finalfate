@@ -194,6 +194,14 @@ function clearScreen() {
     context.fillRect(0, 0, oldestWidth, oldestHeight);
 }
 
+/**
+ * Return in-game matrix coordinates to real canvas coordinates.
+ */
+
+function transformToCanvasCoords(matrixValue){
+    return matrixValue * 10;
+}
+
 /* Boot sequence.
  * 
  * @returns {undefined}
@@ -441,6 +449,8 @@ var sfx2 = document.getElementById("sfx-channel-2");
 var sfx3 = document.getElementById("sfx-channel-3");
 //Menu select.
 var sfx4 = document.getElementById("sfx-channel-4");
+//Laser SFX.
+var sfx5 = document.getElementById("sfx-channel-5");
 //Game over tune.
 var game_over = document.getElementById("game-over");
 //Exception occured.

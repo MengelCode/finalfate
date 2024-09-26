@@ -9,6 +9,8 @@ var boss3_hatch_dimension = meteor_dimension;
 var boss3_heating_dimension = meteor_dimension;
 //"Boss 3 middle part" dimension function.
 var boss3_middle_dimension = meteor_dimension;
+//"Laser Ray" global variable.
+var laser_ray = null;
 
 
 
@@ -381,6 +383,8 @@ function boss3_middle_invalidate() {
  * @returns {undefined}
  */
 function boss3_arm_not_active_invalidate() {
+    simplyPlaySound(sfx5);
+    displayList.addElement(new Boom(),false);
     player.health--;
 }
 
