@@ -71,14 +71,6 @@ class SpaceShip extends GameObject {
         //Checkpoint memory. Because levels start to count with zero, I set the default to -1 here.
         this.checkpoint = -1;
         super.updateState = function () {
-            //If memorized button here, then poll that from controller.
-            //Disabled for now.
-
-            if (false) {
-                pollAxisX();
-                pollAxisY();
-                pollDatButton();
-            }
             if (this.score >= this.score_newlife) {
                 simplyPlaySound(sfx2);
                 this.lifes++;
