@@ -94,9 +94,12 @@ function metallicMoon_update(){
                 if(player.skill<2){
                     player.health-=7;
                     this.mouthHp-=14;
+                    simplyPlaySound(sfx1);
                     displayList.addElement(new Boom(),false);
                 }
                 else{
+                    simplyPlaySound(sfx1);
+                    displayList.addElement(new Boom(),false);
                     player.health=0;
                 }
             }
@@ -119,11 +122,14 @@ function metallicMoon_update(){
             }
             // B - Wrong timing, Hard mode.
             else if(player.skill < 2){
+                displayList.addElement(new Boom(), false);
                 simplyPlaySound(sfx2);
                 this.mouthHp = 85;
             }
             // C - Wrong timing, Master mode.
             else{
+                displayList.addElement(new Boom(), false);
+                simplyPlaySound(sfx1);
                 player.health = 0;
             }
         }
