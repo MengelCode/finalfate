@@ -295,11 +295,25 @@ function deleteDeceased() {
 //6 - Render the HUD.
 
 function renderHUD() {
-    bulletList.resetIterator();
-    if (bulletList.peekNext() !== null) {
-        //  context.fillStyle = "#333333";
+    let gfxTimer = aniCount % 160;
+    let gfxChange = false;
+    //If hp less than 60.
+    if(player.health < 5){
+        gfxChange = true;
     }
-    context.fillStyle = "#222222";
+    else if(player.health < 20 && gfxTimer % 10 < 5){
+        gfxChange = true;
+    }
+    else if(player.health < 40 && gfxTimer % 40 < 20){
+        gfxChange = true;
+    }
+    else if(player.health < 50 && gfxTimer < 90){
+        gfxChange = true;
+    }
+    else if(player.health < 60 && gfxTimer < 70){
+        gfxChange = true;
+    }
+    context.fillStyle = gfxChange ? "#ee3333" : "#222222";
     context.fillRect(0, 550, 800, 50);
     context.fillStyle = "white";
     context.font = "27px sans-serif";
