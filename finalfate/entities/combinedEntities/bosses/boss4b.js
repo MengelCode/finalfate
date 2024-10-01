@@ -312,6 +312,7 @@ function boss4b_phase2HitDetection(){
                     player.noHit = false;
                 }
                 displayList.addElement(new Fog(), false);
+               simplyPlaySound(sfx1);
             }
             //Bullet hit in general - is gone.
             bullet.middleY = -76;
@@ -337,10 +338,14 @@ function boss4b_phase3HitDetection(){
             }
             else {
                 if(player.skill > 0){
+                    simplyPlaySound(sfx1);
+                    displayList.addElement(new Boom(),false);
                     player.health = 0;
                 }
                 else {
                     player.health -= 9;
+                    simplyPlaySound(sfx1);
+                    displayList.addElement(new Boom(),false);
                     player.noHit = false;
                 }
             }
