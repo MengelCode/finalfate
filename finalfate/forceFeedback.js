@@ -21,7 +21,7 @@ var fofe_enabled = false;
 function probeFofe(){
     try{
         // Check 1.
-        if(!touchs && !gamepad){
+        if(!touchs && gamepad === false){
             //Check failed (default).
             return false;
         }
@@ -30,8 +30,9 @@ function probeFofe(){
             //Check either failed or passed for mobile phone.
             return navigator.vibrate;
         }
+        var gamepad_handle = navigator.getGamepads()[gamepad];
         //Check 2B.
-        if(!gamepad.hapticActuators || !gamepad.hapticActuators.length || gamepad.hapticActuators.length < 1 || !gamepad.hapticActuators[0] || !gamepad.hapticActuators[0].pulse){
+        if(!gamepad_handle.vibrationActuator || !gamepad_handle.vibrationActuator.playEffect){
             //Check failed for gamepad.
             return false;
         }
@@ -79,12 +80,18 @@ function attemptFofe(value, duration){
             navigator.vibrate(duration);
         }
         //Case 2 - Vibrate all devices found in gamepad.
-        if(gamepad){
-            var motors = gamepad.hapticActuators;
-            var motors_no = motors.length;
-            for(var i = 0; i<motors_no; i++){
-                motors[i].pulse(value, duration);
-            }
+        if(gamepad !== null){
+            var gamepad_handle = navigator.getGamepads()[gamepad];
+            var motor = gamepad_handle.vibrationActuator;
+            motor.playEffect("dual-rumble",{
+                startDelay: 0,
+                duration: duration,
+                weakMagnitude: 0.05,
+                strongMagnitude: value, 
+                }
+
+            )
+
         }
         //All other cases: Just do nothing.
     }
