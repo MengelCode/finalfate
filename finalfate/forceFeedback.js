@@ -4,12 +4,11 @@
  */
 //Functionality turned on? (Should be forced to false at the title screen)
 var fofe_enabled = false;
-//Respective gamepad, unless it is a mobile device.
-var fofe_device = null;
+
 
 
 /**
- * TODO: Test both on mobile and on PC (using a gamepad)
+ * TODO: Test both on mobile (using the touch screen) and on PC (using a gamepad)
  * Try an educated guess whether force feedback will be available.
  * Test the following:
  * 1.) Is either the touch overlay on (global variable "touchs" is true) or a gamepad (global variable "gamepad" contains device) used? If no, return false.
@@ -32,7 +31,7 @@ function probeFofe(){
             return navigator.vibrate;
         }
         //Check 2B.
-        if(!gamepad.hapticAcutators || !gamepad.hapticAcutators.length || gamepad.hapticAcutators.length < 1 || !gamepad.hapticAcutators[0] || !gamepad.hapticAcutators[0].pulse){
+        if(!gamepad.hapticActuators || !gamepad.hapticActuators.length || gamepad.hapticActuators.length < 1 || !gamepad.hapticActuators[0] || !gamepad.hapticActuators[0].pulse){
             //Check failed for gamepad.
             return false;
         }
@@ -49,21 +48,50 @@ function probeFofe(){
 }
 
 /**
- * TODO: Fill function body.
+ * TODO: Test the code.
  * Enable or disable force feedback.
  */
 
 function setFofe(enabled){
+    if(!enabled || !probeFofe()){
+        fofe_enabled = false;
+        return;
+    }
+    fofe_enabled = enabled;
 
 }
 
 /**
- * TODO: Fill function body.
+ * TODO: Test the code.
  * Attempt to use the force feedback functionality.
  * Does nothing or to a limited ability if disabled, (partially) not supported or not applicable. 
  * @param {*} value The strength of the vibration
  * @param {*} duration The duration of the vibration
  */
 function attemptFofe(value, duration){
+    //Immediately return if disabled.
+    if(!fofe_enabled){
+        return;
+    }
+    try{
+        //Case 1 - Vibrate the mobile device.
+        if(touchs){
+            navigator.vibrate(duration);
+        }
+        //Case 2 - Vibrate all devices found in gamepad.
+        if(gamepad){
+            var motors = gamepad.hapticActuators;
+            var motors_no = motors.length;
+            for(var i = 0; i<motors_no; i++){
+                motors[i].pulse(value, duration);
+            }
+        }
+        //All other cases: Just do nothing.
+    }
+    catch(error){
+        //In the event the browser is behaving funny, log the error and disable this functionality.
+        console.error(error);
+        fofe_enabled = false;
+    }
 
 }
