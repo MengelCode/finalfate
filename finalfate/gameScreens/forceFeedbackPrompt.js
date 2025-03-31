@@ -57,6 +57,7 @@ function forceFeedbackPrompt(){
     }
     if (shoot && shootReleased) {
         simplyPlaySound(sfx4);
+        setFofe(fefoPrompt_decision);
         exchangeRenderLoop(fefoPrompt_jumpTo);
         shootReleased = false;
     }
