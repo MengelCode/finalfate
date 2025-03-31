@@ -52,16 +52,34 @@ function titleScreen() {
                 //TODO Implement: Decide whether to open the force feedback screen.
                 if (storageStatus === false) {
                     simplyPlaySound(sfx4);
-                    exchangeRenderLoop(skillPrompt);
+                    if(probeFofe()){
+                        fefoPrompt_jumpTo = skillPrompt;
+                        exchangeRenderLoop(forceFeedbackPrompt);
+                    }
+                    else{
+                        exchangeRenderLoop(skillPrompt);
+                    }     
                 }
                 else if (storageStatus === null){
                     simplyPlaySound(sfx4);
-                    exchangeRenderLoop(loadFail);
+                    if(probeFofe()){
+                        fefoPrompt_jumpTo = loadFail;
+                        exchangeRenderLoop(forceFeedbackPrompt);
+                    }
+                    else{
+                        exchangeRenderLoop(loadFail);
+                    }     
                 }
                 else {
                     shootReleased = false;
                     simplyPlaySound(sfx4);
-                    exchangeRenderLoop(loadPrompt);
+                    if(probeFofe()){
+                        fefoPrompt_jumpTo = loadPrompt;
+                        exchangeRenderLoop(forceFeedbackPrompt);
+                    }
+                    else{
+                        exchangeRenderLoop(loadPrompt);
+                    }            
                 }
 
             }
@@ -89,7 +107,7 @@ var volumePause = "(change with left / right)";
 function volume_prompt_render(lockVolume = false){
     context.fillStyle = "white";
     var volumeControls = renderFunction === skillPrompt ||
-            renderFunction === loadPrompt;
+            renderFunction === loadPrompt || renderFunction === forceFeedbackPrompt;
     if (volumeControls) {
         context.fillText(volumeText + " " + volumeTitle + ": " + masterVolume + " %", 195, 530);
         if (up && masterVolume < 100 && !lockVolume)

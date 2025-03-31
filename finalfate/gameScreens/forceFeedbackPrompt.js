@@ -6,7 +6,7 @@
 var fefoPrompt_jumpTo = null;
 var fefoPrompt_decision = null;
 const FEFO_PROMPT_TITLE = "Rumble Function";
-const FEFO_PROMPT_DETECTED = "Rumble / Vibration support has been detected.";
+const FEFO_PROMPT_DETECTED = "Rumble / Vibration support detected.";
 const FEFO_PROMPT_GENERAL_TEXT = "Do you want to enable this function";
 const FEFO_PROMPT_PHONE = "of your phone?";
 const FEFO_PROMPT_GAMEPAD = "of your gamepad?";
@@ -38,11 +38,12 @@ function forceFeedbackPrompt(){
     context.fillStyle = "gold";
     context.fillText(FEFO_PROMPT_GENERAL_TEXT, 290, 275);
     context.fillText(touchs ? FEFO_PROMPT_PHONE : FEFO_PROMPT_GAMEPAD, 290, 290);
+    context.font = "27px sans-serif";
     //Yes / no elements.
     context.fillStyle = fefoPrompt_decision ? "gold" : "white";
     context.fillText(youSure[1], 310, 380);
     context.fillStyle = !fefoPrompt_decision ? "gold" : "white";
-    context.fillText(youSure[0], 350, 380);
+    context.fillText(youSure[0], 450, 380);
 
     //Selecting around.
     if (right && axisXReleased && fefoPrompt_decision) {
