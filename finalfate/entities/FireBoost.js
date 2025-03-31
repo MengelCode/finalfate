@@ -27,6 +27,7 @@ var fireBoost_dimension = healthBoost_dimension;
 function fireBoost_update() {
     if (player.collides(this)) {
         this.invalid = true;
+        attemptFofe(FOFE_MILD_SHOCK,FOFE_SHORT_SHOCK);
         simplyPlaySound(sfx2);
         if (player.massfire) {
             player.health = player.health + 120;
@@ -37,6 +38,7 @@ function fireBoost_update() {
     this.middleY = this.middleY + 1;
     if (player.collides(this)) {
         this.invalid = true;
+        attemptFofe(FOFE_MILD_SHOCK,FOFE_SHORT_SHOCK);
         simplyPlaySound(sfx2);
         if (player.massfire) {
             player.health = player.health + 120;

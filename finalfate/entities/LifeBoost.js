@@ -28,6 +28,7 @@ var lifeBoost_dimension = healthBoost_dimension;
 function lifeBoost_update() {
     if (player.collides(this)) {
         this.invalid = true;
+        attemptFofe(FOFE_MILD_SHOCK,FOFE_SHORT_SHOCK);
         simplyPlaySound(sfx2);
         player.lifes = player.lifes + 1;
         return;
@@ -35,6 +36,7 @@ function lifeBoost_update() {
     this.middleY = this.middleY + 1;
     if (player.collides(this)) {
         this.invalid = true;
+        attemptFofe(FOFE_MILD_SHOCK,FOFE_SHORT_SHOCK);
         simplyPlaySound(sfx2);
         player.lifes = player.lifes + 1;
     }

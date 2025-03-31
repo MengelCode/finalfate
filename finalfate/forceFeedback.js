@@ -5,7 +5,8 @@
 //Functionality turned on? (Should be forced to false at the title screen)
 var fofe_enabled = false;
 
-
+const FOFE_MILD_SHOCK = 0.3;
+const FOFE_SHORT_SHOCK = 400;
 
 /**
  * TODO: Test both on mobile (using the touch screen) and on PC (using a gamepad)
@@ -86,7 +87,7 @@ function attemptFofe(value, duration){
             motor.playEffect("dual-rumble",{
                 startDelay: 0,
                 duration: duration,
-                weakMagnitude: 0.05,
+                weakMagnitude: value,
                 strongMagnitude: value, 
                 }
 

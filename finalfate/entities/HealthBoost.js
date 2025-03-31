@@ -28,6 +28,7 @@ var healthBoost_dimension = simpleEnemy_dimension;
 function healthBoost_update() {
     if (player.collides(this)) {
         this.invalid = true;
+        attemptFofe(FOFE_MILD_SHOCK,FOFE_SHORT_SHOCK);
         simplyPlaySound(sfx2);
         player.health = player.health + 30;
         return;
@@ -35,6 +36,7 @@ function healthBoost_update() {
     this.middleY = this.middleY + 1;
     if (player.collides(this)) {
         this.invalid = true;
+        attemptFofe(FOFE_MILD_SHOCK,FOFE_SHORT_SHOCK);
         simplyPlaySound(sfx2);
         player.health = player.health + 30;
     }
