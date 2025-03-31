@@ -49,6 +49,7 @@ function titleScreen() {
                 shootReleased = false;
             }
             if (keyboard || gamepad !== false) {
+                //TODO Implement: Decide whether to open the force feedback screen.
                 if (storageStatus === false) {
                     simplyPlaySound(sfx4);
                     exchangeRenderLoop(skillPrompt);

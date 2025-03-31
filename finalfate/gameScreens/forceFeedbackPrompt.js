@@ -10,6 +10,7 @@ const FEFO_PROMPT_GENERAL_TEXT = "Do you want to enable this function";
 const FEFO_PROMPT_PHONE = "of your phone?";
 const FEFO_PROMPT_GAMEPAD = "of your gamepad?";
 
+//TODO Finish screen function.
 function forceFeedbackPrompt(){
 
     title_and_copyright_render();
