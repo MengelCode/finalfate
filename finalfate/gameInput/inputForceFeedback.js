@@ -1,5 +1,5 @@
 /**
- * forceFeedback.js
+ * inputForceFeedback.js
  * Utility functions and variables for the force feedback (rumble/vibration) function for supported devices.
  */
 //Functionality turned on? (Should be forced to false at the title screen)

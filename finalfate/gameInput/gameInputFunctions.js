@@ -1,7 +1,11 @@
 /**
- * gameInput.js
+ * gameInputFunctions.js
  * Contains a collection of variables and functions related to user input.
  */
+
+
+
+//Original gameInput.js code
 
 //"booleans" if certain keys are pressed.
 var shoot = 0;
@@ -95,17 +99,17 @@ function getKeyPress(event) {
     //Key Codes supported?
     if (event.keyCode !== undefined) {
 // window.alert(event.which);
-        if (event.keyCode === 32) {
+        if (event.keyCode === keyboard_code_shoot) {
             shoot = 5;
-        } else if (event.keyCode === 37) {
+        } else if (event.keyCode === keyboard_code_left) {
             left = 5;
-        } else if (event.keyCode === 39) {
+        } else if (event.keyCode === keyboard_code_right) {
             right = 5;
-        } else if (event.keyCode === 38) {
+        } else if (event.keyCode === keyboard_code_up) {
             up = 5;
-        } else if (event.keyCode === 40) {
+        } else if (event.keyCode === keyboard_code_down) {
             down = 5;
-        } else if (event.keyCode === 80) {
+        } else if (event.keyCode === keyboard_code_pause) {
             pause = 5;
         }
     }
